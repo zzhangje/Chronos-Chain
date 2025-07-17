@@ -1,0 +1,736 @@
+{
+  "hubs": [
+    {
+      "x": -8,
+      "y": -8,
+      "width": 2473,
+      "height": 1504,
+      "state": {
+        "sidebar": {
+          "width": 313,
+          "expanded": [
+            "/DriverStation/Joystick0/POVs",
+            "/DriverStation/Joystick0/AxisValues",
+            "/Swerve/Gyro/YawPosition",
+            "/AmpArm/Roller",
+            "/RealOutputs/ApriltagVision/AllGoodRobotInField/0",
+            "/RealOutputs/ApriltagVision/AllGoodRobotInField/0/rotation",
+            "/RealOutputs/ApriltagVision/AllGoodRobotInField/0/rotation/q",
+            "/RealOutputs/Odometry/EstimatedPose/rotation",
+            "/RealOutputs/Odometry/EstimatedPose/translation",
+            "/RealOutputs/Odometry/WheeledPose/rotation",
+            "/RealOutputs/Odometry/WheeledPose/translation",
+            "/Swerve/Odometry/OdometryBLPositions/0",
+            "/Swerve/Odometry/OdometryBLPositions/0/angle",
+            "/DashboardInputs/TunableNumbers/ApriltagVision/BackLeft/PoseInRobot",
+            "/DashboardInputs/TunableNumbers/ApriltagVision/BackMid",
+            "/DashboardInputs/TunableNumbers",
+            "/RealOutputs/ApriltagVision/AllUsedTagInField/0/rotation",
+            "/RealOutputs/ApriltagVision/AllUsedTagInField/1",
+            "/RealOutputs/ApriltagVision/AllUsedTagInField/1/rotation",
+            "/ApriltagVision/BackLeft/ApriltagIdsUsed",
+            "/ApriltagVision/BackLeft/TargetPitchInCamera",
+            "/ApriltagVision/BackLeft/TargetYawInCamera",
+            "/RealOutputs/GamePieces/AllLivedNotes/0/rotation",
+            "/RealOutputs/GamePieces/AllLivedNotes/1/rotation",
+            "/RealOutputs/GamePieces/AllLivedNotes/1/translation",
+            "/RealOutputs/GamePieces/AllLivedNotes/0/translation",
+            "/RealOutputs/GamePieces/AllLivedNotes",
+            "/ObjectDetectionVision/FrontMid",
+            "/ObjectDetectionVision/FrontMid/TargetPitchInCamera",
+            "/ObjectDetectionVision/FrontMid/TargetPitchInCamera/0",
+            "/ObjectDetectionVision/FrontMid/TargetPitchInCamera/1",
+            "/ObjectDetectionVision/FrontMid/TargetPitchInCamera/2",
+            "/ObjectDetectionVision/FrontMid/TargetPitchInCamera/3",
+            "/ObjectDetectionVision/FrontMid/TargetYawInCamera/0",
+            "/RealOutputs/Swerve/SwerveStates/GoalModuleStates/3",
+            "/RealOutputs/Odometry/EstimatedPose",
+            "/RealOutputs/ShootingPlanner",
+            "/RealOutputs/ShootingPlanner/OrgRobotFlywheelVel",
+            "/Feeder/Pitch",
+            "/Feeder/Roller",
+            "/RealOutputs/magic dynamic translation 3d?",
+            "/RealOutputs/CompensatedShootingDirection/q",
+            "/NetworkInputs/SmartDashboard/Auto",
+            "/NetworkInputs/TunableNumbers",
+            "/NetworkInputs/TunableNumbers/Intake",
+            "/NetworkInputs/TunableNumbers/Intake/Align",
+            "/NetworkInputs/TunableNumbers/Intake/Align/Goal",
+            "/NetworkInputs/TunableNumbers/Intake/Roller",
+            "/NetworkInputs/TunableNumbers/Intake/Roller/Goal",
+            "/NetworkInputs/Tuning",
+            "/NetworkInputs/Tuning/Intake",
+            "/NetworkInputs/Tuning/Intake/Align",
+            "/NetworkInputs/Tuning/Intake/Align/Goal",
+            "/NetworkInputs/Tuning/KsCharacterization",
+            "/Tuning/Intake/Align",
+            "/Tuning/Intake/Align/Goal",
+            "/Tuning/Swerve/TrajectoryController",
+            "/AdvantageKit/ObjectDetectionVision/FrontMid",
+            "/AdvantageKit/ObjectDetectionVision/FrontMid/Yaw",
+            "/AdvantageKit/ObjectDetectionVision/FrontMid/Pitch",
+            "/AdvantageKit/ApriltagVision/BackMid",
+            "/AdvantageKit/ApriltagVision/BackMid/Ids",
+            "/AdvantageKit/ApriltagVision/BackLeft/PoseObservations",
+            "/AdvantageKit/ApriltagVision/BackLeft/PoseObservations/0",
+            "/AdvantageKit/ObjectDetectionVision/FrontMid/Timestamp",
+            "/AdvantageKit/RealOutputs/GamePieceTracker/AllAlgae",
+            "/AdvantageKit/RealOutputs/Mechanism/Swerve",
+            "/AdvantageKit/RealOutputs/Mechanism/Swerve/Module_0",
+            "/AdvantageKit/RealOutputs/Mechanism/Module_0",
+            "/AdvantageKit/RealOutputs/ZeroedComponentPoses/0",
+            "/AdvantageKit/RealOutputs/Swerve/ModuleStates/0",
+            "/AdvantageKit/RealOutputs/test",
+            "/AdvantageKit/RealOutputs/test/origin",
+            "/AdvantageKit/RealOutputs/test/pose",
+            "/AdvantageKit/RealOutputs/test/invPose",
+            "/AdvantageKit/RealOutputs/test/origin/rotation",
+            "/AdvantageKit/RealOutputs/test/origin/translation",
+            "/AdvantageKit/RealOutputs/test/pose/rotation",
+            "/AdvantageKit/RealOutputs/test/pose/translation",
+            "/AdvantageKit/RealOutputs/test/invPose/translation",
+            "/AdvantageKit/RealOutputs/test/invPose/rotation",
+            "/AdvantageKit/RealOutputs/test/giao",
+            "/AdvantageKit/RealOutputs/test/giao/q",
+            "/AdvantageKit/RealOutputs/Odometry/WheeledPose",
+            "/AdvantageKit/RealOutputs/Odometry/EstimatedPose",
+            "/AdvantageKit/RealOutputs/Visualize/Component/0",
+            "/AdvantageKit/RealOutputs/Visualize/Component/0/rotation",
+            "/AdvantageKit/RealOutputs/Visualize/Component/0/translation",
+            "/AdvantageKit/RealOutputs/Visualize/Component/0/rotation/q",
+            "/Tuning/Arm/Shoulder/Goal",
+            "/Tuning/Arm/Elbow/Goal",
+            "/AdvantageKit/RealOutputs/Visualize/Component/5",
+            "/AdvantageKit/RealOutputs/Visualize/Component/5/translation",
+            "/AdvantageKit/RealOutputs/Visualize/Component/4",
+            "/AdvantageKit/RealOutputs/Visualize/Component/4/translation",
+            "/AdvantageKit/RealOutputs/Visualize/Component/6",
+            "/AdvantageKit/RealOutputs/Visualize/Component/6/translation",
+            "/AdvantageKit/RealOutputs/Visualize/Component/6/rotation",
+            "/AdvantageKit/RealOutputs/Visualize/Component/6/rotation/q",
+            "/AdvantageKit/RealOutputs/Visualize/Component/5/rotation",
+            "/AdvantageKit/RealOutputs/Visualize/Component/5/rotation/q",
+            "/AdvantageKit/RealOutputs/Visualize/Component/4/rotation",
+            "/AdvantageKit/RealOutputs/Visualize/Component/4/rotation/q",
+            "/AdvantageKit/RealOutputs/Visualize/TFtree",
+            "/AdvantageKit/RealOutputs/Visualize/Debug",
+            "/AdvantageKit/RealOutputs/Visualize/Debug/5",
+            "/AdvantageKit/RealOutputs/Visualize/Debug/5/TF",
+            "/AdvantageKit/RealOutputs/Visualize/Debug/5/deltaTF",
+            "/AdvantageKit/RealOutputs/Visualize/Debug/5/deltaTF/rotation",
+            "/AdvantageKit/RealOutputs/Visualize/Debug/5/deltaTF/rotation/q",
+            "/AdvantageKit/RealOutputs/Visualize/Debug/5/parentTF",
+            "/AdvantageKit/RealOutputs/Visualize/Debug/5/TF/rotation",
+            "/AdvantageKit/RealOutputs/Visualize/Debug/5/parentTF/rotation",
+            "/AdvantageKit/RealOutputs/Visualize/Debug/5/parentTF/rotation/q",
+            "/AdvantageKit/RealOutputs/Visualize/Debug/5/TF/rotation/q",
+            "/AdvantageKit/RealOutputs/Visualize/Debug/6",
+            "/AdvantageKit/RealOutputs/Visualize/Debug/6/parentTF",
+            "/AdvantageKit/RealOutputs/Visualize/Debug/6/parentTF/rotation",
+            "/AdvantageKit/RealOutputs/Visualize/Debug/6/parentTF/rotation/q",
+            "/AdvantageKit/RealOutputs/Visualize/Debug/6/TF",
+            "/AdvantageKit/RealOutputs/Visualize/Debug/6/TF/rotation",
+            "/AdvantageKit/RealOutputs/Visualize/Debug/6/TF/rotation/q",
+            "/AdvantageKit/RealOutputs/Visualize/Debug/6/deltaTF",
+            "/AdvantageKit/RealOutputs/Visualize/Debug/6/deltaTF/rotation",
+            "/AdvantageKit/RealOutputs/Visualize/Debug/6/deltaTF/rotation/q",
+            "/AdvantageKit/Arm Elevator",
+            "/AdvantageKit/RealOutputs/Swerve/TeleopController",
+            "/AdvantageKit/RealOutputs/Swerve/TeleopController/HeadingMaintainer",
+            "/AdvantageKit/RealOutputs/Swerve/LaserController",
+            "/AdvantageKit/AlgaeGroundIntake/Arm",
+            "/Tuning/Arm/Elbow",
+            "/AdvantageKit/Swerve/Gyro",
+            "/AdvantageKit/Swerve/Gyro/YawPosition",
+            "/AdvantageKit/RealOutputs/Arm/Shoulder",
+            "/AdvantageKit/RealOutputs/AlgaeGroundIntake",
+            "/AdvantageKit/RealOutputs/CoralEndEffector",
+            "/Tuning/CoralEndEffector/Goal",
+            "/Tuning/Swerve/LaserController",
+            "/Tuning/Odometry/TxTyObservation",
+            "/Tuning/CoralEndEffector",
+            "/RealOutputs/Visualize",
+            "/RealOutputs/Swerve/SwerveStates",
+            "/RealOutputs/Swerve/LaserController",
+            "/RealOutputs",
+            "/RealOutputs/Swerve",
+            "/AdvantageKit/RealOutputs",
+            "/AdvantageKit/RealOutputs/EndEffector",
+            "/AdvantageKit/RollerSensor",
+            "/AdvantageKit/RealOutputs/Swerve/ReefAlignController",
+            "/AdvantageKit/RealOutputs/Visualize",
+            "/AdvantageKit/RealOutputs/Visualizer",
+            "/AdvantageKit/GroundIntake",
+            "/AdvantageKit/GroundIntake/Roller",
+            "/AdvantageKit/GroundIntake/Arm",
+            "/AdvantageKit/RealOutputs/GamePieceTracker",
+            "/AdvantageKit/RealOutputs/GroundIntake",
+            "/AdvantageKit/RealOutputs/GamePieceVisualizer",
+            "/AdvantageKit/RealOutputs/Intake",
+            "/AdvantageKit/Intake",
+            "/AdvantageKit/Intake/Pivot",
+            "/Tuning/Intake/Config/Pivot",
+            "/Tuning/Intake/Pivot",
+            "/Tuning/Intake/Config",
+            "/Tuning/Intake/Roller",
+            "/AdvantageKit/Arm Elbow",
+            "/AdvantageKit/RealOutputs/Arm",
+            "/AdvantageKit/Arm Shoulder",
+            "/AdvantageKit/RealOutputs/GamePiece",
+            "/AdvantageKit/RealOutputs/GamePiece/Algae",
+            "/AdvantageKit/RealOutputs/Visualization/Algae",
+            "/AdvantageKit/RealOutputs/Visualization/Coral",
+            "/AdvantageKit/Arm End Effector",
+            "/AdvantageKit/RealOutputs/RobotContainer",
+            "/AdvantageKit",
+            "/Tuning",
+            "/Tuning/Arm",
+            "/AdvantageKit/RealOutputs/Visualization"
+          ]
+        },
+        "tabs": {
+          "selected": 3,
+          "tabs": [
+            {
+              "type": 0,
+              "title": "",
+              "controller": null,
+              "controllerUUID": "12f9dcah8q681upfwoozm23czhplfwbx",
+              "renderer": "#/",
+              "controlsHeight": 0
+            },
+            {
+              "type": 9,
+              "title": "Swerve(Live)",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "chassisSpeeds",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Swerve/RawGoalVel",
+                    "logType": "ChassisSpeeds",
+                    "visible": true,
+                    "options": {
+                      "color": "#0000ff"
+                    }
+                  },
+                  {
+                    "type": "states",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Swerve/SwerveStates/OptimizedGoalModuleStates",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#0000ff",
+                      "arrangement": "0,3,1,2"
+                    }
+                  },
+                  {
+                    "type": "states",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Swerve/ModuleStates",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff8c00",
+                      "arrangement": "0,3,1,2"
+                    }
+                  },
+                  {
+                    "type": "chassisSpeeds",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Swerve/FinalGoalVel",
+                    "logType": "ChassisSpeeds",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00"
+                    }
+                  },
+                  {
+                    "type": "chassisSpeeds",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Swerve/RobotCentricVel",
+                    "logType": "ChassisSpeeds",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff8c00"
+                    }
+                  },
+                  {
+                    "type": "states",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Swerve/SwerveStates/OptimizedGoalModuleTorques",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff0000",
+                      "arrangement": "0,3,1,2"
+                    }
+                  },
+                  {
+                    "type": "rotation",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Odometry/EstimatedPose/rotation",
+                    "logType": "Rotation2d",
+                    "visible": true,
+                    "options": {}
+                  }
+                ],
+                "maxSpeed": 5.4864,
+                "sizeX": 0.2967,
+                "sizeY": 0.2967,
+                "orientation": 1
+              },
+              "controllerUUID": "rvs08gwx0dxox0s8ooqv5gmpedaets0n",
+              "renderer": null,
+              "controlsHeight": 370
+            },
+            {
+              "type": 9,
+              "title": "Swerve(Log)",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "chassisSpeeds",
+                    "logKey": "/RealOutputs/Swerve/RawGoalVel",
+                    "logType": "ChassisSpeeds",
+                    "visible": true,
+                    "options": {
+                      "color": "#0000ff"
+                    }
+                  },
+                  {
+                    "type": "states",
+                    "logKey": "/RealOutputs/Swerve/SwerveStates/OptimizedGoalModuleStates",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff0000",
+                      "arrangement": "0,3,1,2"
+                    }
+                  },
+                  {
+                    "type": "states",
+                    "logKey": "/RealOutputs/Swerve/ModuleStates",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff8c00",
+                      "arrangement": "0,3,1,2"
+                    }
+                  },
+                  {
+                    "type": "chassisSpeeds",
+                    "logKey": "/RealOutputs/Swerve/FinalGoalVel",
+                    "logType": "ChassisSpeeds",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00"
+                    }
+                  },
+                  {
+                    "type": "chassisSpeeds",
+                    "logKey": "/RealOutputs/Swerve/RobotCentricVel",
+                    "logType": "ChassisSpeeds",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff8c00"
+                    }
+                  },
+                  {
+                    "type": "rotation",
+                    "logKey": "/RealOutputs/Odometry/EstimatedPose/rotation",
+                    "logType": "Rotation2d",
+                    "visible": true,
+                    "options": {}
+                  }
+                ],
+                "maxSpeed": 5,
+                "sizeX": 0.65,
+                "sizeY": 0.65,
+                "orientation": 1
+              },
+              "controllerUUID": "03k95ug45csavev4dcblv8hxt4h3sf34",
+              "renderer": null,
+              "controlsHeight": 290
+            },
+            {
+              "type": 3,
+              "title": "Field(Live)",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Odometry/EstimatedPose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "model": "8583 Nailong"
+                    }
+                  },
+                  {
+                    "type": "swerveStates",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Swerve/SwerveStates/GoalModuleStates",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "arrangement": "0,3,1,2"
+                    }
+                  },
+                  {
+                    "type": "swerveStates",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Swerve/ModuleStates",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff8c00",
+                      "arrangement": "0,3,1,2"
+                    }
+                  },
+                  {
+                    "type": "vision",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/ApriltagVision/AllUsedTagInField",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "vision",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/GamePieceTracker/AllCorals",
+                    "logType": "Pose2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff00ff",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "vision",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/GamePieceTracker/BestCoral",
+                    "logType": "Pose2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ffff00",
+                      "size": "bold"
+                    }
+                  },
+                  {
+                    "type": "component",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Visualization/Components",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Odometry/WheeledPose",
+                    "logType": "Pose2d",
+                    "visible": false,
+                    "options": {
+                      "model": "Crab Bot",
+                      "color": "#0000ff"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/ApriltagVision/AllGoodRobotInField",
+                    "logType": "Pose3d[]",
+                    "visible": false,
+                    "options": {
+                      "model": "Crab Bot",
+                      "color": "#00ff00"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/ApriltagVision/AllBadRobotInField",
+                    "logType": "Pose3d[]",
+                    "visible": false,
+                    "options": {
+                      "model": "Crab Bot",
+                      "color": "#ff0000"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Swerve/TrajectoryController/TrajectoryPoses",
+                    "logType": "Pose2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ffff",
+                      "size": "bold"
+                    }
+                  },
+                  {
+                    "type": "aprilTag",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/ApriltagVision/AllUsedTagInField",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "family": "36h11"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/GamePieceTracker/SearchAreaCoral",
+                    "logType": "Translation2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ffff00",
+                      "size": "bold"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Swerve/ReefAlignController/UsedSingleTagPose",
+                    "logType": "Pose2d",
+                    "visible": false,
+                    "options": {
+                      "model": "Crab Bot",
+                      "color": "#ff00ff"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Swerve/ReefAlignController/GoalPose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "model": "Duck Bot",
+                      "color": "#ffff00"
+                    }
+                  },
+                  {
+                    "type": "gamePiece",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Visualization/Coral/pickableGamePiecePose",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "variant": "Coral"
+                    }
+                  },
+                  {
+                    "type": "gamePiece",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Visualization/Coral/scoredGamePiecePose",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "variant": "Coral"
+                    }
+                  },
+                  {
+                    "type": "gamePiece",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Visualization/Algae/pickableGamePiecePose",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "variant": "Algae"
+                    }
+                  },
+                  {
+                    "type": "gamePiece",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Visualization/Algae/scoredGamePiecePose",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "variant": "Algae"
+                    }
+                  }
+                ],
+                "game": "2025 Field (Welded)",
+                "origin": "blue"
+              },
+              "controllerUUID": "1039uu5pmi9tb8r5kmxl2aqwcr3021jc",
+              "renderer": {
+                "cameraIndex": -1,
+                "orbitFov": 50,
+                "cameraPosition": [
+                  -10.064083865034224,
+                  5.217704136157524,
+                  -3.941703364741429
+                ],
+                "cameraTarget": [
+                  -4.073053821702723,
+                  0.06721737572217265,
+                  -0.1504039950977748
+                ]
+              },
+              "controlsHeight": 0
+            },
+            {
+              "type": 3,
+              "title": "3D Field(Log)",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "robot",
+                    "logKey": "/RealOutputs/Odometry/EstimatedPose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "model": "8214 Trouble"
+                    }
+                  },
+                  {
+                    "type": "component",
+                    "logKey": "/RealOutputs/Visualize/Component",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "/RealOutputs/Swerve/TrajectoryController/TrajectoryPoses",
+                    "logType": "Pose2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ffff",
+                      "size": "bold"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "/RealOutputs/Swerve/TrajectoryController/SetpointPose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "model": "8214 Trouble",
+                      "color": "#00ffff"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "/RealOutputs/ApriltagVision/AllGoodRobotInField",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "model": "8583 Nailong",
+                      "color": "#00ff00"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "/RealOutputs/ApriltagVision/AllBadRobotInField",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "model": "8583 Nailong",
+                      "color": "#ff0000"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "/RealOutputs/Swerve/LaserController/UsedSingleTagPose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "model": "8214 Trouble",
+                      "color": "#ffff00"
+                    }
+                  }
+                ],
+                "game": "2025 Field (Welded)",
+                "origin": "blue"
+              },
+              "controllerUUID": "ypo7r781mi9gk3u7oqj1yzzptmtk0ofy",
+              "renderer": {
+                "cameraIndex": -1,
+                "orbitFov": 50,
+                "cameraPosition": [
+                  -12.21975229865766,
+                  7.1802061043251,
+                  0.533034880347695
+                ],
+                "cameraTarget": [
+                  0.08324366159410457,
+                  -2.500207468745409,
+                  0.9990279403299999
+                ]
+              },
+              "controlsHeight": 283
+            },
+            {
+              "type": 1,
+              "title": "Line Graph",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/Arm Shoulder/PositionMeter",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "l1h9kixcdemzh6fneui6m0vq7076fpf6",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "Line Graph",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/Arm Elbow/PositionRad",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": "angle",
+                  "factor": 1,
+                  "from": "radians",
+                  "to": "degrees"
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "ct51n5xo40t5btmtx3up4c8ydxmstxys",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 12,
+              "title": "Metadata",
+              "controller": null,
+              "controllerUUID": "aauzc69tkf499sdxxl8439r4gv9mhilm",
+              "renderer": null,
+              "controlsHeight": 0
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "satellites": [],
+  "version": "4.1.0"
+}
