@@ -136,32 +136,6 @@ tasks.withType(JavaCompile) {
     options.compilerArgs.add '-XDstringConcat=inline'
 }
 
-// Check robot type when deploying
-task(checkConfigDeploy, dependsOn: "classes", type: JavaExec) {
-    mainClass = "com.nextinnovation.team8583.Config\$CheckDeploy"
-    classpath = sourceSets.main.runtimeClasspath
-}
-deployroborio.dependsOn(checkConfigDeploy)
-tasks.named("deploy").configure {
-    dependsOn(checkConfigDeploy)
-}
-
-// Check robot type when simulating
-task(checkConfigSim, dependsOn: "classes", type: JavaExec) {
-    mainClass = "com.nextinnovation.team8583.Config\$CheckSim"
-    classpath = sourceSets.main.runtimeClasspath
-}
-simulateJava.dependsOn(checkConfigSim)
-tasks.named("simulateExternalJavaRelease").configure {
-    dependsOn(checkConfigSim)
-}
-
-// Check config for pull request
-task(checkConfigPullRequest, dependsOn: "classes", type: JavaExec) {
-    mainClass = "com.nextinnovation.team8583.Config\$CheckPullRequest"
-    classpath = sourceSets.main.runtimeClasspath
-}
-
 idea {
     project {
         // The project.sourceCompatibility setting is not always picked up, so we set explicitly
@@ -175,17 +149,6 @@ idea {
         excludeDirs += file(".run")
         excludeDirs += file(".vscode")
     }
-}
-
-// Create version file
-project.compileJava.dependsOn(createVersionFile)
-gversion {
-    srcDir = "src/main/java/"
-    classPackage = "com.nextinnovation.team8583"
-    className = "BuildConstants"
-    dateFormat = "yyyy-MM-dd HH:mm:ss z"
-    timeZone = "America/New_York"
-    indent = "  "
 }
 
 // Create commit with working changes on event branches
