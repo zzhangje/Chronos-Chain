@@ -32,8 +32,7 @@ public class RobotState {
     }
 
     public static Boolean isScoreNet(RobotGoal goal) {
-      return goal.getSelectedType() == GamePieceType.ALGAE
-          && goal.getSelectedBranch().equals("N");
+      return goal.getSelectedType() == GamePieceType.ALGAE && goal.getSelectedBranch().equals("N");
     }
 
     public static RobotGoal scoreProcessor() {
@@ -41,8 +40,7 @@ public class RobotState {
     }
 
     public static Boolean isScoreProcessor(RobotGoal goal) {
-      return goal.getSelectedType() == GamePieceType.ALGAE
-          && goal.getSelectedBranch().equals("P");
+      return goal.getSelectedType() == GamePieceType.ALGAE && goal.getSelectedBranch().equals("P");
     }
 
     public static RobotGoal collectAlgae(String branch) {
@@ -52,7 +50,7 @@ public class RobotState {
     public static RobotGoal scoreCoral(String branch, String level) {
       return new RobotGoal(GamePieceType.CORAL, branch, level, false);
     }
-    
+
     public static RobotGoal invalid() {
       return new RobotGoal(GamePieceType.INVALID, "NA", "NA", false);
     }

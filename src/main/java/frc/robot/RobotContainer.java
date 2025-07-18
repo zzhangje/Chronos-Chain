@@ -96,7 +96,7 @@ public class RobotContainer {
 
     swerve.setCustomMaxTiltAccelScale(
         () -> Math.pow(1.0 - arm.getCOGHeightPercent() * Misc.accelCOGHeightScaleFactor.get(), 2));
-    // intake.setNeedDodgeSupplier();
+    intake.setNeedDodgeSupplier(() -> arm.isNeedIntakeDodge());
 
     configureBindings();
     configureAuto();

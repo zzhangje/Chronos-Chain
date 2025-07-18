@@ -11,7 +11,7 @@ import frc.lib.dashboard.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.Constants.DebugGroup;
 
-class ArmConfig {
+public class ArmConfig {
   static final double ELBOW_CANCODER_OFFSET = 0.22314453125;
   static final double ELBOW_REDUCTION = (74.0 / 12.0) * (60.0 / 20.0) * (64.0 / 16.0);
   protected static final LoggedTunableNumber transitionElevatorHeightMeter =
@@ -43,12 +43,6 @@ class ArmConfig {
       shoulderStaticCharacterizationVelocityThreshMeterPerSec =
           new LoggedTunableNumber(
               DebugGroup.ARM, "Arm/Shoulder/StaticCharacterizationVelocityThreshMeterPerSec", 0.01);
-  protected static final LoggedTunableNumber shoulderHomingCurrentAmp =
-      new LoggedTunableNumber(DebugGroup.ARM, "Arm/Shoulder/HomingCurrentAmp", -3.0);
-  protected static final LoggedTunableNumber shoulderHomingTimeSecs =
-      new LoggedTunableNumber(DebugGroup.ARM, "Arm/Shoulder/HomingTimeSecs", 0.2);
-  protected static final LoggedTunableNumber shoulderHomingVelocityThreshMeterPerSec =
-      new LoggedTunableNumber(DebugGroup.ARM, "Arm/Shoulder/HomingVelocityThreshMeterPerSec", 0.05);
 
   protected static final LoggedTunableNumber elbowMotionMagicVelDegreePerSec =
       new LoggedTunableNumber("Arm/Elbow/MotionMagicVelDegreePerSec", 500.0);
