@@ -1,6 +1,6 @@
 # Chronos Chain
 
-*A command-driven framework where robotic actions unfold in flawless sequence, like links in a timeless chain.*
+_A command-driven framework where robotic actions unfold in flawless sequence, like links in a timeless chain._
 
 <img width=100% src="./public/screenshot.png">
 
@@ -11,7 +11,6 @@ The architecture enforces strict interaction between subsystems solely through w
 ## Quick Start
 
 See [Environment Setup](./docs/setup/)
-
 
 ## License
 
