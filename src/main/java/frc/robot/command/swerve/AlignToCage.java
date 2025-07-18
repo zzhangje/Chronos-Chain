@@ -1,5 +1,3 @@
 package frc.robot.command.swerve;
 
-public class AlignToCage {
-  
-}
+public class AlignToCage {}
