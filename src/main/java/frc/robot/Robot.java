@@ -4,9 +4,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.lib.interfaces.VirtualSubsystem;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -19,7 +21,12 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
+    Threads.setCurrentThreadPriority(true, 99);
+
+    VirtualSubsystem.periodicAll();
     CommandScheduler.getInstance().run();
+
+    Threads.setCurrentThreadPriority(true, 10);
   }
 
   @Override
@@ -69,4 +76,34 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testExit() {}
+
+  private String commandPrintHelper(String name) {
+    switch (name.split("/").length) {
+      case 2:
+        {
+          String subsystem = name.split("/")[0];
+          String command = name.split("/")[1];
+          StringBuilder sb = new StringBuilder("$ [");
+          sb.append(subsystem);
+          sb.append("] ");
+          sb.append(command);
+          return sb.toString();
+        }
+      case 3:
+        {
+          String subsystem = name.split("/")[0];
+          String command = name.split("/")[1];
+          String subcommand = name.split("/")[2];
+          StringBuilder sb = new StringBuilder("$ [");
+          sb.append(subsystem);
+          sb.append("] ");
+          sb.append(command);
+          sb.append(" => ");
+          sb.append(subcommand);
+          return sb.toString();
+        }
+      default:
+        return "# " + name;
+    }
+  }
 }
