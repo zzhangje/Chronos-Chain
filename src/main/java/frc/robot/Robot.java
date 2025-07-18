@@ -8,7 +8,9 @@ import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.interfaces.VirtualSubsystem;
+import frc.lib.service.TunableManager;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -76,6 +78,17 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testExit() {}
+
+  private void debugGroupInit() {
+    TunableManager debugGroup = new TunableManager("DebugGroup");
+    debugGroup.register(Constants.DebugGroup.ARM);
+    debugGroup.register(Constants.DebugGroup.SWERVE);
+    debugGroup.register(Constants.DebugGroup.AUTO);
+    debugGroup.register(Constants.DebugGroup.ODOMETRY);
+    debugGroup.register(Constants.DebugGroup.INTAKE);
+    debugGroup.register(Constants.DebugGroup.CLIMBER);
+    new Trigger(Constants.IS_LIVE_DEBUG).onTrue(debugGroup.run()).onFalse(debugGroup.stop());
+  }
 
   private String commandPrintHelper(String name) {
     switch (name.split("/").length) {

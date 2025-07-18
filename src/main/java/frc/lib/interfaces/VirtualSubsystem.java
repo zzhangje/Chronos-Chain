@@ -1,5 +1,7 @@
 package frc.lib.interfaces;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,18 +20,24 @@ public abstract class VirtualSubsystem {
 
   public abstract void periodic();
 
-  public final void run() {
-    if (!subsystems.contains(this)) {
-      subsystems.add(this);
-    }
-    onRun();
+  public final Command run() {
+    return Commands.runOnce(
+        () -> {
+          if (!subsystems.contains(this)) {
+            subsystems.add(this);
+          }
+          onRun();
+        });
   }
 
-  public final void stop() {
-    if (subsystems.contains(this)) {
-      subsystems.remove(this);
-    }
-    onStop();
+  public final Command stop() {
+    return Commands.runOnce(
+        () -> {
+          if (subsystems.contains(this)) {
+            subsystems.remove(this);
+          }
+          onStop();
+        });
   }
 
   /** Called when the subsystem is started. Override this method to perform any initialization. */
