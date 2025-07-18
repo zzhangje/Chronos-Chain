@@ -1,4 +1,4 @@
-# Chronos Chain: A Command-Based Robot Framework
+# Chronos Chain
 
 *A command-driven framework where robotic actions unfold in flawless sequence, like links in a timeless chain.*
 
