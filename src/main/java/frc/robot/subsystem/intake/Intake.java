@@ -16,6 +16,7 @@ import frc.lib.interfaces.motor.GenericRollerIO;
 import frc.lib.interfaces.motor.GenericRollerIOInputsAutoLogged;
 import frc.lib.interfaces.motor.GenericRollerIOKraken;
 import frc.lib.interfaces.motor.GenericRollerIOSim;
+import frc.lib.interfaces.sensor.digital.DigitalInputRio;
 import frc.robot.Constants.Ports;
 import frc.robot.subsystem.intake.IntakeGoal.IntakePivotGoal;
 import frc.robot.subsystem.intake.IntakeGoal.IntakeRollerGoal;
@@ -37,7 +38,7 @@ public class Intake extends SubsystemBase {
   @Setter @Getter @AutoLogOutput private IntakePivotGoal pivotGoal = IntakePivotGoal.IDLE;
   @Setter @Getter @AutoLogOutput private IntakeRollerGoal rollerGoal = IntakeRollerGoal.IDLE;
 
-  @Setter private BooleanSupplier hasCoralSupplier = () -> false;
+  @Setter private BooleanSupplier hasCoralSupplier;
   private final Debouncer hasCoralDebouncer = new Debouncer(0.2, Debouncer.DebounceType.kFalling);
   @Setter private BooleanSupplier needDodgeSupplier = () -> false;
   private final Debouncer needDodgeDebouncer = new Debouncer(0.2, Debouncer.DebounceType.kFalling);
@@ -102,7 +103,7 @@ public class Intake extends SubsystemBase {
 
     if (rollerGoal != IntakeRollerGoal.EJECT
         && rollerGoal != IntakeRollerGoal.TROUGH
-        && hasCoralSupplier.getAsBoolean()) {
+        && hasCoral()) {
       rollerGoal = IntakeRollerGoal.STANDBY;
     }
 
@@ -153,16 +154,21 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean hasCoral() {
-    return hasCoralSupplier.getAsBoolean();
+    return hasCoralDebouncer.calculate(hasCoralSupplier.getAsBoolean());
   }
 
-  private Intake(GenericRollerIO rollerIO, GenericRollerIO centeringIO, GenericArmIO pivotIO) {
+  private Intake(
+      GenericRollerIO rollerIO,
+      GenericRollerIO centeringIO,
+      GenericArmIO pivotIO,
+      BooleanSupplier hasCoralSupplier) {
     this.rollerIO = rollerIO;
     this.centeringIO = centeringIO;
     this.pivotIO = pivotIO;
+    this.hasCoralSupplier = hasCoralSupplier;
   }
 
-  public static Intake createSim() {
+  public static Intake createSim(BooleanSupplier hasCoralSupplier) {
     return new Intake(
         new GenericRollerIOSim(DCMotor.getKrakenX60Foc(1), 1.0, 0.001),
         new GenericRollerIOSim(DCMotor.getKrakenX60Foc(1), 1.0, 0.001),
@@ -173,7 +179,8 @@ public class Intake extends SubsystemBase {
             0.1,
             Units.degreesToRadians(IntakeConfig.MIN_ANGLE_DEGREE),
             Units.degreesToRadians(IntakeConfig.MAX_ANGLE_DEGREE),
-            Units.degreesToRadians(IntakeConfig.INIT_ANGLE_DEGREE)));
+            Units.degreesToRadians(IntakeConfig.INIT_ANGLE_DEGREE)),
+        hasCoralSupplier);
   }
 
   public static Intake createReal() {
@@ -188,10 +195,12 @@ public class Intake extends SubsystemBase {
             "IntakePivot",
             Ports.Can.GROUND_INTAKE_PIVOT,
             IntakeConfig.getPivotTalonConfig(),
-            Units.degreesToRadians(IntakeConfig.INIT_ANGLE_DEGREE)));
+            Units.degreesToRadians(IntakeConfig.INIT_ANGLE_DEGREE)),
+        new DigitalInputRio(Ports.Digital.GROUND_INTAKE_BEAM_BREAK));
   }
 
   public static Intake createIO() {
-    return new Intake(new GenericRollerIO() {}, new GenericRollerIO() {}, new GenericArmIO() {});
+    return new Intake(
+        new GenericRollerIO() {}, new GenericRollerIO() {}, new GenericArmIO() {}, () -> false);
   }
 }
