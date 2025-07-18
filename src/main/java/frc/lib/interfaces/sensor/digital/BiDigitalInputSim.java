@@ -2,11 +2,11 @@ package frc.lib.interfaces.sensor.digital;
 
 import java.util.function.BooleanSupplier;
 
-public class BiDigitalIOSim implements BiDigitalIO {
+public class BiDigitalInputSim implements BiDigitalInput {
   private final BooleanSupplier value1Supplier;
   private final BooleanSupplier value2Supplier;
 
-  public BiDigitalIOSim(BooleanSupplier value1Supplier, BooleanSupplier value2Supplier) {
+  public BiDigitalInputSim(BooleanSupplier value1Supplier, BooleanSupplier value2Supplier) {
     this.value1Supplier = value1Supplier;
     this.value2Supplier = value2Supplier;
   }
@@ -22,12 +22,12 @@ public class BiDigitalIOSim implements BiDigitalIO {
   }
 
   @Override
-  public DigitalIO getDigitalIO1() {
-    return new DigitalIOSim(value1Supplier);
+  public DigitalInput getDigitalIO1() {
+    return new DigitalInputSim(value1Supplier);
   }
 
   @Override
-  public DigitalIO getDigitalIO2() {
-    return new DigitalIOSim(value2Supplier);
+  public DigitalInput getDigitalIO2() {
+    return new DigitalInputSim(value2Supplier);
   }
 }

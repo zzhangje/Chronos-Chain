@@ -2,10 +2,10 @@ package frc.lib.interfaces.sensor.digital;
 
 import java.util.function.BooleanSupplier;
 
-public class DigitalIOSim implements DigitalIO {
+public class DigitalInputSim implements DigitalInput {
   private final BooleanSupplier valueSupplier;
 
-  public DigitalIOSim(BooleanSupplier valueSupplier) {
+  public DigitalInputSim(BooleanSupplier valueSupplier) {
     this.valueSupplier = valueSupplier;
   }
 
