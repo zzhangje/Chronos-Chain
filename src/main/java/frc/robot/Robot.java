@@ -4,26 +4,124 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.SignalLogger;
+import edu.wpi.first.net.WebServer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Threads;
-import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.interfaces.VirtualSubsystem;
 import frc.lib.service.TunableManager;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-public class Robot extends TimedRobot {
-  private Command m_autonomousCommand;
+public class Robot extends LoggedRobot {
+  private Command autonomousCommand;
+  private boolean autonomousHasPrinted;
+  private double autonomousStartTime;
 
-  private final RobotContainer m_robotContainer;
+  private final RobotContainer robotContainer;
 
   public Robot() {
-    m_robotContainer = new RobotContainer();
+    CommandScheduler.getInstance().getActiveButtonLoop().clear();
+    RobotController.setBrownoutVoltage(6.0);
+
+    // configure CTRE
+    SignalLogger.enableAutoLogging(false);
+    SignalLogger.stop();
+
+    // configure AKit
+    loggerInit();
+
+    // virtual subsystem init
+    debugGroupInit();
+    trajectoryLoaderInit();
+
+    robotContainer = new RobotContainer();
+    WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
+  }
+
+  private final void loggerInit() {
+    switch (Constants.MODE) {
+      case REAL -> {
+        Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));
+        Logger.addDataReceiver(new NT4Publisher());
+      }
+
+      case SIM -> Logger.addDataReceiver(new NT4Publisher());
+
+      case REPLAY -> {
+        setUseTiming(false); // Run as fast as possible
+        var logPath = LogFileUtil.findReplayLog();
+        Logger.setReplaySource(new WPILOGReader(logPath));
+        Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+      }
+    }
+    Logger.start();
+
+    Map<String, Integer> commandCounts = new HashMap<>();
+    BiConsumer<Command, Boolean> logCommandFunction =
+        (Command command, Boolean active) -> {
+          String name = command.getName();
+          int count = commandCounts.getOrDefault(name, 0) + (active ? 1 : -1);
+          commandCounts.put(name, count);
+          Logger.recordOutput(
+              "CommandsUnique/" + name + "_" + Integer.toHexString(command.hashCode()), active);
+          Logger.recordOutput("CommandsAll/" + name, count > 0);
+        };
+    CommandScheduler.getInstance()
+        .onCommandInitialize(
+            (Command command) -> {
+              System.out.println(commandPrintHelper(command.getName()));
+              logCommandFunction.accept(command, true);
+            });
+
+    CommandScheduler.getInstance()
+        .onCommandFinish(
+            (Command command) -> {
+              System.out.println(
+                  "\u001B[32m" + commandPrintHelper(command.getName()) + "\u001B[0m");
+              logCommandFunction.accept(command, false);
+            });
+
+    CommandScheduler.getInstance()
+        .onCommandInterrupt(
+            (Command command) -> {
+              System.out.println(
+                  "\u001B[31m" + commandPrintHelper(command.getName()) + "\u001B[0m");
+              logCommandFunction.accept(command, false);
+            });
   }
 
   @Override
   public void robotPeriodic() {
     Threads.setCurrentThreadPriority(true, 99);
+
+    if (autonomousCommand != null) {
+      if (!autonomousCommand.isScheduled() && !autonomousHasPrinted) {
+        if (DriverStation.isAutonomousEnabled()) {
+          System.out.printf(
+              "*** Auto finished in %.2f secs ***%n",
+              Timer.getFPGATimestamp() - autonomousStartTime);
+        } else {
+          System.out.printf(
+              "*** Auto cancelled in %.2f secs ***%n",
+              Timer.getFPGATimestamp() - autonomousStartTime);
+        }
+        autonomousHasPrinted = true;
+      }
+    }
 
     VirtualSubsystem.periodicAll();
     CommandScheduler.getInstance().run();
@@ -42,10 +140,12 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    autonomousCommand = robotContainer.getAutonomousCommand();
 
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
+    if (autonomousCommand != null) {
+      autonomousHasPrinted = false;
+      autonomousStartTime = Timer.getFPGATimestamp();
+      autonomousCommand.schedule();
     }
   }
 
@@ -57,8 +157,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
+    if (autonomousCommand != null) {
+      autonomousCommand.cancel();
     }
   }
 
@@ -89,6 +189,8 @@ public class Robot extends TimedRobot {
     debugGroup.register(Constants.DebugGroup.CLIMBER);
     new Trigger(Constants.IS_LIVE_DEBUG).onTrue(debugGroup.run()).onFalse(debugGroup.stop());
   }
+
+  private void trajectoryLoaderInit() {}
 
   private String commandPrintHelper(String name) {
     switch (name.split("/").length) {
