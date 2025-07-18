@@ -6,7 +6,7 @@ import frc.lib.dashboard.LoggedTunableNumber;
 import frc.robot.Constants.DebugGroup;
 import org.littletonrobotics.junction.Logger;
 
-class Module {
+public class Module {
   private static final LoggedTunableNumber driveKp =
       new LoggedTunableNumber(DebugGroup.SWERVE, "Swerve/Module/DriveKp");
   private static final LoggedTunableNumber driveKd =
@@ -91,7 +91,7 @@ class Module {
         inputs.driveVelRadPerSec * SwerveConfig.WHEEL_RADIUS_METER, inputs.steerAbsPosition);
   }
 
-  double getDrivePositionRad() {
+  public double getDrivePositionRad() {
     return inputs.drivePositionRad;
   }
 

@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.ExtensionMethod;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -35,7 +36,7 @@ import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 @ExtensionMethod({GeomUtil.class, GeomExtensions.class})
 public class Swerve extends SubsystemBase {
-  private final Module[] modules = new Module[4];
+  @Getter private final Module[] modules = new Module[4];
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final SwerveOdometryInputs swerveOdometryInputs = new SwerveOdometryInputs();
@@ -52,28 +53,38 @@ public class Swerve extends SubsystemBase {
   private final Alert gyroOfflineAlert = new Alert("Gyro offline!", Alert.AlertType.WARNING);
 
   @Setter private Supplier<Double> customMaxTiltAccelScale = () -> 1.0;
+
+  @Setter
   private List<Vector<N2>> moduleForces =
       IntStream.range(0, 4).boxed().map(i -> VecBuilder.fill(0, 0)).toList();
+
   private ChassisSpeeds goalVel = new ChassisSpeeds();
-  private Boolean applyAccelLimitation = true;
+  private ChassisSpeeds currVel = new ChassisSpeeds();
+
+  public void setGoalVel(ChassisSpeeds goalVel) {
+    setGoalVel(goalVel, true);
+  }
+
+  public void setGoalVel(ChassisSpeeds goalVel, boolean applyAccelLimitation) {
+    if (applyAccelLimitation) {
+      this.goalVel = clipAcceleration(goalVel);
+    } else {
+      this.goalVel = goalVel;
+    }
+  }
 
   @Override
   public void periodic() {
     updateInputs();
 
-    var currentVel = getVel();
-    updateOdometry(currentVel);
+    currVel = getVel();
+    updateOdometry();
 
     // Desaturate
     var rawGoalModuleStates = SwerveConfig.SWERVE_KINEMATICS.toSwerveModuleStates(goalVel);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         rawGoalModuleStates, SwerveConfig.MAX_TRANSLATION_VEL_METER_PER_SEC);
     goalVel = SwerveConfig.SWERVE_KINEMATICS.toChassisSpeeds(rawGoalModuleStates);
-
-    // 1690 Orbit accel limitation
-    if (applyAccelLimitation) {
-      goalVel = clipAcceleration(currentVel, goalVel);
-    }
 
     // Dynamics compensation
     goalVel = ChassisSpeeds.discretize(goalVel, Constants.LOOP_PERIOD_SEC);
@@ -116,10 +127,10 @@ public class Swerve extends SubsystemBase {
         "Swerve/SwerveStates/OptimizedGoalModuleTorques", optimizedGoalModuleTorques);
   }
 
-  private ChassisSpeeds clipAcceleration(
-      final ChassisSpeeds currentVel, final ChassisSpeeds goalVel) {
+  // 1690 Orbit accel limitation
+  private ChassisSpeeds clipAcceleration(final ChassisSpeeds goalVel) {
     var currentTranslationVel =
-        new Translation2d(currentVel.vxMetersPerSecond, currentVel.vyMetersPerSecond);
+        new Translation2d(currVel.vxMetersPerSecond, currVel.vyMetersPerSecond);
 
     var goalTranslationVel =
         new Translation2d(goalVel.vxMetersPerSecond, goalVel.vyMetersPerSecond);
@@ -209,7 +220,7 @@ public class Swerve extends SubsystemBase {
     Logger.processInputs("Swerve/Odometry", swerveOdometryInputs);
   }
 
-  private void updateOdometry(final ChassisSpeeds currentVel) {
+  private void updateOdometry() {
     // TODO:
   }
 
