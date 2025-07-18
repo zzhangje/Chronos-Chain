@@ -43,5 +43,4 @@ public class RobotGoal {
         && !selectedBranch.equals("NA")
         && !selectedLevel.equals("NA");
   }
-  
 }

@@ -60,7 +60,7 @@ public class LoggedTunableNumber implements DoubleSupplier {
    * @param key The unique identifier for this tunable within the group
    */
   public LoggedTunableNumber(String group, String key) {
-    this.fullKey = ROOT_TABLE_KEY + "/"  + key;
+    this.fullKey = ROOT_TABLE_KEY + "/" + key;
     this.groupName = group;
     registerInstance(group);
   }
@@ -83,7 +83,7 @@ public class LoggedTunableNumber implements DoubleSupplier {
    * @param key The unique identifier for this tunable
    */
   public LoggedTunableNumber(String key) {
-    this.groupName= key.split("/")[0];
+    this.groupName = key.split("/")[0];
     this.fullKey = ROOT_TABLE_KEY + "/" + key;
     registerInstance(this.groupName);
   }
