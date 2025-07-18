@@ -112,4 +112,16 @@ public class ModuleIOSim implements ModuleIO {
     setDriveVoltage(0.0);
     setSteerVoltage(0.0);
   }
+
+  double getDrivePositionRad() {
+    return driveSim.getAngularPositionRad();
+  }
+
+  double getDriveVelRadPerSec() {
+    return driveSim.getAngularVelocityRadPerSec();
+  }
+
+  double getSteerPositionRad() {
+    return steerSim.getAngularPositionRad();
+  }
 }

@@ -8,9 +8,21 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
+import frc.lib.dashboard.LoggedTunableNumber;
 import frc.robot.Constants;
+import frc.robot.Constants.DebugGroup;
 
 public class SwerveConfig {
+  protected final LoggedTunableNumber maxTiltAccelXMeterPerSecPerLoop =
+      new LoggedTunableNumber(DebugGroup.SWERVE, "Swerve/MaxTiltAccelXMeterPerSecPerLoop", 80.0);
+  protected final LoggedTunableNumber maxTiltAccelYMeterPerSecPerLoop =
+      new LoggedTunableNumber(DebugGroup.SWERVE, "Swerve/MaxTiltAccelYMeterPerSecPerLoop", 70.0);
+  protected final LoggedTunableNumber maxSkidAccelMeterPerSecPerLoop =
+      new LoggedTunableNumber(
+          DebugGroup.SWERVE,
+          "Swerve/MaxSkidAccelMeterPerSecPerLoop",
+          SwerveConfig.MAX_TRANSLATION_VEL_METER_PER_SEC * 2.0 / Constants.LOOP_PERIOD_SEC);
+
   static final String FL_MODULE_NAME = "FL";
   static final String BL_MODULE_NAME = "BL";
   static final String BR_MODULE_NAME = "BR";
