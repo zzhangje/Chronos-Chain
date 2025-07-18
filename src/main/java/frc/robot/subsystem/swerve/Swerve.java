@@ -21,6 +21,7 @@ import frc.lib.math.EqualsUtil.GeomExtensions;
 import frc.lib.math.GeomUtil;
 import frc.robot.Constants;
 import frc.robot.Constants.Ports;
+import frc.robot.RobotState;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -51,34 +52,26 @@ public class Swerve extends SubsystemBase {
       };
 
   private final Alert gyroOfflineAlert = new Alert("Gyro offline!", Alert.AlertType.WARNING);
-
   @Setter private Supplier<Double> customMaxTiltAccelScale = () -> 1.0;
 
-  @Setter
-  private List<Vector<N2>> moduleForces =
-      IntStream.range(0, 4).boxed().map(i -> VecBuilder.fill(0, 0)).toList();
-
-  private ChassisSpeeds goalVel = new ChassisSpeeds();
-  private ChassisSpeeds currVel = new ChassisSpeeds();
-
-  public void setGoalVel(ChassisSpeeds goalVel) {
-    setGoalVel(goalVel, true);
+  public void setGoalVel(ChassisSpeeds tarGoalVel) {
+    setGoalVel(
+        tarGoalVel, true, IntStream.range(0, 4).boxed().map(i -> VecBuilder.fill(0, 0)).toList());
   }
 
-  public void setGoalVel(ChassisSpeeds goalVel, boolean applyAccelLimitation) {
+  public void setGoalVel(ChassisSpeeds tarGoalVel, Boolean applyAccelLimitation) {
+    setGoalVel(
+        tarGoalVel,
+        applyAccelLimitation,
+        IntStream.range(0, 4).boxed().map(i -> VecBuilder.fill(0, 0)).toList());
+  }
+
+  public void setGoalVel(
+      ChassisSpeeds tarGoalVel, boolean applyAccelLimitation, List<Vector<N2>> moduleForces) {
+    var goalVel = tarGoalVel;
     if (applyAccelLimitation) {
-      this.goalVel = clipAcceleration(goalVel);
-    } else {
-      this.goalVel = goalVel;
+      goalVel = clipAcceleration(goalVel);
     }
-  }
-
-  @Override
-  public void periodic() {
-    updateInputs();
-
-    currVel = getVel();
-    updateOdometry();
 
     // Desaturate
     var rawGoalModuleStates = SwerveConfig.SWERVE_KINEMATICS.toSwerveModuleStates(goalVel);
@@ -102,10 +95,6 @@ public class Swerve extends SubsystemBase {
     var optimizedGoalModuleTorques = new SwerveModuleState[4];
 
     for (int i = 0; i < modules.length; i++) {
-      // Optimize setpoints
-      optimizedGoalModuleStates[i] = goalModuleStates[i];
-      optimizedGoalModuleStates[i].optimize(modules[i].getState().angle);
-
       var wheelDirection =
           VecBuilder.fill(
               optimizedGoalModuleStates[i].angle.getCos(),
@@ -119,7 +108,6 @@ public class Swerve extends SubsystemBase {
     }
 
     lastGoalModuleStates = goalModuleStates;
-
     Logger.recordOutput("Swerve/SwerveStates/GoalModuleStates", goalModuleStates);
     Logger.recordOutput("Swerve/FinalGoalVel", goalVel);
     Logger.recordOutput("Swerve/SwerveStates/OptimizedGoalModuleStates", optimizedGoalModuleStates);
@@ -127,8 +115,15 @@ public class Swerve extends SubsystemBase {
         "Swerve/SwerveStates/OptimizedGoalModuleTorques", optimizedGoalModuleTorques);
   }
 
+  @Override
+  public void periodic() {
+    updateInputs();
+    updateOdometry();
+  }
+
   // 1690 Orbit accel limitation
   private ChassisSpeeds clipAcceleration(final ChassisSpeeds goalVel) {
+    var currVel = getVel();
     var currentTranslationVel =
         new Translation2d(currVel.vxMetersPerSecond, currVel.vyMetersPerSecond);
 
@@ -221,7 +216,23 @@ public class Swerve extends SubsystemBase {
   }
 
   private void updateOdometry() {
-    // TODO:
+    var odometry = RobotState.getOdometry();
+    for (int i = 0; i < swerveOdometryInputs.odometryTimestamps.length; i++) {
+      var wheeledObservation =
+          new WheeledObservation(
+              swerveOdometryInputs.odometryTimestamps[i],
+              new SwerveModulePosition[] {
+                swerveOdometryInputs.odometryFLPositions[i],
+                swerveOdometryInputs.odometryBLPositions[i],
+                swerveOdometryInputs.odometryBRPositions[i],
+                swerveOdometryInputs.odometryFRPositions[i],
+              },
+              swerveOdometryInputs.odometryYaws[i]);
+      odometry.addWheeledObservation(wheeledObservation);
+    }
+
+    var currentVel = getVel();
+    odometry.addRobotCentricVel(currentVel.toTwist2d());
   }
 
   private Swerve(
