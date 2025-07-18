@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <title>Node Selector</title>
+
+    <link rel="stylesheet" type="text/css" href="./style.css" />
+    <script type="module" src="./index.js"></script>
+</head>
+
+<body>
+    <div class="root">
+        <img class="try" src="8214.png"></img>
+        <div class="picture">
+            <img class="k1" src="ni.png"></img>
+        </div>
+        
+        
+        
+        <div class="main">
+            <div class="net" id="AN">N E T</div>
+            <div class="reef-station">
+                <div class="reef front-left low">
+                    <div class="branch left L4 unselected" id="CK4"></div>
+                    <div class="branch left L3 unselected" id="CK3"></div>
+                    <div class="branch left L2 unselected" id="CK2"></div>
+                    <div class="trough left L1 type0" id="CK1">0</div>
+                    <div class="branch right L4 unselected" id="CL4"></div>
+                    <div class="branch right L3 unselected" id="CL3"></div>
+                    <div class="branch right L2 unselected" id="CL2"></div>
+                    <div class="trough right L1 type0" id="CL1">0</div>
+                    <div class="algae unselected" id="AKL"></div>
+                    <div class="algae-background"></div>
+                    <div class="border"></div>
+                </div>
+
+                <div class="reef front high">
+                    <div class="branch left L4 unselected" id="CA4"></div>
+                    <div class="branch left L3 unselected" id="CA3"></div>
+                    <div class="branch left L2 unselected" id="CA2"></div>
+                    <div class="trough left L1 type0" id="CA1">0</div>
+                    <div class="branch right L4 unselected" id="CB4"></div>
+                    <div class="branch right L3 unselected" id="CB3"></div>
+                    <div class="branch right L2 unselected" id="CB2"></div>
+                    <div class="trough right L1 type0" id="CB1">0</div>
+                    <div class="algae unselected" id="AAB"></div>
+                    <div class="algae-background"></div>
+                    <div class="border"></div>
+                </div>
+
+                <div class="reef front-right low">
+                    <div class="branch left L4 unselected" id="CC4"></div>
+                    <div class="branch left L3 unselected" id="CC3"></div>
+                    <div class="branch left L2 unselected" id="CC2"></div>
+                    <div class="trough left L1 type0" id="CC1">0</div>
+                    <div class="branch right L4 unselected" id="CD4"></div>
+                    <div class="branch right L3 unselected" id="CD3"></div>
+                    <div class="branch right L2 unselected" id="CD2"></div>
+                    <div class="trough right L1 type0" id="CD1">0</div>
+                    <div class="algae unselected" id="ACD"></div>
+                    <div class="algae-background"></div>
+                    <div class="border"></div>
+                </div>
+
+                <!-- Note the left and right differences in perspective geometry and HTML components. -->
+                <!-- scaleX(-1) is not suitable for solving this. A better way is to modify id. -->
+
+                <div class="reef back-right high">
+                    <div class="branch left L4 unselected" id="CF4"></div>
+                    <div class="branch left L3 unselected" id="CF3"></div>
+                    <div class="branch left L2 unselected" id="CF2"></div>
+                    <div class="trough left L1 type0" id="CF1">0</div>
+                    <div class="branch right L4 unselected" id="CE4"></div>
+                    <div class="branch right L3 unselected" id="CE3"></div>
+                    <div class="branch right L2 unselected" id="CE2"></div>
+                    <div class="trough right L1 type0" id="CE1">0</div>
+                    <div class="algae unselected" id="AEF"></div>
+                    <div class="algae-background"></div>
+                    <div class="border"></div>
+                </div>
+
+                <div class="reef back low">
+                    <div class="branch left L4 unselected" id="CH4"></div>
+                    <div class="branch left L3 unselected" id="CH3"></div>
+                    <div class="branch left L2 unselected" id="CH2"></div>
+                    <div class="trough left L1 type0" id="CH1">0</div>
+                    <div class="branch right L4 unselected" id="CG4"></div>
+                    <div class="branch right L3 unselected" id="CG3"></div>
+                    <div class="branch right L2 unselected" id="CG2"></div>
+                    <div class="trough right L1 type0" id="CG1">0</div>
+                    <div class="algae unselected" id="AGH"></div>
+                    <div class="algae-background"></div>
+                    <div class="border"></div>
+                </div>
+
+                <div class="reef back-left high">
+                    <div class="branch left L4 unselected" id="CJ4"></div>
+                    <div class="branch left L3 unselected" id="CJ3"></div>
+                    <div class="branch left L2 unselected" id="CJ2"></div>
+                    <div class="trough left L1 type0" id="CJ1">0</div>
+                    <div class="branch right L4 unselected" id="CI4"></div>
+                    <div class="branch right L3 unselected" id="CI3"></div>
+                    <div class="branch right L2 unselected" id="CI2"></div>
+                    <div class="trough right L1 type0" id="CI1">0</div>
+                    <div class="algae unselected" id="AIJ"></div>
+                    <div class="algae-background"></div>
+                    <div class="border"></div>
+                </div>
+            </div>
+
+            <div id="compass">
+                <div id="tri-1" class="tri"></div>
+                <div id="tri-2" class="tri"></div>
+                <div id="tri-3" class="tri"></div>
+                <div id="tri-4" class="tri"></div>
+                <div id="tri-5" class="tri"></div>
+                <div id="tri-6" class="tri"></div>
+                <div id="pointer"></div>
+            </div>
+        </div>
+        
+        <div class="more">
+            
+            <div class="time teleop-1" id="time">0 : 00</div>
+            <div class="danger">
+                <div class="toggle-container">
+                    <p>Arm<br>Force Elevate</p>
+                    <div class="container" id="arm-forced">
+                        <input type="checkbox" name="check" id="check" hidden="">
+                        <label for="check" class="toggle">
+                            <div class="toggle__circle"></div>
+                        </label>
+                        <div class="toggle-text">
+                            <span>N</span>
+                            <span>FF</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

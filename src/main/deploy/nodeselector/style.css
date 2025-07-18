@@ -1,0 +1,866 @@
+/* forbid select start */
+* {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-context-menu: none;
+    -webkit-touch-callout: none;
+    pointer-events: auto;
+}
+
+/* forbid select end */
+
+/* forbid scroll start */
+body {
+    overflow: hidden;
+    touch-action: none;
+    overscroll-behavior: none;
+}
+
+/* forbid scroll end */
+
+/* color start */
+.algae.unselected {
+    background-color: #00BEAF;
+}
+
+.branch.unselected {
+    background-color: #ff39d4;
+}
+
+.selecting-1 {
+    background-color: #ff3434 !important;
+    transition-duration: 0.2s;
+}
+
+.selecting-2 {
+    background-color: #ffbb35 !important;
+    transition-duration: 0.2s;
+}
+
+.algae.selected {
+    background-color: #C1FFF1;
+}
+
+.branch.selected {
+    background-color: #FFDDF5;
+}
+
+.algae-background {
+    background-color: #fff;
+}
+
+.trough {
+    box-shadow: inset 0 0 0 3px #444;
+}
+
+.trough.type2 {
+    color: #444;
+    background-color: #f0f0f0;
+}
+
+.trough.type1 {
+    color: #fff;
+    background-color: #bababa;
+}
+
+.trough.type0 {
+    color: #fff;
+    background-color: #888;
+}
+
+.border {
+    /* background-color: #333; */
+}
+
+#gp-select {
+    background-color: #34ff59;
+}
+
+/* color end */
+
+/* button labels start */
+.branch::before {
+    position: absolute;
+    color: #000;
+    font-size: 21px;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+.right.branch::before {
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.left.branch::before {
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Front Left (K) */
+#CK4::before {
+    content: '左后4';
+}
+
+#CK3::before {
+    content: '左后3';
+}
+
+#CK2::before {
+    content: '左后2';
+}
+
+/* Front Left (L) */
+#CL4::before {
+    content: '左后4';
+}
+
+#CL3::before {
+    content: '左后3';
+}
+
+#CL2::before {
+    content: '左后2';
+}
+
+/* Front (A) */
+#CA4::before {
+    content: '后4';
+}
+
+#CA3::before {
+    content: '后3';
+}
+
+#CA2::before {
+    content: '后2';
+}
+
+/* Front (B) */
+#CB4::before {
+    content: '后4';
+}
+
+#CB3::before {
+    content: '后3';
+}
+
+#CB2::before {
+    content: '后2';
+}
+
+/* Front Right (C) */
+#CC4::before {
+    content: '右后4';
+}
+
+#CC3::before {
+    content: '右后3';
+}
+
+#CC2::before {
+    content: '右后2';
+}
+
+/* Front Right (D) */
+#CD4::before {
+    content: '右后4';
+}
+
+#CD3::before {
+    content: '右后3';
+}
+
+#CD2::before {
+    content: '右后2';
+}
+
+/* Back Right (F) */
+#CF4::before {
+    content: '右前4';
+}
+
+#CF3::before {
+    content: '右前3';
+}
+
+#CF2::before {
+    content: '右前2';
+}
+
+/* Back Right (E) */
+#CE4::before {
+    content: '右前4';
+}
+
+#CE3::before {
+    content: '右前3';
+}
+
+#CE2::before {
+    content: '右前2';
+}
+
+/* Back (H) */
+#CH4::before {
+    content: '前4';
+}
+
+#CH3::before {
+    content: '前3';
+}
+
+#CH2::before {
+    content: '前2';
+}
+
+/* Back (G) */
+#CG4::before {
+    content: '前4';
+}
+
+#CG3::before {
+    content: '前3';
+}
+
+#CG2::before {
+    content: '前2';
+}
+
+/* Back Left (J) */
+#CJ4::before {
+    content: '左前4';
+}
+
+#CJ3::before {
+    content: '左前3';
+}
+
+#CJ2::before {
+    content: '左前2';
+}
+
+/* Back Left (I) */
+#CI4::before {
+    content: '左前4';
+}
+
+#CI3::before {
+    content: '左前3';
+}
+
+#CI2::before {
+    content: '左前2';
+}
+
+/* button labels end */
+
+/* layout start */
+body {
+    display: grid;
+    place-items: center;
+}
+
+.root {
+    height: 640px;
+    width: 960px;
+    /* border: 1px solid #000; */
+}
+
+.main {
+    display: grid;
+    position: absolute;
+    top: 120px;
+    left: 340px;
+    height: 600px;
+    width: 592px;
+    scale: 1.1;
+}
+
+.more {
+    display: grid;
+    position: absolute;
+    top: 0px;
+    left: 40px;
+    height: 720px;
+    width: 240px;
+    /* border: 1px solid #000; */
+}
+.try {
+    display: grid;
+    position: absolute;
+    top: -190px;
+    right: -590px;
+    height: 1560px;
+    width: 1560px;
+    opacity: 0.08;
+}
+
+.picture {
+    display: grid;
+    position: absolute;
+    top: 30px;
+    left: 50px;
+    height: 80px;
+    width: 80px;
+    /* border: 5px solid #7f0fa1;
+    border-radius: 5px; */
+}
+
+.k1 {
+    display: grid;
+    position: absolute;
+    height: 70px;
+    width: 220px;
+}
+/* Cyber Unicorn name+logo right top cornor */
+.k2 {
+    display: grid;
+    position: absolute;
+    height: 120px;
+    width: 300px;
+    right: 30px;
+    top: 30px;
+    opacity: 0; /* Switch to 0 if you don't want to see the logo */
+    
+}
+
+
+.teamname {
+    display: grid;
+    position: absolute;
+    top:75px;
+    left: 130px;
+    height: 40px;
+    width: 170px;
+    border-top: 5px solid #7f0fa1;
+    border-left: 5px solid #7f0fa1;
+    line-height: 40px;
+    text-align: center;
+    border-radius: 5px;
+    color: #7f0fa1;
+    font-size: 32px;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+}
+
+/* layout end */
+
+/* reef start */
+.reef-station {
+    position: absolute;
+    width: 960px;
+    height: 640px;
+    top: 38px;
+}
+
+.reef {
+    height: 245px;
+    width: 240px;
+    position: absolute;
+    opacity: 0.85;
+    border-radius: 12px;
+}
+
+.reef.back-right {
+    top: 24px;
+    left: 380px;
+    transform: skewY(15deg) scaleX(0.75);
+}
+
+.reef.back {
+    top: 0.7px;
+    left: 175px;
+}
+
+.reef.back-left {
+    top: 24px;
+    left: -30px;
+    transform: skewY(-15deg) scaleX(0.75);
+}
+
+.reef.front-left {
+    top: 310px;
+    left: -30px;
+    transform: skewY(15deg) scaleX(0.75);
+}
+
+.reef.front {
+    top: 333.6px;
+    left: 175px;
+}
+
+.reef.front-right {
+    top: 310px;
+    left: 380px;
+    transform: skewY(-15deg) scaleX(0.75);
+}
+
+.branch {
+    height: 50px;
+    width: 107px;
+    position: absolute;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.trough {
+    height: 50px;
+    width: 107px;
+    position: absolute;
+    border-radius: 4px;
+    font-size: 40px;
+    line-height: 50px;
+    text-align: center;
+}
+
+.left.L4 {
+    border-top-left-radius: 7px !important;
+}
+
+.left.L1 {
+    border-bottom-left-radius: 7px !important;
+}
+
+.right.L4 {
+    border-top-right-radius: 7px !important;
+}
+
+.right.L1 {
+    border-bottom-right-radius: 7px !important;
+}
+
+.left {
+    left: 10px;
+}
+
+.right {
+    right: 10px;
+}
+
+.L4 {
+    top: 10px;
+}
+
+.low .L3 {
+    top: 66px;
+}
+
+.high .L3 {
+    top: 74px;
+}
+
+.L2 {
+    top: 130px;
+}
+
+.L1 {
+    top: 186px;
+}
+
+.algae {
+    position: absolute;
+    left: 85px;
+    width: 70px;
+    height: 70px;
+    border-radius: 100%;
+    z-index: 1000;
+}
+
+.algae-background {
+    position: absolute;
+    left: 75px;
+    width: 90px;
+    height: 90px;
+    border-radius: 100%;
+    z-index: 999;
+}
+
+.high .algae {
+    top: 35px;
+}
+
+.high .algae-background {
+    top: 25px;
+}
+
+.low .algae {
+    top: 90px;
+}
+
+.low .algae-background {
+    top: 80px;
+}
+
+.border {
+    position: absolute;
+    top: 243px;
+    height: 5px;
+    border-radius: 10px;
+    left: 1px;
+    width: 238px;
+}
+
+.front-left .border,
+.back-left .border {
+    width: 230px;
+    left: 10px;
+}
+
+.front-right .border,
+.back-right .border {
+    width: 230px;
+    left: 0px;
+}
+
+/* reef end */
+
+/* net start */
+.net {
+    position: relative;
+    width: 75%;
+    height: 2em;
+    left: 12.5%;
+    top: -1.6em;
+    background-color: #eee;
+    background-image: linear-gradient(0deg,
+            rgba(0, 0, 0, 0.2) 0px,
+            rgba(0, 0, 0, 0.2) 1px,
+            transparent 1px,
+            transparent 100px),
+        linear-gradient(90deg,
+            rgba(0, 0, 0, 0.2) 0px,
+            rgba(0, 0, 0, 0.2) 1px,
+            transparent 1px,
+            transparent 100px);
+    background-size: 0.5em 0.5em, 0.5em 0.5em;
+    background-position: center center;
+    border-top-left-radius: 0.3em;
+    border-top-right-radius: 0.3em;
+    border-bottom-left-radius: 0.6em;
+    border-bottom-right-radius: 0.6em;
+    border: rgba(0, 0, 0, 0.2) 1px solid;
+    line-height: 2em;
+    text-align: center;
+    font-size: 1.6em;
+    font-weight: bold;
+    font-family: 'Monospace', sans-serif;
+    color: #555;
+    transition: transform 0.2s, background-color 0.2s, color 0.2s, background-image 0.2s;
+}
+
+.net:active {
+    transform: scale(1.2);
+    background-color: #ffbb35;
+    background-image: linear-gradient(0deg,
+            rgba(255, 255, 255, 0.4) 0px,
+            rgba(255, 255, 255, 0.4) 1px,
+            transparent 1px,
+            transparent 100px),
+        linear-gradient(90deg,
+            rgba(255, 255, 255, 0.4) 0px,
+            rgba(255, 255, 255, 0.4) 1px,
+            transparent 1px,
+            transparent 100px);
+    color: #fff;
+}
+
+/* net end */
+
+/* compass start */
+#compass {
+    position: absolute;
+    left: -60px;
+    top: 15px;
+    transform: perspective(800px) rotateX(60deg);
+    z-index: -999;
+    display: flex;
+    width: 680px;
+    height: 680px;
+    position: absolute;
+    border-radius: 100%;
+    border: 15px solid #243db0;
+}
+
+#compass::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 0px;
+    background-color: #243db0;
+    transform: translateY(-50%) rotateZ(0deg);
+}
+
+#compass::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    background-color: #243db0;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.tri {
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-bottom: 40px solid #243db0;
+    position: absolute;
+}
+
+#tri-1 {
+    transform: rotateZ(90deg);
+    top: 320px;
+    left: 0px;
+}
+
+#tri-2 {
+    transform: rotateZ(-90deg);
+    top: 320px;
+    right: 0px;
+}
+
+#tri-3 {
+    transform: rotateZ(14deg);
+    top: 632px;
+    left: 250px;
+}
+
+#tri-4 {
+    transform: rotateZ(-14deg);
+    top: 632px;
+    right: 250px;
+}
+
+#tri-5 {
+    transform: rotateZ(150deg);
+    top: 35px;
+    left: 163px;
+}
+
+#tri-6 {
+    transform: rotateZ(-150deg);
+    top: 35px;
+    right: 163px;
+}
+
+#pointer {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 355px;
+    height: 30px;
+    transform: translateY(-15px) rotateZ(0deg);
+    background-color: rgba(0, 255, 0, 0.5);
+    clip-path: polygon(100% 0, 0 35%, 0 55%, 100% 100%);
+    border-radius: 100%;
+}
+
+/* compass end */
+
+/* time start */
+
+/* With Logo+name Time position */
+/*.time {
+    position: absolute;
+    width: 240px;
+    height: 70px; 
+    top:160px;
+    left:940px;
+    line-height: 70px;
+    text-align: center;
+    border-radius: 10px;
+    font-size: 48px;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+} */
+
+.time {
+    position: absolute;
+    width: 280px;
+    height: 80px; 
+    top:30px;
+    left:960px;
+    line-height: 80px;
+    text-align: center;
+    border-radius: 40px;
+    font-size: 48px;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+}
+
+.time.auto {
+    background-color: #7eb4ff;
+    color: #fff;
+}
+
+.time.teleop-1 {
+    color: #734887;
+    box-shadow: inset 0 0 0 6px #734887;
+}
+
+.time.teleop-2 {
+    background-color: #ffbb35;
+    color: #fff;
+}
+
+.time.teleop-3 {
+    background-color: #ff4b4b;
+    color: #fff;
+}
+
+.time.teleop-4 {
+    color: #ff4b4b;
+    box-shadow: inset 0 0 0 6px #ff4b4b;
+}
+
+/* time end */
+
+/* active start */
+.branch,
+.algae,
+.trough {
+    transition: transform 0.2s;
+}
+
+.branch:active,
+.algae:active,
+.trough:active {
+    transform: scale(1.2);
+}
+
+.branch:active,
+.trough:active {
+    z-index: 99;
+}
+
+.net:active {
+    color: #fff;
+}
+
+/* active end */
+
+/* danger zone start */
+.danger {
+    position: absolute;
+    top: 700px;
+    height: 88px;
+    width: 200px;
+    left: -10px;
+    padding: 20px;
+    scale: 0.8;
+}
+
+.danger::before {
+    content: '';
+    position: absolute;
+    border-radius: 10px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    box-shadow: inset 0 0 0 6px #ff4b4b;
+}
+
+.danger::after {
+    content: 'DANGER ZONE';
+    position: absolute;
+    top: 2px;
+    left: 50%;
+    width: 190px;
+    text-align: center;
+    transform: translate(-50%, -50%);
+    font-weight: 900;
+    font-size: 1.5em;
+    color: #ff4b4b;
+    background-color: #fff;
+}
+
+/* danger zone end */
+
+
+/* toggle start */
+.toggle-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    height: 78px;
+    width: 210px;
+    top: 30px;
+    left: 15px;
+}
+
+.toggle-container>p {
+    width: 110px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 900;
+    letter-spacing: 0.1rem;
+    color: hsl(0, 0%, 30%);
+}
+
+/* From Uiverse.io by mrjamestab */
+.container {
+    margin: auto;
+    color: hsl(0, 0%, 30%);
+    font-weight: 900;
+    font-size: 3rem;
+    display: flex;
+    right: 0;
+    width: 100px;
+}
+
+.toggle {
+    width: 40px;
+    height: 70px;
+    /* background-color: hsl(0, 0%, 80%); */
+    border-radius: 1.7rem;
+    padding: .25rem 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    transition: background-color 100ms 100ms;
+}
+
+.toggle__circle {
+    width: 30px;
+    height: 30px;
+    background-color: hsl(0, 0%, 95%);
+    border-radius: 50%;
+    margin-top: calc(70px - (.05rem) - 30px);
+    transition: margin 200ms ease-in-out;
+}
+
+.toggle-text {
+    display: flex;
+    flex-direction: column;
+    line-height: .8;
+}
+
+#check:checked+.toggle>.toggle__circle {
+    margin-top: 0;
+}
+
+#check:checked+.toggle {
+    background-color: #41a63c;
+}
+
+:not(#check:checked)+.toggle {
+    background-color: #f44336;
+}
+
+/* toggle end */

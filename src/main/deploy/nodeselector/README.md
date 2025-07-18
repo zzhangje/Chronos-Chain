@@ -1,0 +1,1 @@
+https://www.reddit.com/r/Windows11/comments/15s6brv/i_cannot_disable_edge_swipe_gestures_opening_the
