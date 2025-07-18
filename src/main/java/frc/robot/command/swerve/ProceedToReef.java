@@ -18,48 +18,42 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
-public class AlignToReef extends Command {
+public class ProceedToReef extends Command {
   private static final LoggedTunableNumber maxLineupShiftingYMeter =
       new LoggedTunableNumber(
-          Constants.DebugGroup.SWERVE, "Swerve/ReefAlignController/MaxLineupShiftingYMeter", 1.75);
+          Constants.DebugGroup.SWERVE, "Swerve/ProceedToReef/MaxLineupShiftingYMeter", 1.75);
   private static final LoggedTunableNumber maxLineupShiftingXMeter =
       new LoggedTunableNumber(
-          Constants.DebugGroup.SWERVE, "Swerve/ReefAlignController/MaxLineupShiftingXMeter", 1.25);
+          Constants.DebugGroup.SWERVE, "Swerve/ProceedToReef/MaxLineupShiftingXMeter", 1.25);
   private static final LoggedTunableNumber minLineupHesitatedShiftingXMeter =
       new LoggedTunableNumber(
           Constants.DebugGroup.SWERVE,
-          "Swerve/ReefAlignController/MinLineupHesitatedShiftingXMeter",
+          "Swerve/ProceedToReef/MinLineupHesitatedShiftingXMeter",
           0.3);
 
   private static final LoggedTunableNumber translationKp =
       new LoggedTunableNumber(
-          Constants.DebugGroup.SWERVE, "Swerve/ReefAlignController/TranslationKp", 4.25);
+          Constants.DebugGroup.SWERVE, "Swerve/ProceedToReef/TranslationKp", 4.25);
   private static final LoggedTunableNumber translationKd =
       new LoggedTunableNumber(
-          Constants.DebugGroup.SWERVE, "Swerve/ReefAlignController/TranslationKd", 1.3);
+          Constants.DebugGroup.SWERVE, "Swerve/ProceedToReef/TranslationKd", 1.3);
   private static final LoggedTunableNumber translationToleranceMeter =
       new LoggedTunableNumber(
-          Constants.DebugGroup.SWERVE,
-          "Swerve/ReefAlignController/TranslationToleranceMeter",
-          0.07);
+          Constants.DebugGroup.SWERVE, "Swerve/ProceedToReef/TranslationToleranceMeter", 0.07);
   private static final LoggedTunableNumber maxTranslationVelMeterPerSec =
       new LoggedTunableNumber(
-          Constants.DebugGroup.SWERVE,
-          "Swerve/ReefAlignController/MaxTranslationVelMeterPerSec",
-          3.8);
+          Constants.DebugGroup.SWERVE, "Swerve/ProceedToReef/MaxTranslationVelMeterPerSec", 3.8);
 
   private static final LoggedTunableNumber rotationKp =
-      new LoggedTunableNumber(
-          Constants.DebugGroup.SWERVE, "Swerve/ReefAlignController/RotationKp", 3.7);
+      new LoggedTunableNumber(Constants.DebugGroup.SWERVE, "Swerve/ProceedToReef/RotationKp", 3.7);
   private static final LoggedTunableNumber rotationKd =
-      new LoggedTunableNumber(
-          Constants.DebugGroup.SWERVE, "Swerve/ReefAlignController/RotationKd", 0.3);
+      new LoggedTunableNumber(Constants.DebugGroup.SWERVE, "Swerve/ProceedToReef/RotationKd", 0.3);
   private static final LoggedTunableNumber rotationToleranceDegree =
       new LoggedTunableNumber(
-          Constants.DebugGroup.SWERVE, "Swerve/ReefAlignController/RotationToleranceDegree", 7.0);
+          Constants.DebugGroup.SWERVE, "Swerve/ProceedToReef/RotationToleranceDegree", 7.0);
   private static final LoggedTunableNumber maxRotationVelDegreePerSec =
       new LoggedTunableNumber(
-          Constants.DebugGroup.SWERVE, "Swerve/ReefAlignController/MaxRotationDegreePerSec", 540.0);
+          Constants.DebugGroup.SWERVE, "Swerve/ProceedToReef/MaxRotationDegreePerSec", 540.0);
 
   private final Supplier<Pose2d> goalPoseSupplier;
   private final Supplier<Rotation2d> alignRotationSupplier;
@@ -73,7 +67,7 @@ public class AlignToReef extends Command {
   private boolean hasHeadingAtGoal = false;
   private boolean needHesitation = true;
 
-  public AlignToReef(
+  public ProceedToReef(
       Supplier<Pose2d> goalPoseSupplier,
       Supplier<Rotation2d> alignRotationSupplier,
       BooleanSupplier stopHesitationSignalSupplier,
@@ -105,11 +99,11 @@ public class AlignToReef extends Command {
     var shiftedGoalPose =
         new Pose2d(getShiftedGoalPose().getTranslation(), goalPoseSupplier.get().getRotation());
     var currentPose = getCurrentPose();
-    Logger.recordOutput("Swerve/ReefAlignController/GoalPose", shiftedGoalPose);
+    Logger.recordOutput("Swerve/ProceedToReef/GoalPose", shiftedGoalPose);
 
     var currentDistance =
         currentPose.getTranslation().getDistance(shiftedGoalPose.getTranslation());
-    Logger.recordOutput("Swerve/ReefAlignController/TranslationErrorMeter", currentDistance);
+    Logger.recordOutput("Swerve/ProceedToReef/TranslationErrorMeter", currentDistance);
 
     var translationDir =
         shiftedGoalPose.getTranslation().minus(currentPose.getTranslation()).getAngle();
@@ -118,7 +112,7 @@ public class AlignToReef extends Command {
 
     var rotationErrorDegree =
         currentPose.getRotation().minus(shiftedGoalPose.getRotation()).getDegrees();
-    Logger.recordOutput("Swerve/ReefAlignController/RotationErrorDegree", rotationErrorDegree);
+    Logger.recordOutput("Swerve/ProceedToReef/RotationErrorDegree", rotationErrorDegree);
 
     hasHeadingAtGoal = Math.abs(rotationErrorDegree) <= rotationToleranceDegree.get();
     hasDone =
@@ -128,8 +122,7 @@ public class AlignToReef extends Command {
 
     var translationOutputScalar =
         hasHeadingAtGoal ? 1.0 : 1.0 - Math.abs(rotationErrorDegree) / 180.0;
-    Logger.recordOutput(
-        "Swerve/ReefAlignController/TranslationOutputScalar", translationOutputScalar);
+    Logger.recordOutput("Swerve/ProceedToReef/TranslationOutputScalar", translationOutputScalar);
 
     var translationVel =
         new Translation2d(
