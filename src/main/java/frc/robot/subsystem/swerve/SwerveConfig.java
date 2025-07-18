@@ -13,11 +13,11 @@ import frc.robot.Constants;
 import frc.robot.Constants.DebugGroup;
 
 public class SwerveConfig {
-  protected final LoggedTunableNumber maxTiltAccelXMeterPerSecPerLoop =
+  protected static final LoggedTunableNumber maxTiltAccelXMeterPerSecPerLoop =
       new LoggedTunableNumber(DebugGroup.SWERVE, "Swerve/MaxTiltAccelXMeterPerSecPerLoop", 80.0);
-  protected final LoggedTunableNumber maxTiltAccelYMeterPerSecPerLoop =
+  protected static final LoggedTunableNumber maxTiltAccelYMeterPerSecPerLoop =
       new LoggedTunableNumber(DebugGroup.SWERVE, "Swerve/MaxTiltAccelYMeterPerSecPerLoop", 70.0);
-  protected final LoggedTunableNumber maxSkidAccelMeterPerSecPerLoop =
+  protected static final LoggedTunableNumber maxSkidAccelMeterPerSecPerLoop =
       new LoggedTunableNumber(
           DebugGroup.SWERVE,
           "Swerve/MaxSkidAccelMeterPerSecPerLoop",
