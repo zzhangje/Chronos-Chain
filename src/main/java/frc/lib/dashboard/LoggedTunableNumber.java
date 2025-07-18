@@ -16,6 +16,7 @@ public class LoggedTunableNumber implements DoubleSupplier {
   private static final Map<String, List<LoggedTunableNumber>> groupInstances = new HashMap<>();
 
   private final String fullKey;
+  private final String groupName;
   private boolean hasDefault = false;
   private double defaultValue;
   private LoggedNetworkNumber dashboardNumber;
@@ -59,7 +60,8 @@ public class LoggedTunableNumber implements DoubleSupplier {
    * @param key The unique identifier for this tunable within the group
    */
   public LoggedTunableNumber(String group, String key) {
-    this.fullKey = ROOT_TABLE_KEY + "/" + group + "/" + key;
+    this.fullKey = ROOT_TABLE_KEY + "/"  + key;
+    this.groupName = group;
     registerInstance(group);
   }
 
@@ -81,9 +83,9 @@ public class LoggedTunableNumber implements DoubleSupplier {
    * @param key The unique identifier for this tunable
    */
   public LoggedTunableNumber(String key) {
-    String group = key.split("/")[0];
-    registerInstance(group);
+    this.groupName= key.split("/")[0];
     this.fullKey = ROOT_TABLE_KEY + "/" + key;
+    registerInstance(this.groupName);
   }
 
   /**
@@ -147,7 +149,7 @@ public class LoggedTunableNumber implements DoubleSupplier {
    * @return Group name as a String
    */
   private String getGroupName() {
-    return fullKey.split("/")[2];
+    return groupName;
   }
 
   /**
