@@ -1,4 +1,6 @@
-# Soul Pivot: A Command-Based Robot Framework
+# Chronos Chain: A Command-Based Robot Framework
+
+*A command-driven framework where robotic actions unfold in flawless sequence, like links in a timeless chain.*
 
 <img width=100% src="./public/screenshot.png">
 
