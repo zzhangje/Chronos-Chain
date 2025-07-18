@@ -20,6 +20,15 @@ public class Constants {
     REPLAY
   }
 
+  public final class DebugGroup {
+    public static final String SWERVE = "Swerve";
+    public static final String CLIMBER = "Climber";
+    public static final String INTAKE = "Intake";
+    public static final String ARM = "Arm";
+    public static final String ODOMETRY = "Odometry";
+    public static final String AUTO = "Auto";
+  }
+
   public final class Ports {
     public static final class Can {
       public static final String RIO_BUS = "";
