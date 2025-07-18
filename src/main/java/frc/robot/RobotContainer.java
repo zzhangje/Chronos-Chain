@@ -7,10 +7,12 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.math.PoseUtil;
+import frc.lib.service.CommandSelector;
 import frc.lib.service.GamePieceVisualizer;
 import frc.lib.service.Visualizer;
 import frc.reefscape.Field;
@@ -23,6 +25,7 @@ import frc.robot.subsystem.climber.Climber;
 import frc.robot.subsystem.intake.Intake;
 import frc.robot.subsystem.intake.IntakeGoal.IntakePivotGoal;
 import frc.robot.subsystem.intake.IntakeGoal.IntakeRollerGoal;
+import frc.robot.subsystem.nodeselector.NodeSelector;
 import frc.robot.subsystem.swerve.Swerve;
 
 public class RobotContainer {
@@ -31,6 +34,10 @@ public class RobotContainer {
   private final Intake intake;
   private final Climber climber;
   private final Arm arm;
+
+  // service
+  private final CommandSelector autoCmdSelector = new CommandSelector("Auto");
+  private final NodeSelector nodeSelector = new NodeSelector();
 
   // states
   boolean g_isClimbing = false;
@@ -78,10 +85,25 @@ public class RobotContainer {
       arm = Arm.createIO();
     }
 
+    // swerve.setCustomMaxTiltAccelScale();
+    // intake.setNeedDodgeSupplier();
+
     configureBindings();
+    configureAuto();
+
+    System.out.println("##########################################");
+    System.out.println("# RobotContainer Initialization Complete #");
+    System.out.println("#               Mode: " + Constants.MODE + "               #");
+    System.out.println("##########################################");
   }
 
   private void configureBindings() {}
+
+  private void configureAuto() {
+    new Trigger(() -> DriverStation.isAutonomousEnabled())
+        .onTrue(autoCmdSelector.stop())
+        .onFalse(autoCmdSelector.run());
+  }
 
   private void configureSimulation(
       Visualizer visualizer, GamePieceVisualizer coral, GamePieceVisualizer algae) {
@@ -312,6 +334,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    return autoCmdSelector.getCommand();
   }
 }

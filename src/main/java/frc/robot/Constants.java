@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.lib.dashboard.LoggedTunableNumber;
 import frc.lib.interfaces.CanId;
 import java.util.function.BooleanSupplier;
 
@@ -29,6 +30,11 @@ public class Constants {
         new Transform3d(0.225, -0.15, 0.5, new Rotation3d(0.0, 0.0, Math.PI / 2));
     public static final Transform3d ee_T_algae =
         new Transform3d(0.225, 0.0, 0.65, new Rotation3d());
+
+    public static final LoggedTunableNumber omegaCOGHeightScaleFactor =
+        new LoggedTunableNumber("Swerve", "TeleopController/OmegaCOGHeightScaleFactor", 0.1);
+    public static final LoggedTunableNumber accelCOGHeightScaleFactor =
+        new LoggedTunableNumber("Swerve", "TeleopController/AccelCOGHeightScaleFactor", 0.1);
   }
 
   public final class AscopeAssets {
