@@ -1,6 +1,5 @@
 package frc.lib.interfaces.sensor.digital;
 
-
 public class DigitalInputRio implements DigitalInput {
   private final edu.wpi.first.wpilibj.DigitalInput input;
 
