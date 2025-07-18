@@ -108,7 +108,7 @@ public class Climber extends SubsystemBase {
     lickOfflineAlert.set(!lickInputs.connected);
   }
 
-  public Climber createSim() {
+  public static Climber createSim() {
     return new Climber(
         new GenericArmIOSim(
             DCMotor.getKrakenX60Foc(1),
@@ -121,7 +121,7 @@ public class Climber extends SubsystemBase {
         new GenericRollerIOSim(DCMotor.getFalcon500(1), 1, 1));
   }
 
-  public Climber createReal() {
+  public static Climber createReal() {
     return new Climber(
         new GenericArmIOKraken(
             "Climber/Pull",

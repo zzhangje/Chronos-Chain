@@ -8,7 +8,7 @@ import lombok.Setter;
 
 public class RobotState {
   @Getter
-  private static final GamePieceTracker coral =
+  private static final GamePieceTracker coralTracker =
       new GamePieceTracker(GamePiece.GamePieceType.CORAL.getName(), 0.5);
 
   @Getter private static final Odometry odometry = new Odometry();

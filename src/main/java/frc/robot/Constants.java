@@ -20,6 +20,22 @@ public class Constants {
     REPLAY
   }
 
+  public final class AscopeAssets {
+
+    public static final int CHASSIS = 0;
+    public static final int ELEVATOR_1 = 1;
+    public static final int ELEVATOR_2 = 2;
+    public static final int CARRIAGE = 3;
+    public static final int ARM = 4;
+    public static final int INTAKE_BASE = 5;
+    public static final int INTAKE = 6;
+    public static final int CLIMBER_BASE = 7;
+    public static final int CLIMBER = 8;
+    public static final int ALGAE = 9;
+    public static final int CORAL = 10;
+    public static final int CORAL_INTAKE = 11;
+  }
+
   public final class DebugGroup {
     public static final String SWERVE = "Swerve";
     public static final String CLIMBER = "Climber";

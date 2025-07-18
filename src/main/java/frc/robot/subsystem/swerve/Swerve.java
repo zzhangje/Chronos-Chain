@@ -241,7 +241,7 @@ public class Swerve extends SubsystemBase {
     modules[3] = new Module(frModuleIO, SwerveConfig.FR_MODULE_NAME);
   }
 
-  public Swerve createReal() {
+  public static Swerve createReal() {
     var flModuleIo =
         new ModuleIOKrakenFOC(
             SwerveConfig.FL_MODULE_NAME,
@@ -298,7 +298,7 @@ public class Swerve extends SubsystemBase {
         odometryCachedWheeledObservationQueue);
   }
 
-  public Swerve createSim() {
+  public static Swerve createSim() {
     var flModuleIo = new ModuleIOSim();
     var blModuleIo = new ModuleIOSim();
     var brModuleIo = new ModuleIOSim();
@@ -325,7 +325,7 @@ public class Swerve extends SubsystemBase {
         odometryCachedWheeledObservationQueue);
   }
 
-  public Swerve createIO() {
+  public static Swerve createIO() {
     return new Swerve(
         new ModuleIO() {},
         new ModuleIO() {},
