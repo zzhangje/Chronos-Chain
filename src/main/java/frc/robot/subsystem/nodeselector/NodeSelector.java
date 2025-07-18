@@ -150,6 +150,5 @@ public class NodeSelector extends VirtualSubsystem {
 
   public boolean isIgnoreArmMoveCondition() {
     return selectedNode.getIgnoreArmMoveCondition();
-    // return true;
   }
 }

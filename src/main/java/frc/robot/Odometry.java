@@ -33,7 +33,6 @@ import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 
 public class Odometry {
-
   private static final LoggedTunableNumber txTyObservationStaleSecs =
       new LoggedTunableNumber(
           Constants.DebugGroup.ODOMETRY, "Odometry/TxTyObservation/StaleSeconds", 0.2);
