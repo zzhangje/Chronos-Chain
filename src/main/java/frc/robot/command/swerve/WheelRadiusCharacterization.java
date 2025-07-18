@@ -1,4 +1,4 @@
-package frc.robot.subsystem.swerve.command;
+package frc.robot.command.swerve;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -49,7 +49,7 @@ public class WheelRadiusCharacterization extends Command {
     this.gyroYawRadsSupplier = () -> yawSupplier.get().getRadians();
     addRequirements(swerve);
     withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
-    setName("[Swerve] Wheel Radius Characterization");
+    setName("Swerve/Wheel Radius Characterization");
   }
 
   @Override
