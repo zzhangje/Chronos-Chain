@@ -68,7 +68,7 @@ public class GamePieceVisualizer extends VirtualSubsystem {
   public boolean tryEject(Pose3d pose) {
     if (hasGamePieceNums > 0) {
       hasGamePieceNums--;
-      // TODO: make it pickable instead simply remove
+      // FIXME: make it pickable instead simply remove
     }
     return true;
   }

@@ -25,16 +25,13 @@ public class TransformTree {
 
   protected final Node root = new Node();
   protected Pose3d rootPose = new Pose3d();
-  private final String rootName;
 
   /**
    * Creates a new TransformTree with an optional root name
    *
    * @param rootName The name of the root node, can be null
    */
-  public TransformTree(String rootName) {
-    this.rootName = rootName;
-  }
+  public TransformTree() {}
 
   /**
    * Sets the root pose of the transform tree

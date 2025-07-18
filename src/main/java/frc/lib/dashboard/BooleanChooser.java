@@ -13,7 +13,7 @@ public class BooleanChooser extends LoggedNetworkInput implements BooleanSupplie
   private final BooleanSubscriber valueInput;
 
   public BooleanChooser(String name) {
-    this(name, true); // Default to false if not specified //FIXME: TESTING
+    this(name, false);
   }
 
   public BooleanChooser(String name, boolean defaultValue) {

@@ -17,7 +17,7 @@ import org.littletonrobotics.junction.Logger;
  */
 public class Visualizer extends VirtualSubsystem {
   public static final String BASE_FRAME = "robot";
-  private final TransformTree transformTree = new TransformTree(BASE_FRAME);
+  private final TransformTree transformTree = new TransformTree();
   private final Map<Integer, String> indexToPath = new HashMap<>();
   private final Map<String, String> nameToPath = new HashMap<>();
 
