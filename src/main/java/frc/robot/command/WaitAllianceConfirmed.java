@@ -3,7 +3,7 @@ package frc.robot.command;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class WaitAlliance extends Command {
+public class WaitAllianceConfirmed extends Command {
   private static final int MAX_ALLIANCE_CONFIRM_COUNT = 2;
 
   private DriverStation.Alliance lastAlliance = null;
@@ -34,9 +34,5 @@ public class WaitAlliance extends Command {
   @Override
   public boolean isFinished() {
     return allianceConfirmCount >= MAX_ALLIANCE_CONFIRM_COUNT;
-  }
-
-  public static Command waitForAllianceConfirmed() {
-    return new WaitAlliance();
   }
 }
