@@ -1,10 +1,12 @@
 package frc.robot.subsystem.arm;
 
+import com.ctre.phoenix6.configs.CANdiConfiguration;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.S2FloatStateValue;
 import frc.lib.dashboard.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.Constants.DebugGroup;
@@ -155,6 +157,12 @@ class ArmConfig {
     config.CurrentLimits.StatorCurrentLimit = 30.0;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
 
+    return config;
+  }
+
+  static CANdiConfiguration getRollerSensorConfig() {
+    var config = new CANdiConfiguration();
+    config.DigitalInputs.S2FloatState = S2FloatStateValue.PullHigh;
     return config;
   }
 

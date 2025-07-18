@@ -12,7 +12,7 @@ import org.littletonrobotics.junction.Logger;
 public class GamePieceVisualizer extends VirtualSubsystem {
   private final String name;
 
-  // FIXME: reset gamepiece when onStop() is called
+  // FIXME: reset gamepiece when reset() is called
   private final Pose3d[] scorableGamePiecePose;
   @Getter private final Pose3d[] pickableGamePiecePose;
   private final Pose3d[] scoredGamePiecePose;

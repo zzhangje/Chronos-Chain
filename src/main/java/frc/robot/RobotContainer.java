@@ -4,10 +4,25 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib.math.PoseUtil;
+import frc.lib.service.GamePieceVisualizer;
+import frc.lib.service.Visualizer;
+import frc.reefscape.Field;
+import frc.robot.Constants.AscopeAssets;
+import frc.robot.Constants.Misc;
+import frc.robot.subsystem.arm.Arm;
+import frc.robot.subsystem.arm.ArmGoal.ArmSubsystemGoal;
+import frc.robot.subsystem.arm.ArmGoal.EndEffectorGoal;
 import frc.robot.subsystem.climber.Climber;
 import frc.robot.subsystem.intake.Intake;
+import frc.robot.subsystem.intake.IntakeGoal.IntakePivotGoal;
+import frc.robot.subsystem.intake.IntakeGoal.IntakeRollerGoal;
 import frc.robot.subsystem.swerve.Swerve;
 
 public class RobotContainer {
@@ -15,6 +30,7 @@ public class RobotContainer {
   private final Swerve swerve;
   private final Intake intake;
   private final Climber climber;
+  private final Arm arm;
 
   // states
   boolean g_isClimbing = false;
@@ -27,14 +43,39 @@ public class RobotContainer {
       swerve = Swerve.createReal();
       intake = Intake.createReal();
       climber = Climber.createReal();
+      arm = Arm.createReal();
     } else if (Constants.MODE.equals(Constants.Mode.SIM)) {
       swerve = Swerve.createSim();
       intake = Intake.createSim(() -> s_intakeHasCoral);
       climber = Climber.createSim();
+      arm = Arm.createSim(() -> s_armHasCoral, () -> s_armHasAlgae);
+
+      GamePieceVisualizer algae =
+          new GamePieceVisualizer(
+              "Algae",
+              1.2,
+              1.3,
+              PoseUtil.concat(Field.PRESET_ALGAE_POSES, Field.Reef.AlGAE_POSES),
+              PoseUtil.concat(Field.Barge.SCORABLE_POSES, Field.Processor.SCORABLE_POSES),
+              s_armHasAlgae ? 1 : 0);
+
+      GamePieceVisualizer coral =
+          new GamePieceVisualizer(
+              "Coral",
+              0.5,
+              1.0,
+              PoseUtil.repeat(Field.PRESET_CORAL_POSES, 5),
+              PoseUtil.tolist(Field.Reef.CORAL_POSES),
+              (s_armHasCoral ? 1 : 0) + (s_intakeHasCoral ? 1 : 0));
+
+      Visualizer visualizer = new Visualizer();
+      configureVisualization(visualizer);
+      configureSimulation(visualizer, coral, algae);
     } else {
       swerve = Swerve.createIO();
       intake = Intake.createIO();
       climber = Climber.createIO();
+      arm = Arm.createIO();
     }
 
     configureBindings();
@@ -42,9 +83,233 @@ public class RobotContainer {
 
   private void configureBindings() {}
 
-  private void configureSimulation() {}
+  private void configureSimulation(
+      Visualizer visualizer, GamePieceVisualizer coral, GamePieceVisualizer algae) {
 
-  private void configureVisualization() {}
+    new Trigger(
+            () ->
+                intake.getPivotGoal().equals(IntakePivotGoal.REGRASP)
+                    && intake.getRollerGoal().equals(IntakeRollerGoal.EJECT)
+                    && arm.getArmGoal().equals(ArmSubsystemGoal.CORAL_GROUND_PICK)
+                    && arm.getEeGoal().equals(EndEffectorGoal.CORAL_COLLECT))
+        .debounce(0.1)
+        .whileTrue(
+            Commands.runOnce(
+                    () -> {
+                      if (s_intakeHasCoral && !s_armHasAlgae) {
+                        s_armHasCoral = true;
+                        s_intakeHasCoral = false;
+                      }
+                    })
+                .withName("[SIM] Try Regrasp Coral"));
+
+    new Trigger(
+            () ->
+                intake.getRollerGoal().equals(IntakeRollerGoal.INJECT)
+                    && intake.getPivotGoal().equals(IntakePivotGoal.DOWN))
+        .debounce(0.5)
+        .whileTrue(
+            Commands.run(
+                    () -> {
+                      if (!s_intakeHasCoral) {
+                        Boolean ret =
+                            coral.tryPick(
+                                new Pose3d(RobotState.getOdometry().getEstimatedPose())
+                                    .plus(
+                                        visualizer
+                                            .getComponentTransform(AscopeAssets.INTAKE)
+                                            .plus(Misc.intake_T_coral)));
+                        if (ret) {
+                          s_intakeHasCoral = true;
+                        }
+                      }
+                    })
+                .withName("[SIM] Try Pick Coral"));
+
+    new Trigger(
+            () ->
+                intake.getRollerGoal().equals(IntakeRollerGoal.EJECT)
+                    || intake.getRollerGoal().equals(IntakeRollerGoal.TROUGH))
+        .debounce(3.5)
+        .whileTrue(
+            Commands.runOnce(
+                    () -> {
+                      if (s_intakeHasCoral) {
+                        Boolean ret =
+                            coral.tryScore(
+                                new Pose3d(RobotState.getOdometry().getEstimatedPose())
+                                    .plus(
+                                        visualizer
+                                            .getComponentTransform(AscopeAssets.INTAKE)
+                                            .plus(Misc.intake_T_coral)));
+                        if (ret) {
+                          s_intakeHasCoral = false;
+                        } else if (coral.tryEject(
+                            new Pose3d(RobotState.getOdometry().getEstimatedPose())
+                                .plus(
+                                    visualizer
+                                        .getComponentTransform(AscopeAssets.INTAKE)
+                                        .plus(Misc.intake_T_coral)))) {
+                          s_intakeHasCoral = false;
+                        }
+                      }
+                    })
+                .withName("[SIM] Try Eject Coral"));
+
+    new Trigger(
+            () ->
+                arm.getEeGoal().equals(EndEffectorGoal.EJECT)
+                    || arm.getEeGoal().equals(EndEffectorGoal.ALGAE_SCORE)
+                    || arm.getEeGoal().equals(EndEffectorGoal.CORAL_SCORE))
+        .debounce(0.3)
+        .whileTrue(
+            Commands.runOnce(
+                    () -> {
+                      if (s_armHasAlgae) {
+                        Boolean ret =
+                            algae.tryScore(
+                                new Pose3d(RobotState.getOdometry().getEstimatedPose())
+                                    .plus(
+                                        visualizer
+                                            .getComponentTransform(AscopeAssets.ARM)
+                                            .plus(Misc.ee_T_algae)));
+                        if (ret) {
+                          s_armHasAlgae = false;
+                        } else {
+                          if (algae.tryEject(
+                              new Pose3d(RobotState.getOdometry().getEstimatedPose())
+                                  .plus(
+                                      visualizer
+                                          .getComponentTransform(AscopeAssets.ARM)
+                                          .plus(Misc.ee_T_algae)))) {
+                            s_armHasAlgae = false;
+                          }
+                        }
+                      }
+                      if (s_armHasCoral) {
+                        Boolean ret =
+                            coral.tryScore(
+                                new Pose3d(RobotState.getOdometry().getEstimatedPose())
+                                    .plus(
+                                        visualizer
+                                            .getComponentTransform(AscopeAssets.ARM)
+                                            .plus(Misc.ee_T_coral)));
+                        if (ret) {
+                          s_armHasCoral = false;
+                        } else {
+                          if (coral.tryEject(
+                              new Pose3d(RobotState.getOdometry().getEstimatedPose())
+                                  .plus(
+                                      visualizer
+                                          .getComponentTransform(AscopeAssets.ARM)
+                                          .plus(Misc.ee_T_coral)))) {
+                            s_armHasCoral = false;
+                          }
+                        }
+                      }
+                    })
+                .withName("[SIM] Try Score or Eject"));
+
+    new Trigger(() -> arm.getEeGoal().equals(EndEffectorGoal.ALGAE_COLLECT))
+        .debounce(0.2)
+        .whileTrue(
+            Commands.run(
+                    () -> {
+                      if (!s_armHasAlgae && !s_armHasCoral) {
+                        Boolean ret =
+                            algae.tryPick(
+                                new Pose3d(RobotState.getOdometry().getEstimatedPose())
+                                    .plus(
+                                        visualizer
+                                            .getComponentTransform(AscopeAssets.INTAKE)
+                                            .plus(Misc.ee_T_algae)));
+                        if (ret) {
+                          s_armHasAlgae = true;
+                        }
+                      }
+                    })
+                .withName("[SIM] Try Pick Algae"));
+  }
+
+  private void configureVisualization(Visualizer visualizer) {
+    visualizer.registerVisualizedComponent(
+        Visualizer.BASE_FRAME,
+        "chassis",
+        AscopeAssets.CHASSIS,
+        new Transform3d(
+            0.0, 0.0, 0.0, new Rotation3d(Math.PI / 2 * 0, Math.PI / 2 * 2, Math.PI / 2 * 2)));
+
+    // climber
+    visualizer.registerVisualizedComponent(
+        "chassis", "climber_base", AscopeAssets.CLIMBER_BASE, new Transform3d());
+    visualizer.registerVisualizedComponent(
+        "climber_base",
+        "climber",
+        AscopeAssets.CLIMBER,
+        () -> new Transform3d(-0.325, 0.0, -0.275, new Rotation3d(0.0, 0.28 - 0.0, 0.0)));
+
+    // intake
+    visualizer.registerVisualizedComponent(
+        "chassis", "intake_base", AscopeAssets.INTAKE_BASE, new Transform3d());
+    visualizer.registerVisualizedComponent(
+        "intake_base",
+        "intake",
+        AscopeAssets.INTAKE,
+        () ->
+            new Transform3d(
+                0.315,
+                0.0,
+                -0.15,
+                new Rotation3d(0.0, Math.PI * 0.72 - intake.getPivotPositionRad(), 0.0)));
+
+    // arm
+    visualizer.registerVisualizedComponent(
+        "chassis", "elevator_l1", AscopeAssets.ELEVATOR_1, new Transform3d());
+    visualizer.registerVisualizedComponent(
+        "elevator_l1",
+        "elevator_l2",
+        AscopeAssets.ELEVATOR_2,
+        () -> new Transform3d(0.0, 0.0, -arm.getElevatorHeightMeter(), new Rotation3d()));
+    visualizer.registerVisualizedComponent(
+        "elevator_l2",
+        "carriage",
+        AscopeAssets.CARRIAGE,
+        () -> new Transform3d(0.0, 0.0, -arm.getCarriageHeightMeter(), new Rotation3d()));
+    visualizer.registerVisualizedComponent(
+        "carriage",
+        "arm",
+        AscopeAssets.ARM,
+        () ->
+            new Transform3d(
+                0.0,
+                0.0,
+                -0.255,
+                new Rotation3d(Math.PI / 2 + arm.getElbowPositionRad(), 0.0, 0.0)));
+
+    // game piece
+    visualizer.registerVisualizedComponent(
+        "intake",
+        "coral_intake",
+        AscopeAssets.CORAL_INTAKE,
+        () ->
+            s_intakeHasCoral
+                ? Misc.intake_T_coral
+                : new Transform3d(0, 0, 0x3f3f3f3f, new Rotation3d()));
+    visualizer.registerVisualizedComponent(
+        "arm",
+        "coral_arm",
+        AscopeAssets.CORAL,
+        () ->
+            s_armHasCoral ? Misc.ee_T_coral : new Transform3d(0, 0, 0x3f3f3f3f, new Rotation3d()));
+    visualizer.registerVisualizedComponent(
+        "arm",
+        "algae_arm",
+        AscopeAssets.ALGAE,
+        () ->
+            s_armHasAlgae ? Misc.ee_T_algae : new Transform3d(0, 0, 0x3f3f3f3f, new Rotation3d()));
+
+    visualizer.print();
+  }
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
