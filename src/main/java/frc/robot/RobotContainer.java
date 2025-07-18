@@ -4,20 +4,25 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.math.PoseUtil;
 import frc.lib.service.CommandSelector;
 import frc.lib.service.GamePieceVisualizer;
 import frc.lib.service.Visualizer;
+import frc.lib.utils.AllianceFlipUtil;
 import frc.reefscape.Field;
 import frc.robot.Constants.AscopeAssets;
 import frc.robot.Constants.Misc;
+import frc.robot.Constants.Ports;
 import frc.robot.subsystem.arm.Arm;
 import frc.robot.subsystem.arm.ArmGoal.ArmSubsystemGoal;
 import frc.robot.subsystem.arm.ArmGoal.EndEffectorGoal;
@@ -27,8 +32,12 @@ import frc.robot.subsystem.intake.IntakeGoal.IntakePivotGoal;
 import frc.robot.subsystem.intake.IntakeGoal.IntakeRollerGoal;
 import frc.robot.subsystem.nodeselector.NodeSelector;
 import frc.robot.subsystem.swerve.Swerve;
+import frc.robot.subsystem.swerve.command.TeleopController;
 
 public class RobotContainer {
+  // driver
+  CommandXboxController driver = new CommandXboxController(Ports.Joystick.DRIVER);
+
   // subsystem
   private final Swerve swerve;
   private final Intake intake;
@@ -85,7 +94,8 @@ public class RobotContainer {
       arm = Arm.createIO();
     }
 
-    // swerve.setCustomMaxTiltAccelScale();
+    swerve.setCustomMaxTiltAccelScale(
+        () -> Math.pow(1.0 - arm.getCOGHeightPercent() * Misc.accelCOGHeightScaleFactor.get(), 2));
     // intake.setNeedDodgeSupplier();
 
     configureBindings();
@@ -97,7 +107,30 @@ public class RobotContainer {
     System.out.println("##########################################");
   }
 
-  private void configureBindings() {}
+  private void configureBindings() {
+    swerve.setDefaultCommand(
+        new TeleopController(
+            swerve,
+            () -> -driver.getLeftY(),
+            () -> -driver.getLeftX(),
+            () ->
+                -driver.getRightX()
+                    * Math.pow(
+                        1.0 - arm.getCOGHeightPercent() * Misc.omegaCOGHeightScaleFactor.get(), 2),
+            () -> driver.rightBumper().getAsBoolean()));
+
+    driver
+        .back()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        RobotState.getOdometry()
+                            .resetPose(
+                                new Pose2d(
+                                    RobotState.getOdometry().getEstimatedPose().getTranslation(),
+                                    AllianceFlipUtil.apply(Rotation2d.kZero))))
+                .ignoringDisable(true));
+  }
 
   private void configureAuto() {
     new Trigger(() -> DriverStation.isAutonomousEnabled())
