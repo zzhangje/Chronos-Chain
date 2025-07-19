@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.function.Supplier;
-import java.util.stream.IntStream;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.ExtensionMethod;
@@ -54,24 +53,14 @@ public class Swerve extends SubsystemBase {
   private final Alert gyroOfflineAlert = new Alert("Gyro offline!", Alert.AlertType.WARNING);
   @Setter private Supplier<Double> customMaxTiltAccelScale = () -> 1.0;
 
-  public void setGoalVel(ChassisSpeeds tarGoalVel) {
-    setGoalVel(
-        tarGoalVel, true, IntStream.range(0, 4).boxed().map(i -> VecBuilder.fill(0, 0)).toList());
-  }
-
-  public void setGoalVel(ChassisSpeeds tarGoalVel, Boolean applyAccelLimitation) {
-    setGoalVel(
-        tarGoalVel,
-        applyAccelLimitation,
-        IntStream.range(0, 4).boxed().map(i -> VecBuilder.fill(0, 0)).toList());
-  }
-
-  public void setGoalVel(
-      ChassisSpeeds tarGoalVel, boolean applyAccelLimitation, List<Vector<N2>> moduleForces) {
+  /**
+   * Set the goal velocity of the swerve drive with feedforward forces.
+   *
+   * @param tarGoalVel The target goal velocity in robot-centric frame.
+   * @param moduleForces The feedforward forces for each module.
+   */
+  public void setGoalVelFF(ChassisSpeeds tarGoalVel, List<Vector<N2>> moduleForces) {
     var goalVel = tarGoalVel;
-    if (applyAccelLimitation) {
-      goalVel = clipAcceleration(goalVel);
-    }
 
     // Desaturate
     var rawGoalModuleStates = SwerveConfig.SWERVE_KINEMATICS.toSwerveModuleStates(goalVel);
@@ -105,6 +94,63 @@ public class Swerve extends SubsystemBase {
           new SwerveModuleState(wheelTorque, optimizedGoalModuleStates[i].angle);
 
       modules[i].setState(optimizedGoalModuleStates[i], optimizedGoalModuleTorques[i]);
+    }
+
+    lastGoalModuleStates = goalModuleStates;
+    Logger.recordOutput("Swerve/SwerveStates/GoalModuleStates", goalModuleStates);
+    Logger.recordOutput("Swerve/FinalGoalVel", goalVel);
+    Logger.recordOutput("Swerve/SwerveStates/OptimizedGoalModuleStates", optimizedGoalModuleStates);
+    Logger.recordOutput(
+        "Swerve/SwerveStates/OptimizedGoalModuleTorques", optimizedGoalModuleTorques);
+  }
+
+  /**
+   * Set the goal velocity of the swerve drive.
+   *
+   * @param tarGoalVel The target goal velocity in robot-centric frame.
+   */
+  public void setGoalVel(ChassisSpeeds tarGoalVel) {
+    setGoalVel(tarGoalVel, true);
+  }
+
+  /**
+   * Set the goal velocity of the swerve drive.
+   *
+   * @param tarGoalVel The target goal velocity in robot-centric frame.
+   * @param applyAccelLimitation Whether to apply acceleration limitation.
+   */
+  public void setGoalVel(ChassisSpeeds tarGoalVel, boolean applyAccelLimitation) {
+    var goalVel = tarGoalVel;
+    if (applyAccelLimitation) {
+      goalVel = clipAcceleration(goalVel);
+    }
+
+    // Desaturate
+    var rawGoalModuleStates = SwerveConfig.SWERVE_KINEMATICS.toSwerveModuleStates(goalVel);
+    SwerveDriveKinematics.desaturateWheelSpeeds(
+        rawGoalModuleStates, SwerveConfig.MAX_TRANSLATION_VEL_METER_PER_SEC);
+    goalVel = SwerveConfig.SWERVE_KINEMATICS.toChassisSpeeds(rawGoalModuleStates);
+
+    // Dynamics compensation
+    goalVel = ChassisSpeeds.discretize(goalVel, Constants.LOOP_PERIOD_SEC);
+
+    // Use last goal angle for module if chassis want stop completely
+    var goalModuleStates = SwerveConfig.SWERVE_KINEMATICS.toSwerveModuleStates(goalVel);
+    if (goalVel.toTwist2d().epsilonEquals(new Twist2d())) {
+      for (int i = 0; i < modules.length; i++) {
+        goalModuleStates[i].angle = lastGoalModuleStates[i].angle;
+        goalModuleStates[i].speedMetersPerSecond = 0.0;
+      }
+    }
+
+    var optimizedGoalModuleStates = new SwerveModuleState[4];
+    var optimizedGoalModuleTorques = new SwerveModuleState[4];
+
+    for (int i = 0; i < modules.length; i++) {
+      optimizedGoalModuleTorques[i] =
+          new SwerveModuleState(0.0, optimizedGoalModuleStates[i].angle);
+
+      modules[i].setState(optimizedGoalModuleStates[i]);
     }
 
     lastGoalModuleStates = goalModuleStates;
