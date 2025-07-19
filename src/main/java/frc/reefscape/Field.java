@@ -176,23 +176,16 @@ public final class Field {
     public static final Translation2d CENTER =
         new Translation2d(Units.inchesToMeters(176.746), WIDTH / 2.0);
 
-    public static Integer closestReefSide(Pose2d pose) {
-      Pose2d tmpPose = !AllianceFlipUtil.inBlueHalf(pose) ? AllianceFlipUtil.mirror(pose) : pose;
-      double degree = (tmpPose.getTranslation().minus(Reef.CENTER)).getAngle().getDegrees();
-
-      if (-30 < degree && degree <= 30) {
-        return 3;
-      } else if (30 < degree && degree <= 90) {
-        return 4;
-      } else if (90 < degree && degree <= 150) {
-        return 5;
-      } else if (-90 < degree && degree <= -30) {
-        return 2;
-      } else if (-150 < degree && degree <= -90) {
-        return 1;
-      } else {
-        return 0;
-      }
+    public static int getSingleTagPoseIdBySelection(String selectedBranch) {
+      return switch (selectedBranch) {
+        case "A", "B", "AB" -> AllianceFlipUtil.shouldFlip() ? 7 : 18;
+        case "C", "D", "CD" -> AllianceFlipUtil.shouldFlip() ? 8 : 17;
+        case "E", "F", "EF" -> AllianceFlipUtil.shouldFlip() ? 9 : 22;
+        case "G", "H", "GH" -> AllianceFlipUtil.shouldFlip() ? 10 : 21;
+        case "I", "J", "IJ" -> AllianceFlipUtil.shouldFlip() ? 11 : 20;
+        case "K", "L", "KL" -> AllianceFlipUtil.shouldFlip() ? 6 : 19;
+        default -> -1;
+      };
     }
 
     public static Boolean closestRobotSide(Pose2d pose) {
@@ -211,7 +204,7 @@ public final class Field {
     public static final Map<String, Pose2d> ALGAE_COLLECT_POSES = new HashMap<>();
 
     // TODO: adjust this based on the field
-    public static final double SCORE_ADJUST_X = 0.1 + GamePiece.Coral.DIAMETER * 1.0;
+    public static final double SCORE_ADJUST_X = 0.36 + GamePiece.Coral.DIAMETER * 1.0;
     // Caused by coral end effector is not in robot center line
     public static final double CORAL_ADJUST_Y_OFFSET = 0.0;
     // Caused by algae end effector is not in robot center line

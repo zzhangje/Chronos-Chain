@@ -53,6 +53,12 @@ public class RobotState {
       return new RobotGoal(GamePieceType.ALGAE, branch, "0", false);
     }
 
+    public Boolean isHighPick() {
+      return selectedBranch.equals("AB")
+          || selectedBranch.equals("EF")
+          || selectedBranch.equals("IJ");
+    }
+
     public static RobotGoal scoreCoral(String branch, String level) {
       return new RobotGoal(GamePieceType.CORAL, branch, level, false);
     }

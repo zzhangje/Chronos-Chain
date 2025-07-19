@@ -53,7 +53,7 @@ public class RobotContainer {
   // states
   boolean g_isClimbing = false;
   boolean s_intakeHasCoral = false;
-  boolean s_armHasCoral = false;
+  boolean s_armHasCoral = true;
   boolean s_armHasAlgae = false;
 
   public RobotContainer() {
@@ -137,7 +137,7 @@ public class RobotContainer {
     driver
         .b()
         .and(() -> !g_isClimbing)
-        .whileTrue(
+        .onTrue(
             new UniversalScoreCommand(
                 swerve,
                 arm,
@@ -149,7 +149,7 @@ public class RobotContainer {
     driver
         .x()
         .and(() -> !g_isClimbing)
-        .whileTrue(
+        .onTrue(
             new UniversalScoreCommand(
                 swerve,
                 arm,
@@ -158,7 +158,25 @@ public class RobotContainer {
                     RobotGoal.scoreNet()
                         .setIgnoreArmMoveCondition(nodeSelector.isIgnoreArmMoveCondition())));
 
-    driver.a().and(() -> !g_isClimbing).whileTrue(arm.idleCommand());
+    driver
+        .a()
+        .and(() -> !g_isClimbing)
+        .onTrue(
+            Commands.parallel(
+                arm.idleCommand(),
+                intake.trough(),
+                Commands.runOnce(
+                    () -> {
+                      Command current = swerve.getCurrentCommand();
+                      if (current != null && current != teleopDrive) {
+                        current.cancel();
+                      }
+                    })));
+
+    driver
+        .y()
+        .and(() -> !g_isClimbing)
+        .onTrue(new UniversalScoreCommand(swerve, arm, intake, nodeSelector::getSelectedNode));
   }
 
   private void configureAuto() {

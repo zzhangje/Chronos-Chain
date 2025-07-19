@@ -68,10 +68,10 @@ public class ProceedToReef extends Command {
   private boolean needHesitation = true;
 
   public ProceedToReef(
+      Swerve swerve,
       Supplier<Pose2d> goalPoseSupplier,
       Supplier<Rotation2d> alignRotationSupplier,
-      BooleanSupplier stopHesitationSignalSupplier,
-      Swerve swerve) {
+      BooleanSupplier stopHesitationSignalSupplier) {
     this.goalPoseSupplier = goalPoseSupplier;
     this.alignRotationSupplier = alignRotationSupplier;
     this.stopHesitationSignalSupplier = stopHesitationSignalSupplier;
@@ -155,6 +155,7 @@ public class ProceedToReef extends Command {
   public void end(boolean interrupted) {
     // Stop the swerve when command ends
     swerve.stop();
+    Logger.recordOutput("Swerve/ProceedToReef/GoalPose", new Pose2d());
   }
 
   private Pose2d getCurrentPose() {

@@ -169,6 +169,7 @@ public class ProceedToProcessor extends Command {
   @Override
   public void end(boolean interrupted) {
     swerve.stop();
+    Logger.recordOutput("Swerve/ProceedToProcessor/GoalPose", new Pose2d());
   }
 
   public boolean hasHeadingAtGoal() {

@@ -121,6 +121,7 @@ public class ProceedToNet extends Command {
   @Override
   public void end(boolean interrupted) {
     swerve.stop();
+    Logger.recordOutput("Swerve/ProceedToNet/GoalPose", new Pose2d());
   }
 
   public boolean hasHeadingAtGoal() {

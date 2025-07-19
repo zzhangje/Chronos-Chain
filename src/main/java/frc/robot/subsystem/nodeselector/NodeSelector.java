@@ -24,7 +24,6 @@ public class NodeSelector extends VirtualSubsystem {
   private final DoublePublisher reef2RobotAngleDegreePublisher;
   private final DoublePublisher reef2RobotDistanceMeterPublisher;
 
-  // @AutoLogOutput(key = "NodeSelector/SelectedNode")
   @Getter private RobotGoal selectedNode = RobotGoal.invalid();
 
   public NodeSelector() {
@@ -111,6 +110,7 @@ public class NodeSelector extends VirtualSubsystem {
     }
 
     selectedNode = new RobotGoal(type, branch, level, isIgnoreArmMoveCondition);
+    Logger.processInputs("NodeSelector/SelectedNode", selectedNode);
   }
 
   public void setSelected(RobotGoal goal) {
@@ -131,22 +131,6 @@ public class NodeSelector extends VirtualSubsystem {
     }
 
     nodePublisher.set(nodeStr);
-  }
-
-  public boolean hasValidSelection() {
-    return selectedNode.isValid();
-  }
-
-  public GamePieceType getSelectedGamePieceType() {
-    return selectedNode.getSelectedType();
-  }
-
-  public String getSelectedBranch() {
-    return selectedNode.getSelectedBranch();
-  }
-
-  public String getSelectedLevel() {
-    return selectedNode.getSelectedLevel();
   }
 
   public boolean isIgnoreArmMoveCondition() {

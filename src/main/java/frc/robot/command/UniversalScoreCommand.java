@@ -1,7 +1,9 @@
 package frc.robot.command;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.lib.utils.AllianceFlipUtil;
 import frc.reefscape.Field.Barge;
 import frc.reefscape.Field.Processor;
 import frc.reefscape.Field.Reef;
@@ -14,8 +16,11 @@ import frc.robot.subsystem.arm.ArmGoal.ArmSubsystemGoal;
 import frc.robot.subsystem.arm.ArmGoal.EndEffectorGoal;
 import frc.robot.subsystem.arm.command.SetArmGoalCommand;
 import frc.robot.subsystem.intake.Intake;
+import frc.robot.subsystem.intake.IntakeGoal.IntakeRollerGoal;
 import frc.robot.subsystem.swerve.Swerve;
+import frc.robot.subsystem.swerve.command.ProceedToNet;
 import frc.robot.subsystem.swerve.command.ProceedToProcessor;
+import frc.robot.subsystem.swerve.command.ProceedToReef;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -24,7 +29,7 @@ public class UniversalScoreCommand extends Command {
   private final Swerve swerve;
   private final Arm arm;
   private final Intake intake;
-  private final RobotGoal goal;
+  private final Supplier<RobotGoal> goalSupplier;
 
   @AutoLogOutput(key = "Super/IsLeft")
   private final BooleanSupplier isLeftSupplier;
@@ -35,26 +40,27 @@ public class UniversalScoreCommand extends Command {
       Swerve swerve,
       Arm arm,
       Intake intake,
-      Supplier<RobotGoal> goal,
+      Supplier<RobotGoal> goalSupplier,
       BooleanSupplier isLeftSupplier) {
     this.swerve = swerve;
     this.arm = arm;
     this.intake = intake;
-    this.goal = goal.get();
+    this.goalSupplier = goalSupplier;
     this.isLeftSupplier = isLeftSupplier;
     addRequirements(swerve, arm, intake);
   }
 
-  public UniversalScoreCommand(Swerve swerve, Arm arm, Intake intake, Supplier<RobotGoal> goal) {
+  public UniversalScoreCommand(
+      Swerve swerve, Arm arm, Intake intake, Supplier<RobotGoal> goalSupplier) {
     this(
         swerve,
         arm,
         intake,
-        goal,
+        goalSupplier,
         () -> {
-          if (goal.get().isScoreNet()) {
+          if (goalSupplier.get().isScoreNet()) {
             return Barge.closestRobotSide(RobotState.getOdometry().getEstimatedPose());
-          } else if (goal.get().isScoreProcessor()) {
+          } else if (goalSupplier.get().isScoreProcessor()) {
             return Processor.closestRobotSide(RobotState.getOdometry().getEstimatedPose());
           } else {
             return Reef.closestRobotSide(RobotState.getOdometry().getEstimatedPose());
@@ -64,8 +70,16 @@ public class UniversalScoreCommand extends Command {
 
   @Override
   public void initialize() {
+    var goal = goalSupplier.get();
+    System.out.println("UniversalScoreCommand initialized with goal:");
+    System.out.println(
+        String.format(
+            "%s, %s, %s, %b",
+            goal.getSelectedType().getName(),
+            goal.getSelectedBranch(),
+            goal.getSelectedLevel(),
+            goal.getIgnoreArmMoveCondition()));
     if (goal.getSelectedType() == GamePieceType.ALGAE) {
-      // processor score
       if (goal.getSelectedBranch().equals("P")) {
         setName("Super/Score Processor");
         var goalPose = Processor.getScorePose();
@@ -76,43 +90,113 @@ public class UniversalScoreCommand extends Command {
                 () -> goalPose.getRotation());
         runningCommand =
             Commands.parallel(
-                Commands.either(driveCmd, Commands.none(), () -> !goal.getIgnoreArmMoveCondition()),
-                Commands.sequence(
-                    new SetArmGoalCommand(
-                        arm,
-                        () -> ArmSubsystemGoal.ALGAE_PROCESSOR_SCORE.setIsLeft(isLeftSupplier)),
-                    Commands.waitUntil(() -> arm.stopAtGoal()),
-                    Commands.runOnce(() -> arm.setEeGoal(EndEffectorGoal.ALGAE_SCORE)),
-                    Commands.waitUntil(() -> !arm.hasAlgae()),
-                    Commands.runOnce(() -> arm.setEeGoal(EndEffectorGoal.IDLE))));
+                    Commands.either(
+                        driveCmd, Commands.none(), () -> !goal.getIgnoreArmMoveCondition()),
+                    Commands.sequence(
+                        new SetArmGoalCommand(
+                            arm,
+                            () -> ArmSubsystemGoal.ALGAE_PROCESSOR_SCORE.setIsLeft(isLeftSupplier)),
+                        Commands.waitUntil(() -> arm.stopAtGoal()),
+                        Commands.runOnce(() -> arm.setEeGoal(EndEffectorGoal.ALGAE_SCORE))))
+                .withDeadline(
+                    Commands.waitUntil(() -> !arm.hasAlgae())
+                        .finallyDo(() -> arm.setEeGoal(EndEffectorGoal.IDLE)));
       } else if (goal.getSelectedBranch().equals("N")) {
         setName("Super/Score Net");
         var goalPose = Barge.getAlgaeScoredPose(RobotState.getOdometry().getEstimatedPose());
         var driveCmd =
-            new ProceedToProcessor(
+            new ProceedToNet(
                 swerve,
-                () -> goalPose.plus(isLeftSupplier.getAsBoolean() ? Misc.leftSide : Misc.rightSide),
-                () -> goalPose.getRotation());
+                () ->
+                    goalPose.plus(isLeftSupplier.getAsBoolean() ? Misc.leftSide : Misc.rightSide));
         runningCommand =
             Commands.parallel(
-                Commands.either(driveCmd, Commands.none(), () -> !goal.getIgnoreArmMoveCondition()),
-                Commands.sequence(
+                    Commands.either(
+                        driveCmd, Commands.none(), () -> !goal.getIgnoreArmMoveCondition()),
+                    Commands.sequence(
+                        Commands.waitUntil(
+                            () ->
+                                goal.getIgnoreArmMoveCondition()
+                                    || (driveCmd.hasHeadingAtGoal()
+                                        && driveCmd.hasDistanceWithin(1.2))),
+                        new SetArmGoalCommand(
+                            arm, () -> ArmSubsystemGoal.ALGAE_NET_SCORE.setIsLeft(isLeftSupplier)),
+                        Commands.waitUntil(() -> arm.stopAtGoal()),
+                        Commands.runOnce(() -> arm.setEeGoal(EndEffectorGoal.ALGAE_SCORE))))
+                .withDeadline(
+                    Commands.waitUntil(() -> !arm.hasAlgae())
+                        .finallyDo(() -> arm.setEeGoal(EndEffectorGoal.IDLE)));
+      } else {
+        setName("Super/Collect Algae");
+        var goalPose =
+            AllianceFlipUtil.apply(Reef.ALGAE_COLLECT_POSES.get(goal.getSelectedBranch()));
+        var driveCmd =
+            new ProceedToReef(
+                swerve,
+                () -> goalPose.plus(isLeftSupplier.getAsBoolean() ? Misc.leftSide : Misc.rightSide),
+                () -> goalPose.getRotation(),
+                () -> true);
+        runningCommand =
+            Commands.parallel(
+                    Commands.either(
+                        driveCmd, Commands.none(), () -> !goal.getIgnoreArmMoveCondition()),
+                    Commands.sequence(
+                        Commands.waitUntil(
+                            () ->
+                                goal.getIgnoreArmMoveCondition()
+                                    || (driveCmd.hasHeadingAtGoal()
+                                        && driveCmd.hasDistanceWithin(1.2))),
+                        new SetArmGoalCommand(
+                            arm,
+                            () ->
+                                (goal.isHighPick()
+                                        ? ArmSubsystemGoal.ALGAE_HIGH_PICK
+                                        : ArmSubsystemGoal.ALGAE_LOW_PICK)
+                                    .setIsLeft(isLeftSupplier)),
+                        Commands.waitUntil(() -> arm.stopAtGoal()),
+                        Commands.runOnce(() -> arm.setEeGoal(EndEffectorGoal.ALGAE_COLLECT))))
+                .withDeadline(
+                    Commands.waitUntil(() -> arm.hasAlgae())
+                        .finallyDo(() -> arm.setEeGoal(EndEffectorGoal.IDLE)));
+      }
+    } else if (goal.getSelectedType() == GamePieceType.CORAL) {
+      if (goal.getSelectedLevel().contains("1")) {
+        setName("Super/Trough Score");
+        var goalPose = AllianceFlipUtil.apply(Reef.L1_SCORE_POSES.get(goal.getSelectedBranch()));
+        var driveCmd =
+            new ProceedToReef(
+                swerve,
+                () -> goalPose,
+                () -> goalPose.getRotation().rotateBy(Rotation2d.k180deg),
+                () -> true);
+        runningCommand =
+            Commands.parallel(
+                    Commands.either(
+                        driveCmd, Commands.none(), () -> !goal.getIgnoreArmMoveCondition()),
                     Commands.waitUntil(
                         () ->
                             goal.getIgnoreArmMoveCondition()
                                 || (driveCmd.hasHeadingAtGoal()
                                     && driveCmd.hasDistanceWithin(1.2))),
-                    new SetArmGoalCommand(
-                        arm, () -> ArmSubsystemGoal.ALGAE_NET_SCORE.setIsLeft(isLeftSupplier)),
-                    Commands.waitUntil(() -> arm.stopAtGoal()),
-                    Commands.runOnce(() -> arm.setEeGoal(EndEffectorGoal.ALGAE_SCORE)),
-                    Commands.waitUntil(() -> !arm.hasAlgae()),
-                    Commands.runOnce(() -> arm.setEeGoal(EndEffectorGoal.IDLE))));
+                    intake.trough(),
+                    Commands.waitUntil(() -> intake.isAtSetpoint()),
+                    Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerGoal.TROUGH)))
+                .withDeadline(
+                    Commands.waitUntil(() -> !intake.hasCoral())
+                        .finallyDo(() -> intake.setRollerGoal(IntakeRollerGoal.IDLE)));
       } else {
-      }
-    } else if (goal.getSelectedType() == GamePieceType.CORAL) {
-      if (goal.getSelectedLevel() == "1") {
-      } else {
+        setName("Super/Coral Score");
+        var goalPose = AllianceFlipUtil.apply(Reef.L234_SCORE_POSES.get(goal.getSelectedBranch()));
+        var driveCmd =
+            new ProceedToReef(
+                swerve,
+                () -> goalPose.plus(isLeftSupplier.getAsBoolean() ? Misc.leftSide : Misc.rightSide),
+                () -> goalPose.getRotation(),
+                () -> true);
+        runningCommand =
+            Commands.parallel(
+                Commands.either(
+                    driveCmd, Commands.none(), () -> !goal.getIgnoreArmMoveCondition()));
       }
     } else {
       runningCommand = Commands.none();
