@@ -3,7 +3,7 @@ package frc.robot.command.auto;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.interfaces.ComposedCommands;
 import frc.reefscape.Field;
-import frc.robot.RobotState;
+import frc.robot.RobotContainer;
 import frc.robot.RobotState.RobotGoal;
 import frc.robot.command.PounceCoralCommand;
 import frc.robot.command.UniversalScoreCommand;
@@ -21,27 +21,27 @@ public class LeftStationMode extends ComposedCommands {
     runningCommand =
         Commands.sequence(
             new WaitAllianceConfirmed(),
-            RobotState.getOdometry().resetPoseCommand(() -> Field.LEFT_START_POSE),
+            RobotContainer.getOdometry().resetPoseCommand(() -> Field.LEFT_START_POSE),
             arm.idle(),
             new UniversalScoreCommand(swerve, arm, intake, () -> RobotGoal.scoreCoral("J", "4")),
             Commands.parallel(
                 Commands.waitSeconds(0.4).andThen(arm.idle()),
                 new FollowTrajectory(
-                        swerve, () -> RobotState.getTrajectorySet().j2LeftCoralStation.get())
+                        swerve, () -> RobotContainer.getTrajectorySet().j2LeftCoralStation.get())
                     .withTimeout(1.5)),
             PounceCoralCommand.leftStation(swerve, intake, arm),
             new UniversalScoreCommand(swerve, arm, intake, () -> RobotGoal.scoreCoral("K", "4")),
             Commands.parallel(
                 Commands.waitSeconds(0.4).andThen(arm.idle()),
                 new FollowTrajectory(
-                        swerve, () -> RobotState.getTrajectorySet().k2LeftCoralStation.get())
+                        swerve, () -> RobotContainer.getTrajectorySet().k2LeftCoralStation.get())
                     .withTimeout(1.2)),
             PounceCoralCommand.leftStation(swerve, intake, arm),
             new UniversalScoreCommand(swerve, arm, intake, () -> RobotGoal.scoreCoral("L", "4")),
             Commands.parallel(
                 Commands.waitSeconds(0.4).andThen(arm.idle()),
                 new FollowTrajectory(
-                        swerve, () -> RobotState.getTrajectorySet().l2LeftCoralStation.get())
+                        swerve, () -> RobotContainer.getTrajectorySet().l2LeftCoralStation.get())
                     .withTimeout(1.1)),
             PounceCoralCommand.leftStation(swerve, intake, arm),
             new UniversalScoreCommand(swerve, arm, intake, () -> RobotGoal.scoreCoral("A", "4")));

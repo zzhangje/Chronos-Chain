@@ -4,7 +4,7 @@ import edu.wpi.first.math.geometry.*;
 import frc.lib.dashboard.Alert;
 import frc.lib.interfaces.VirtualSubsystem;
 import frc.lib.math.GeomUtil;
-import frc.robot.RobotState;
+import frc.robot.RobotContainer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.function.Supplier;
@@ -76,7 +76,7 @@ public class ObjectDetectionVision extends VirtualSubsystem {
 
     var resultsCount = inputs.timestamp.length;
     for (int i = 0; i < resultsCount; i++) {
-      var robotInField = RobotState.getOdometry().getEstimatedPose();
+      var robotInField = RobotContainer.getOdometry().getEstimatedPose();
       var allViewedCoralsInField = new ArrayList<Pose2d>();
 
       for (int j = 0; j < inputs.gamePieceObservations[i].length; j++) {
@@ -87,7 +87,7 @@ public class ObjectDetectionVision extends VirtualSubsystem {
         allViewedCoralsInField.add(coralInField);
       }
 
-      RobotState.getCoralTracker()
+      RobotContainer.getCoralTracker()
           .add(allViewedCoralsInField.toArray(Pose2d[]::new), inputs.timestamp[i]);
     }
   }

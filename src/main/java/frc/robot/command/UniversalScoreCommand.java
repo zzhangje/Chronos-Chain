@@ -9,7 +9,7 @@ import frc.reefscape.Field.Processor;
 import frc.reefscape.Field.Reef;
 import frc.reefscape.GamePiece.GamePieceType;
 import frc.robot.Constants.Misc;
-import frc.robot.RobotState;
+import frc.robot.RobotContainer;
 import frc.robot.RobotState.RobotGoal;
 import frc.robot.subsystem.arm.Arm;
 import frc.robot.subsystem.arm.ArmGoal.ArmSubsystemGoal;
@@ -57,11 +57,11 @@ public class UniversalScoreCommand extends ComposedCommands {
         goalSupplier,
         () -> {
           if (goalSupplier.get().isScoreNet()) {
-            return Barge.closestRobotSide(RobotState.getOdometry().getEstimatedPose());
+            return Barge.closestRobotSide(RobotContainer.getOdometry().getEstimatedPose());
           } else if (goalSupplier.get().isScoreProcessor()) {
-            return Processor.closestRobotSide(RobotState.getOdometry().getEstimatedPose());
+            return Processor.closestRobotSide(RobotContainer.getOdometry().getEstimatedPose());
           } else {
-            return Reef.closestRobotSide(RobotState.getOdometry().getEstimatedPose());
+            return Reef.closestRobotSide(RobotContainer.getOdometry().getEstimatedPose());
           }
         });
   }
@@ -103,7 +103,7 @@ public class UniversalScoreCommand extends ComposedCommands {
                         .finallyDo(() -> arm.setEeGoal(EndEffectorGoal.IDLE)));
       } else if (goal.getSelectedBranch().equals("N")) {
         setName("Super/Score Net");
-        var goalPose = Barge.getAlgaeScoredPose(RobotState.getOdometry().getEstimatedPose());
+        var goalPose = Barge.getAlgaeScoredPose(RobotContainer.getOdometry().getEstimatedPose());
         var driveCmd =
             new ProceedToNet(
                 swerve,

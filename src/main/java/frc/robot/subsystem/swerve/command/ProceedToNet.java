@@ -8,7 +8,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.dashboard.LoggedTunableNumber;
 import frc.robot.Constants;
-import frc.robot.RobotState;
+import frc.robot.RobotContainer;
 import frc.robot.subsystem.swerve.Swerve;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -63,7 +63,7 @@ public class ProceedToNet extends Command {
   @Override
   public void execute() {
     var goalPose = goalPoseSupplier.get();
-    var currentPose = RobotState.getOdometry().getEstimatedPose();
+    var currentPose = RobotContainer.getOdometry().getEstimatedPose();
 
     Logger.recordOutput("Swerve/ProceedToNet/GoalPose", goalPose);
 

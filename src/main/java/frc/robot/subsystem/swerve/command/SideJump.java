@@ -10,7 +10,7 @@ import frc.lib.utils.AllianceFlipUtil;
 import frc.reefscape.Field.Barge;
 import frc.robot.Constants;
 import frc.robot.Constants.DebugGroup;
-import frc.robot.RobotState;
+import frc.robot.RobotContainer;
 import frc.robot.subsystem.swerve.Swerve;
 import frc.robot.subsystem.swerve.SwerveConfig;
 import java.util.Comparator;
@@ -38,7 +38,7 @@ public class SideJump extends Command {
 
     public static Cage getTheClosest() {
       var cageList = List.of(LEFT, MID, RIGHT);
-      var currentY = RobotState.getOdometry().getEstimatedPose().getY();
+      var currentY = RobotContainer.getOdometry().getEstimatedPose().getY();
 
       var closest =
           cageList.stream()
@@ -147,7 +147,7 @@ public class SideJump extends Command {
     lastWantRight = wantRightSupplier.getAsBoolean();
     double x = MathUtil.applyDeadband(xSupplier.getAsDouble(), 0.1);
 
-    var currentPose = RobotState.getOdometry().getEstimatedPose();
+    var currentPose = RobotContainer.getOdometry().getEstimatedPose();
     var targetHeading = AllianceFlipUtil.apply(Barge.CLIMBING_HEADING);
     var targetY = cage.getY();
 

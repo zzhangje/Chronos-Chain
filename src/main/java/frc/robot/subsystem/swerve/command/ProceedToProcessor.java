@@ -11,7 +11,7 @@ import frc.lib.dashboard.LoggedTunableNumber;
 import frc.lib.math.GeomUtil;
 import frc.reefscape.Field;
 import frc.robot.Constants;
-import frc.robot.RobotState;
+import frc.robot.RobotContainer;
 import frc.robot.subsystem.swerve.Swerve;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -158,7 +158,7 @@ public class ProceedToProcessor extends Command {
   }
 
   private Pose2d getCurrentPose() {
-    return RobotState.getOdometry().getEstimatedPose();
+    return RobotContainer.getOdometry().getEstimatedPose();
   }
 
   @Override

@@ -21,7 +21,7 @@ import frc.lib.math.EqualsUtil.GeomExtensions;
 import frc.lib.math.GeomUtil;
 import frc.robot.Constants;
 import frc.robot.Constants.Ports;
-import frc.robot.RobotState;
+import frc.robot.RobotContainer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -285,7 +285,7 @@ public class Swerve extends SubsystemBase {
   }
 
   private void updateOdometry() {
-    var odometry = RobotState.getOdometry();
+    var odometry = RobotContainer.getOdometry();
     for (int i = 0; i < swerveOdometryInputs.odometryTimestamps.length; i++) {
       var wheeledObservation =
           new WheeledObservation(

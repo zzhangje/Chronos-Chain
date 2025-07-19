@@ -7,7 +7,7 @@ import frc.lib.interfaces.VirtualSubsystem;
 import frc.lib.utils.AllianceFlipUtil;
 import frc.reefscape.Field;
 import frc.reefscape.GamePiece.GamePieceType;
-import frc.robot.RobotState;
+import frc.robot.RobotContainer;
 import frc.robot.RobotState.RobotGoal;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
@@ -56,7 +56,7 @@ public class NodeSelector extends VirtualSubsystem {
     timePublisher.set((long) Math.ceil(Math.max(0.0, DriverStation.getMatchTime())));
     isAutoPublisher.set(DriverStation.isAutonomous());
 
-    var blueSideRobotPose = AllianceFlipUtil.apply(RobotState.getOdometry().getEstimatedPose());
+    var blueSideRobotPose = AllianceFlipUtil.apply(RobotContainer.getOdometry().getEstimatedPose());
     var fieldCentricReef2Robot = blueSideRobotPose.getTranslation().minus(Field.Reef.CENTER);
     var fieldCentricReef2RobotAngleDegree = fieldCentricReef2Robot.getAngle().getDegrees();
     var reef2RobotDistanceMeter =

@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.dashboard.LoggedTunableNumber;
 import frc.lib.math.GeomUtil;
 import frc.robot.Constants.DebugGroup;
-import frc.robot.RobotState;
+import frc.robot.RobotContainer;
 import frc.robot.subsystem.swerve.Swerve;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,9 +85,9 @@ public class FollowTrajectory extends Command {
         ChassisSpeeds.fromFieldRelativeSpeeds(
             setpoint.vx, setpoint.vy, setpoint.omega, setpoint.getPose().getRotation());
 
-    RobotState.getOdometry().addTrajectoryVel(trajectoryVel.toTwist2d());
+    RobotContainer.getOdometry().addTrajectoryVel(trajectoryVel.toTwist2d());
 
-    var currentPose = RobotState.getOdometry().getEstimatedPose();
+    var currentPose = RobotContainer.getOdometry().getEstimatedPose();
     var setpointPose = setpoint.getPose();
 
     var xFeedback = xController.calculate(currentPose.getX(), setpointPose.getX());

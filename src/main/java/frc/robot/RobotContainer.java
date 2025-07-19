@@ -19,7 +19,10 @@ import frc.lib.service.CommandSelector;
 import frc.lib.service.GamePieceVisualizer;
 import frc.lib.service.Visualizer;
 import frc.lib.utils.AllianceFlipUtil;
+import frc.lib.utils.GamePieceTracker;
 import frc.reefscape.Field;
+import frc.reefscape.GamePiece;
+import frc.reefscape.TrajectorySet;
 import frc.robot.Constants.AscopeAssets;
 import frc.robot.Constants.Misc;
 import frc.robot.Constants.Ports;
@@ -42,8 +45,16 @@ import frc.robot.subsystem.swerve.command.WheelRadiusCharacterization;
 import frc.robot.subsystem.swerve.command.WheelRadiusCharacterization.Direction;
 import frc.robot.subsystem.vision.ApriltagVision;
 import frc.robot.subsystem.vision.ObjectDetectionVision;
+import lombok.Getter;
 
 public class RobotContainer {
+  @Getter
+  private static final GamePieceTracker coralTracker =
+      new GamePieceTracker(GamePiece.GamePieceType.CORAL.getName(), 0.5);
+
+  @Getter private static final Odometry odometry = new Odometry();
+  @Getter private static final TrajectorySet trajectorySet = new TrajectorySet();
+
   // driver
   CommandXboxController driver = new CommandXboxController(Ports.Joystick.DRIVER);
 
@@ -97,10 +108,10 @@ public class RobotContainer {
               (s_armHasCoral ? 1 : 0) + (s_intakeHasCoral ? 1 : 0));
 
       ApriltagVision apriltagVision =
-          ApriltagVision.createSim(() -> RobotState.getOdometry().getEstimatedPose());
+          ApriltagVision.createSim(() -> RobotContainer.getOdometry().getEstimatedPose());
       ObjectDetectionVision objectDetectionVision =
           ObjectDetectionVision.createSim(
-              () -> RobotState.getOdometry().getEstimatedPose(),
+              () -> RobotContainer.getOdometry().getEstimatedPose(),
               () -> coral.getPickableGamePiecePose());
 
       Visualizer visualizer = new Visualizer();
@@ -144,10 +155,12 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(
                     () ->
-                        RobotState.getOdometry()
+                        RobotContainer.getOdometry()
                             .resetPose(
                                 new Pose2d(
-                                    RobotState.getOdometry().getEstimatedPose().getTranslation(),
+                                    RobotContainer.getOdometry()
+                                        .getEstimatedPose()
+                                        .getTranslation(),
                                     AllianceFlipUtil.apply(Rotation2d.kZero))))
                 .ignoringDisable(true));
 
@@ -233,7 +246,7 @@ public class RobotContainer {
         "Wheel Radius Characterization",
         new WheelRadiusCharacterization(
             swerve,
-            () -> RobotState.getOdometry().getEstimatedPose().getRotation(),
+            () -> RobotContainer.getOdometry().getEstimatedPose().getRotation(),
             Direction.CLOCKWISE));
 
     autoCmdSelector.addCommand(
@@ -267,7 +280,7 @@ public class RobotContainer {
                         if (!s_armHasAlgae && !s_armHasCoral) {
                           Boolean ret =
                               coral.tryPick(
-                                  new Pose3d(RobotState.getOdometry().getEstimatedPose())
+                                  new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
                                       .plus(
                                           visualizer
                                               .getComponentTransform(AscopeAssets.ARM)
@@ -291,7 +304,7 @@ public class RobotContainer {
                       if (!s_intakeHasCoral) {
                         Boolean ret =
                             coral.tryPick(
-                                new Pose3d(RobotState.getOdometry().getEstimatedPose())
+                                new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
                                     .plus(
                                         visualizer
                                             .getComponentTransform(AscopeAssets.INTAKE)
@@ -314,7 +327,7 @@ public class RobotContainer {
                       if (s_intakeHasCoral) {
                         Boolean ret =
                             coral.tryScore(
-                                new Pose3d(RobotState.getOdometry().getEstimatedPose())
+                                new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
                                     .plus(
                                         visualizer
                                             .getComponentTransform(AscopeAssets.INTAKE)
@@ -322,7 +335,7 @@ public class RobotContainer {
                         if (ret) {
                           s_intakeHasCoral = false;
                         } else if (coral.tryEject(
-                            new Pose3d(RobotState.getOdometry().getEstimatedPose())
+                            new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
                                 .plus(
                                     visualizer
                                         .getComponentTransform(AscopeAssets.INTAKE)
@@ -345,7 +358,7 @@ public class RobotContainer {
                       if (s_armHasAlgae) {
                         Boolean ret =
                             algae.tryScore(
-                                new Pose3d(RobotState.getOdometry().getEstimatedPose())
+                                new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
                                     .plus(
                                         visualizer
                                             .getComponentTransform(AscopeAssets.ARM)
@@ -354,7 +367,7 @@ public class RobotContainer {
                           s_armHasAlgae = false;
                         } else {
                           if (algae.tryEject(
-                              new Pose3d(RobotState.getOdometry().getEstimatedPose())
+                              new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
                                   .plus(
                                       visualizer
                                           .getComponentTransform(AscopeAssets.ARM)
@@ -366,7 +379,7 @@ public class RobotContainer {
                       if (s_armHasCoral) {
                         Boolean ret =
                             coral.tryScore(
-                                new Pose3d(RobotState.getOdometry().getEstimatedPose())
+                                new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
                                     .plus(
                                         visualizer
                                             .getComponentTransform(AscopeAssets.ARM)
@@ -375,7 +388,7 @@ public class RobotContainer {
                           s_armHasCoral = false;
                         } else {
                           if (coral.tryEject(
-                              new Pose3d(RobotState.getOdometry().getEstimatedPose())
+                              new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
                                   .plus(
                                       visualizer
                                           .getComponentTransform(AscopeAssets.ARM)
@@ -395,7 +408,7 @@ public class RobotContainer {
                       if (!s_armHasAlgae && !s_armHasCoral) {
                         Boolean ret =
                             algae.tryPick(
-                                new Pose3d(RobotState.getOdometry().getEstimatedPose())
+                                new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
                                     .plus(
                                         visualizer
                                             .getComponentTransform(AscopeAssets.INTAKE)

@@ -9,7 +9,7 @@ import frc.lib.dashboard.Alert;
 import frc.lib.interfaces.VirtualSubsystem;
 import frc.lib.math.GeomUtil;
 import frc.reefscape.Field;
-import frc.robot.RobotState;
+import frc.robot.RobotContainer;
 import java.util.*;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
@@ -280,7 +280,7 @@ public class ApriltagVision extends VirtualSubsystem {
       return;
     }
 
-    final var odometry = RobotState.getOdometry();
+    final var odometry = RobotContainer.getOdometry();
     final var wheeledPose = odometry.getWheeledPose();
     final var estimatedPose = odometry.getEstimatedPose();
 

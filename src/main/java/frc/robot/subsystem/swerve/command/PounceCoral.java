@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.dashboard.LoggedTunableNumber;
 import frc.lib.utils.GamePieceTracker;
 import frc.robot.Constants.DebugGroup;
-import frc.robot.RobotState;
+import frc.robot.RobotContainer;
 import frc.robot.subsystem.swerve.Swerve;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -46,7 +46,7 @@ public class PounceCoral extends Command {
   private final Swerve swerve;
 
   public PounceCoral(Supplier<Translation2d[]> searchdAreaVerticesSupplier, Swerve swerve) {
-    this.gamePieceTracker = RobotState.getCoralTracker();
+    this.gamePieceTracker = RobotContainer.getCoralTracker();
     this.searchdAreaVerticesSupplier = searchdAreaVerticesSupplier;
     this.swerve = swerve;
 
@@ -72,7 +72,7 @@ public class PounceCoral extends Command {
 
     var goalCoralPose =
         gamePieceTracker.getBest(
-            RobotState.getOdometry().getEstimatedPose(), searchdAreaVerticesSupplier.get());
+            RobotContainer.getOdometry().getEstimatedPose(), searchdAreaVerticesSupplier.get());
 
     if (goalCoralPose.isEmpty()) {
       swerve.stop();
@@ -81,7 +81,7 @@ public class PounceCoral extends Command {
 
     var goalCoralPosition = goalCoralPose.get().getTranslation();
 
-    var currentPose = RobotState.getOdometry().getEstimatedPose();
+    var currentPose = RobotContainer.getOdometry().getEstimatedPose();
     var effectiveDistance =
         currentPose.getTranslation().getDistance(goalCoralPosition)
             - minTranslationKeepingDistanceMeter.get();
@@ -125,13 +125,13 @@ public class PounceCoral extends Command {
   public boolean isFinished() {
     var goalCoralPose =
         gamePieceTracker.getBest(
-            RobotState.getOdometry().getEstimatedPose(), searchdAreaVerticesSupplier.get());
+            RobotContainer.getOdometry().getEstimatedPose(), searchdAreaVerticesSupplier.get());
     if (goalCoralPose.isEmpty()) {
       return true;
     }
 
     var goalCoralPosition = goalCoralPose.get().getTranslation();
-    var currentPose = RobotState.getOdometry().getEstimatedPose();
+    var currentPose = RobotContainer.getOdometry().getEstimatedPose();
     var effectiveDistance =
         currentPose.getTranslation().getDistance(goalCoralPosition)
             - minTranslationKeepingDistanceMeter.get();

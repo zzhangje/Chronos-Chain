@@ -1,22 +1,11 @@
 package frc.robot;
 
-import frc.lib.utils.GamePieceTracker;
-import frc.reefscape.GamePiece;
 import frc.reefscape.GamePiece.GamePieceType;
-import frc.reefscape.TrajectorySet;
 import lombok.Getter;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 public class RobotState {
-  @Getter
-  private static final GamePieceTracker coralTracker =
-      new GamePieceTracker(GamePiece.GamePieceType.CORAL.getName(), 0.5);
-
-  @Getter private static final Odometry odometry = new Odometry();
-
-  @Getter private static final TrajectorySet trajectorySet = new TrajectorySet();
-
   public static class RobotGoal implements LoggableInputs {
     @Getter private GamePieceType selectedType;
     @Getter private String selectedBranch;

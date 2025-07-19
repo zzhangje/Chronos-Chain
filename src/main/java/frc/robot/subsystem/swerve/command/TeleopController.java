@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.dashboard.LoggedTunableNumber;
 import frc.lib.math.EqualsUtil;
 import frc.robot.Constants;
-import frc.robot.RobotState;
+import frc.robot.RobotContainer;
 import frc.robot.subsystem.swerve.Swerve;
 import frc.robot.subsystem.swerve.SwerveConfig;
 import java.util.function.Supplier;
@@ -103,8 +103,8 @@ public class TeleopController extends Command {
     headingMaintainer.setPID(headingMaintainerKp.get(), 0.0, headingMaintainerKd.get());
     headingMaintainer.setTolerance(Units.degreesToRadians(headingMaintainerToleranceDegree.get()));
 
-    var yawVelRadPerSec = RobotState.getOdometry().getRobotCentricVel().dtheta;
-    var yawRad = RobotState.getOdometry().getEstimatedPose().getRotation().getRadians();
+    var yawVelRadPerSec = RobotContainer.getOdometry().getRobotCentricVel().dtheta;
+    var yawRad = RobotContainer.getOdometry().getEstimatedPose().getRotation().getRadians();
 
     boolean wantEscape = wantEscapeSupplier.get();
     if (!wantEscape
@@ -146,7 +146,7 @@ public class TeleopController extends Command {
             translation.getX() * SwerveConfig.MAX_TRANSLATION_VEL_METER_PER_SEC,
             translation.getY() * SwerveConfig.MAX_TRANSLATION_VEL_METER_PER_SEC,
             rotation * SwerveConfig.MAX_ANGULAR_VEL_RAD_PER_SEC + headingMaintainerOutput,
-            RobotState.getOdometry().getEstimatedPose().getRotation());
+            RobotContainer.getOdometry().getEstimatedPose().getRotation());
 
     swerve.setGoalVel(speeds);
   }
@@ -183,7 +183,7 @@ public class TeleopController extends Command {
   }
 
   public void resetHeadingMaintainerSetpointToCurrent() {
-    var yawRad = RobotState.getOdometry().getEstimatedPose().getRotation().getRadians();
+    var yawRad = RobotContainer.getOdometry().getEstimatedPose().getRotation().getRadians();
     headingMaintainer.setSetpoint(yawRad);
   }
 }
