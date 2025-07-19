@@ -172,11 +172,10 @@ public class Arm extends SubsystemBase {
   }
 
   public void setArmGoal(ArmSubsystemGoal goal) {
-    System.out.println("Setting arm goal: " + goal + (goal.getIsLeft() ? " (left)" : " (right)"));
     this.armGoal = goal;
 
-    // setElbowPosition(goal.getElbowPositionRad());
-    // setShoulderPosition(goal.getShoulderHeightMeter());
+    setElbowPosition(goal.getElbowPositionRad());
+    setShoulderPosition(goal.getShoulderHeightMeter());
   }
 
   public void setShoulderCurrent(double currentAmp) {
@@ -184,7 +183,6 @@ public class Arm extends SubsystemBase {
   }
 
   public void setShoulderPosition(double positionMeter) {
-    System.out.println("Setting shoulder position: " + positionMeter);
     shoulderIO.setPosition(
         positionMeter,
         ArmConfig.shoulderMotionMagicVelMeterPerSec.get(),
@@ -193,7 +191,6 @@ public class Arm extends SubsystemBase {
   }
 
   public void setElbowPosition(double positionRad) {
-    System.out.println("Setting elbow position: " + Units.radiansToDegrees(positionRad));
     elbowIO.setPosition(
         positionRad,
         Units.degreesToRadians(ArmConfig.elbowMotionMagicVelDegreePerSec.get()),
@@ -321,34 +318,9 @@ public class Arm extends SubsystemBase {
     return shoulderAtPosition(armGoal.getShoulderHeightMeter());
   }
 
-  @AutoLogOutput(key = "Arm/Shoulder/TargetHeightMeter")
-  private double getShoulderTargetHeightMeter() {
-    return armGoal.getShoulderHeightMeter();
-  }
-
-  @AutoLogOutput(key = "Arm/Shoulder/CurrentHeightMeter")
-  private double getShoulderCurrentHeightMeter() {
-    return shoulderInputs.positionMeter;
-  }
-
   @AutoLogOutput
   public boolean elbowAtGoal() {
     return elbowAtPosition(armGoal.getElbowPositionRad());
-  }
-
-  @AutoLogOutput(key = "Arm/Elbow/TargetPositionRad")
-  private double getElbowTargetPositionRad() {
-    return armGoal.getElbowPositionRad();
-  }
-
-  @AutoLogOutput(key = "Arm/Elbow/TargetPositionDegree")
-  private double getElbowTargetPositionDegree() {
-    return Units.radiansToDegrees(armGoal.getElbowPositionRad());
-  }
-
-  @AutoLogOutput(key = "Arm/Elbow/CurrentPositionDegree")
-  private double getElbowCurrentPositionDegree() {
-    return Units.radiansToDegrees(elbowInputs.positionRad);
   }
 
   public boolean shoulderAtPosition(double positionMeter) {

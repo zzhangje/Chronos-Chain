@@ -62,53 +62,49 @@ public class GenericArmIOSim implements GenericArmIO {
 
   @Override
   public void setPosition(double positionRad, double feedforward) {
-    needResetProfile = true;
-    setVoltage(pid.calculate(sim.getAngleRads(), positionRad + offset));
+    sim.setState(positionRad, 0.0);
+    // needResetProfile = true;
+    // setVoltage(pid.calculate(sim.getAngleRads(), positionRad + offset));
   }
 
   @Override
   public void setPosition(
       double positionRad, double velRadPerSec, double accelRadPerSec2, double feedforward) {
+    sim.setState(positionRad, 0.0);
+    // setPosition(positionRad, feedforward);
 
-    needResetProfile = true;
-    setVoltage(pid.calculate(sim.getAngleRads(), positionRad + offset));
-    //    needResetProfile = lastGoalPositionRad != positionRad;
-    //
-    //    if (!hasProfileInit) {
-    //      profile =
-    //          new TrapezoidProfile(new TrapezoidProfile.Constraints(velRadPerSec,
-    // accelRadPerSec2));
-    //      lastSetpoint = new TrapezoidProfile.State(sim.getAngleRads(),
-    // sim.getVelocityRadPerSec());
-    //      lastGoalPositionRad = positionRad;
-    //
-    //      hasProfileInit = true;
-    //
-    //      return;
-    //    } else if (needResetProfile) {
-    //      profile =
-    //          new TrapezoidProfile(new TrapezoidProfile.Constraints(velRadPerSec,
-    // accelRadPerSec2));
-    //      lastSetpoint = new TrapezoidProfile.State(sim.getAngleRads(),
-    // sim.getVelocityRadPerSec());
-    //      lastGoalPositionRad = positionRad;
-    //    }
-    //
-    //    var setpoint =
-    //        profile.calculate(
-    //            Constants.LOOP_PERIOD_SEC, lastSetpoint, new TrapezoidProfile.State(positionRad,
+    // needResetProfile = lastGoalPositionRad != positionRad;
+
+    // if (!hasProfileInit) {
+    //   profile =
+    //       new TrapezoidProfile(new TrapezoidProfile.Constraints(velRadPerSec, accelRadPerSec2));
+    //   lastSetpoint = new TrapezoidProfile.State(sim.getAngleRads(), sim.getVelocityRadPerSec());
+    //   lastGoalPositionRad = positionRad;
+
+    //   hasProfileInit = true;
+
+    //   return;
+    // } else if (needResetProfile) {
+    //   profile =
+    //       new TrapezoidProfile(new TrapezoidProfile.Constraints(velRadPerSec, accelRadPerSec2));
+    //   lastSetpoint = new TrapezoidProfile.State(sim.getAngleRads(), sim.getVelocityRadPerSec());
+    //   lastGoalPositionRad = positionRad;
+    // }
+
+    // var setpoint =
+    //     profile.calculate(
+    //         Constants.LOOP_PERIOD_SEC, lastSetpoint, new TrapezoidProfile.State(positionRad,
     // 0.0));
-    //
-    //    if (EqualsUtil.epsilonEquals(sim.getAngleRads(), positionRad,
-    // Units.degreesToRadians(3.0))) {
-    //      setpoint = new TrapezoidProfile.State(positionRad, 0.0);
-    //      setVoltage(0.0);
-    //    } else {
-    //      setVoltage(pid.calculate(sim.getAngleRads(), setpoint.position));
-    //    }
-    //
-    //    lastGoalPositionRad = positionRad;
-    //    lastSetpoint = setpoint;
+
+    // if (EqualsUtil.epsilonEquals(sim.getAngleRads(), positionRad, Units.degreesToRadians(3.0))) {
+    //   setpoint = new TrapezoidProfile.State(positionRad, 0.0);
+    //   setVoltage(0.0);
+    // } else {
+    //   setVoltage(pid.calculate(sim.getAngleRads(), setpoint.position));
+    // }
+
+    // lastGoalPositionRad = positionRad;
+    // lastSetpoint = setpoint;
   }
 
   @Override

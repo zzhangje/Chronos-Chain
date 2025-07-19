@@ -25,6 +25,11 @@ public class SetArmGoalCommand extends Command {
   @Override
   public void initialize() {
     var goal = goalSupplier.get();
+    var waitCommand =
+        new WaitUntilCommand(
+            () ->
+                (needStopSupplier.getAsBoolean() && arm.stopAtGoal())
+                    || (!needStopSupplier.getAsBoolean() && arm.atGoal()));
     // if (EqualsUtil.epsilonEquals(goal.getShoulderHeightMeter(),
     // ArmSubsystemGoal.HOME.getShoulderHeightMeter())
     // && EqualsUtil.epsilonEquals(goal.getElbowPositionRad(),
@@ -35,13 +40,7 @@ public class SetArmGoalCommand extends Command {
     //   runningCommand = new TransitionCommand(arm, goalSupplier).andThen(new
     // WaitUntilCommand(arm::stopAtGoal));
     // } else {
-    runningCommand =
-        Commands.runOnce(() -> arm.setArmGoal(goal))
-            .andThen(
-                new WaitUntilCommand(
-                    () ->
-                        (needStopSupplier.getAsBoolean() && arm.stopAtGoal())
-                            || (!needStopSupplier.getAsBoolean() && arm.atGoal())));
+    runningCommand = Commands.runOnce(() -> arm.setArmGoal(goal)).andThen(waitCommand);
     // }
     runningCommand.initialize();
   }

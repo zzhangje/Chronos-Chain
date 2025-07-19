@@ -164,7 +164,7 @@ public class RobotContainer {
         .onTrue(
             Commands.parallel(
                 arm.idleCommand(),
-                intake.trough(),
+                intake.idle(),
                 Commands.runOnce(
                     () -> {
                       Command current = swerve.getCurrentCommand();
@@ -177,6 +177,8 @@ public class RobotContainer {
         .y()
         .and(() -> !g_isClimbing)
         .onTrue(new UniversalScoreCommand(swerve, arm, intake, nodeSelector::getSelectedNode));
+
+    driver.leftBumper().onTrue(intake.inject()).onFalse(intake.idle());
   }
 
   private void configureAuto() {

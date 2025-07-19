@@ -180,7 +180,7 @@ public class UniversalScoreCommand extends Command {
                             goal.getIgnoreArmMoveCondition()
                                 || (driveCmd.hasHeadingAtGoal()
                                     && driveCmd.hasDistanceWithin(1.2))),
-                    intake.trough(),
+                    intake.idle(),
                     Commands.waitUntil(() -> intake.isAtSetpoint()),
                     Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerGoal.TROUGH)))
                 .withDeadline(
@@ -215,21 +215,21 @@ public class UniversalScoreCommand extends Command {
                                       default -> ArmSubsystemGoal.IDLE;
                                     })
                                     .setIsLeft(isLeftSupplier),
-                            () -> false)),
-                    Commands.parallel(
-                        Commands.runOnce(() -> arm.setEeGoal(EndEffectorGoal.CORAL_SCORE)),
-                        new SetArmGoalCommand(
-                            arm,
-                            () ->
-                                (switch (goal.getSelectedLevel()) {
-                                      case "2" -> ArmSubsystemGoal.CORAL_L2_PRESCORE;
-                                      case "3" -> ArmSubsystemGoal.CORAL_L3_PRESCORE;
-                                      case "4" -> ArmSubsystemGoal.CORAL_L4_PRESCORE;
-                                      default -> ArmSubsystemGoal.IDLE;
-                                    })
-                                    .setIsLeft(isLeftSupplier),
                             () -> false),
-                        Commands.waitUntil(() -> !arm.hasCoral())))
+                        Commands.parallel(
+                            Commands.runOnce(() -> arm.setEeGoal(EndEffectorGoal.CORAL_SCORE)),
+                            new SetArmGoalCommand(
+                                arm,
+                                () ->
+                                    (switch (goal.getSelectedLevel()) {
+                                          case "2" -> ArmSubsystemGoal.CORAL_L2_PRESCORE;
+                                          case "3" -> ArmSubsystemGoal.CORAL_L3_PRESCORE;
+                                          case "4" -> ArmSubsystemGoal.CORAL_L4_PRESCORE;
+                                          default -> ArmSubsystemGoal.IDLE;
+                                        })
+                                        .setIsLeft(isLeftSupplier),
+                                () -> false),
+                            Commands.waitUntil(() -> !arm.hasCoral()))))
                 .withDeadline(
                     Commands.waitUntil(() -> !arm.hasCoral()).andThen(Commands.waitSeconds(0.1)))
                 .finallyDo(() -> arm.setEeGoal(EndEffectorGoal.IDLE));

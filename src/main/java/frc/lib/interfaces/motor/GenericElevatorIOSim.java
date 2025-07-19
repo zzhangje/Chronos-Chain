@@ -6,7 +6,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import frc.lib.math.EqualsUtil;
 import frc.robot.Constants;
 
 public class GenericElevatorIOSim implements GenericElevatorIO {
@@ -62,48 +61,52 @@ public class GenericElevatorIOSim implements GenericElevatorIO {
 
   @Override
   public void setPosition(double positionMeter, double feedforward) {
-    needResetProfile = true;
-    setVoltage(pid.calculate(sim.getPositionMeters(), positionMeter));
+    // needResetProfile = true;
+    // setVoltage(pid.calculate(sim.getPositionMeters(), positionMeter));
+    sim.setState(positionMeter, 0.0);
   }
 
   @Override
   public void setPosition(
       double positionMeter, double velMeterPerSec, double accelMeterPerSec2, double feedforward) {
-    needResetProfile = lastGoalPositionMeter != positionMeter;
+    sim.setState(positionMeter, 0.0);
+    // needResetProfile = lastGoalPositionMeter != positionMeter;
 
-    if (!hasProfileInit) {
-      profile =
-          new TrapezoidProfile(new TrapezoidProfile.Constraints(velMeterPerSec, accelMeterPerSec2));
-      lastSetpoint =
-          new TrapezoidProfile.State(sim.getPositionMeters(), sim.getVelocityMetersPerSecond());
-      lastGoalPositionMeter = positionMeter;
+    // if (!hasProfileInit) {
+    //   profile =
+    //       new TrapezoidProfile(new TrapezoidProfile.Constraints(velMeterPerSec,
+    // accelMeterPerSec2));
+    //   lastSetpoint =
+    //       new TrapezoidProfile.State(sim.getPositionMeters(), sim.getVelocityMetersPerSecond());
+    //   lastGoalPositionMeter = positionMeter;
 
-      hasProfileInit = true;
+    //   hasProfileInit = true;
 
-      return;
-    } else if (needResetProfile) {
-      profile =
-          new TrapezoidProfile(new TrapezoidProfile.Constraints(velMeterPerSec, accelMeterPerSec2));
-      lastSetpoint =
-          new TrapezoidProfile.State(sim.getPositionMeters(), sim.getVelocityMetersPerSecond());
-      lastGoalPositionMeter = positionMeter;
-    }
+    //   return;
+    // } else if (needResetProfile) {
+    //   profile =
+    //       new TrapezoidProfile(new TrapezoidProfile.Constraints(velMeterPerSec,
+    // accelMeterPerSec2));
+    //   lastSetpoint =
+    //       new TrapezoidProfile.State(sim.getPositionMeters(), sim.getVelocityMetersPerSecond());
+    //   lastGoalPositionMeter = positionMeter;
+    // }
 
-    var setpoint =
-        profile.calculate(
-            Constants.LOOP_PERIOD_SEC,
-            lastSetpoint,
-            new TrapezoidProfile.State(positionMeter, 0.0));
+    // var setpoint =
+    //     profile.calculate(
+    //         Constants.LOOP_PERIOD_SEC,
+    //         lastSetpoint,
+    //         new TrapezoidProfile.State(positionMeter, 0.0));
 
-    if (EqualsUtil.epsilonEquals(sim.getPositionMeters(), positionMeter, 0.03)) {
-      setpoint = new TrapezoidProfile.State(positionMeter, 0.0);
-      setVoltage(0.0);
-    } else {
-      setVoltage(pid.calculate(sim.getPositionMeters(), setpoint.position));
-    }
+    // if (EqualsUtil.epsilonEquals(sim.getPositionMeters(), positionMeter, 0.03)) {
+    //   setpoint = new TrapezoidProfile.State(positionMeter, 0.0);
+    //   setVoltage(0.0);
+    // } else {
+    //   setVoltage(pid.calculate(sim.getPositionMeters(), setpoint.position));
+    // }
 
-    lastGoalPositionMeter = positionMeter;
-    lastSetpoint = setpoint;
+    // lastGoalPositionMeter = positionMeter;
+    // lastSetpoint = setpoint;
   }
 
   public void setVoltage(double voltageVolt) {

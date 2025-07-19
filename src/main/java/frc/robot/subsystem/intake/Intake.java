@@ -141,7 +141,7 @@ public class Intake extends SubsystemBase {
   public Command idle() {
     return Commands.runOnce(
             () -> {
-              setPivotGoal(IntakePivotGoal.IDLE);
+              setPivotGoal(IntakePivotGoal.TROUGH);
               setRollerGoal(IntakeRollerGoal.IDLE);
             })
         .withName("[Intake] Idle");
