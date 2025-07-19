@@ -75,12 +75,19 @@ public class TransitionCommand extends Command {
       return !needsShoulderFall(currentGoal, targetGoal);
     }
 
-    // FIXME: handle mirror case for elbow
-    return RotationUtil.isRotationEnterSpecificAngleArea(
-        currentGoal.getElbowPositionRad(),
-        targetGoal.getElbowPositionRad(),
-        Units.degreesToRadians(-180.0),
-        Units.degreesToRadians(-60.0));
+    if (targetGoal.getIsLeft()) {
+      return RotationUtil.isRotationEnterSpecificAngleArea(
+          currentGoal.getElbowPositionRad(),
+          targetGoal.getElbowPositionRad(),
+          Units.degreesToRadians(-180.0),
+          Units.degreesToRadians(-60.0));
+    } else {
+      return RotationUtil.isRotationEnterSpecificAngleArea(
+          currentGoal.getElbowPositionRad(),
+          targetGoal.getElbowPositionRad(),
+          Units.degreesToRadians(-120.0),
+          Units.degreesToRadians(0.0));
+    }
   }
 
   public static boolean needsShoulderFall(
