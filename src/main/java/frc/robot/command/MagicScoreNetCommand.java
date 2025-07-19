@@ -1,5 +1,6 @@
 package frc.robot.command;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.interfaces.ComposedCommands;
 import frc.reefscape.Field.Barge;
@@ -13,15 +14,31 @@ import frc.robot.subsystem.swerve.Swerve;
 import frc.robot.subsystem.swerve.command.ProceedToNet;
 import java.util.function.DoubleSupplier;
 
-class MagicNetScoreCommand extends ComposedCommands {
-  // This command is a placeholder for the MagicNetScoreCommand.
-  // It should be implemented with the actual logic for scoring in the Magic Net.
+public class MagicScoreNetCommand extends ComposedCommands {
+  private final Swerve swerve;
+  private final Arm arm;
+  private final DoubleSupplier scoreDistanceSupplier;
 
-  public MagicNetScoreCommand(Swerve swerve, Arm arm, DoubleSupplier scoreDistanceSupplier) {
+  public MagicScoreNetCommand(Swerve swerve, Arm arm, DoubleSupplier scoreDistanceSupplier) {
     setName("Super/Magic Net Score");
-    addRequirements(getRequirements());
+    addRequirements(swerve, arm);
 
-    var goalPose = Barge.getAlgaeScoredPose(RobotContainer.getOdometry().getEstimatedPose());
+    this.swerve = swerve;
+    this.arm = arm;
+    this.scoreDistanceSupplier = scoreDistanceSupplier;
+  }
+
+  @Override
+  public void initialize() {
+
+    var currentPose = RobotContainer.getOdometry().getEstimatedPose();
+    var goalPose =
+        Barge.getAlgaeScoredPose(
+            new Pose2d(
+                currentPose.getX(),
+                scoreDistanceSupplier.getAsDouble(),
+                currentPose.getRotation()));
+    System.out.println("MagicScoreNetCommand: goalPose = " + goalPose);
     var isLeft = Barge.closestRobotSide(RobotContainer.getOdometry().getEstimatedPose());
     var driveCmd =
         new ProceedToNet(swerve, () -> goalPose.plus(isLeft ? Misc.leftSide : Misc.rightSide));
@@ -40,5 +57,6 @@ class MagicNetScoreCommand extends ComposedCommands {
             .withDeadline(
                 Commands.waitUntil(() -> !arm.hasAlgae() || arm.hasCoral())
                     .finallyDo(() -> arm.setEeGoal(EndEffectorGoal.IDLE)));
+    runningCommand.initialize();
   }
 }

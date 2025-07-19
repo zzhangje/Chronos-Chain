@@ -156,20 +156,6 @@ public final class Field {
         }
       }
     }
-
-    public static Pose2d getAlgaeScoredPose(double dist) {
-      if (AllianceFlipUtil.shouldFlip()) {
-        return new Pose2d(
-            AllianceFlipUtil.mirrorX(BARGE_SCORE_X),
-            Math.min(dist, Field.WIDTH / 2 - 0.4),
-            BARGE_SCORE_HEADING.plus(Rotation2d.k180deg));
-      } else {
-        return new Pose2d(
-            BARGE_SCORE_X,
-            AllianceFlipUtil.mirrorY(Math.min(dist, Field.WIDTH / 2 - 0.4)),
-            BARGE_SCORE_HEADING.plus(Rotation2d.k180deg));
-      }
-    }
   }
 
   public static class Reef {

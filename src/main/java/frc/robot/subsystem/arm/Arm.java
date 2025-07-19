@@ -161,6 +161,15 @@ public class Arm extends SubsystemBase {
         .withName("Arm/Idle");
   }
 
+  public Command algaeIdle() {
+    return runOnce(
+            () -> {
+              setArmGoal(ArmSubsystemGoal.ALGAE_IDLE);
+              setEeGoal(EndEffectorGoal.HOLDING);
+            })
+        .withName("Arm/AlgaeIdle");
+  }
+
   public Command stop() {
     return runOnce(
             () -> {

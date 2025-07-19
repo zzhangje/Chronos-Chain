@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -29,6 +30,7 @@ import frc.robot.Constants.Misc;
 import frc.robot.Constants.Ports;
 import frc.robot.command.UniversalScoreCommand;
 import frc.robot.command.auto.LeftStationMode;
+import frc.robot.command.auto.MidNetMode;
 import frc.robot.command.auto.RightStationMode;
 import frc.robot.command.general.KsCharacterization;
 import frc.robot.subsystem.arm.Arm;
@@ -138,7 +140,23 @@ public class RobotContainer {
     System.out.println("##########################################");
   }
 
+  private Command joystickRumblerCommand(
+      CommandXboxController controller, double timeoutSecs, RumbleType rumbleType) {
+    return Commands.startEnd(
+            () -> controller.getHID().setRumble(rumbleType, 1.0),
+            () -> controller.getHID().setRumble(rumbleType, 0.0))
+        .withTimeout(timeoutSecs)
+        .withName("Joystick Rumbler");
+  }
+
   private void configureBindings() {
+    new Trigger(intake::hasCoral)
+        .onChange(joystickRumblerCommand(driver, 0.3, RumbleType.kLeftRumble));
+    new Trigger(arm::hasCoral)
+        .onChange(joystickRumblerCommand(driver, 0.3, RumbleType.kLeftRumble));
+    new Trigger(arm::hasAlgae)
+        .onChange(joystickRumblerCommand(driver, 0.3, RumbleType.kRightRumble));
+        
     var teleopDrive =
         new TeleopController(
             swerve,
@@ -236,6 +254,16 @@ public class RobotContainer {
                 .withName("Super/Force Idle"));
 
     driver.leftBumper().onTrue(intake.inject()).onFalse(intake.idle());
+
+    driver
+        .leftTrigger()
+        .whileTrue(Commands.runOnce(() -> arm.setEeGoal(EndEffectorGoal.EJECT)))
+        .onFalse(Commands.runOnce(() -> arm.setEeGoal(EndEffectorGoal.IDLE)));
+
+    driver
+        .rightTrigger()
+        .whileTrue(Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerGoal.EJECT)))
+        .onFalse(Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerGoal.IDLE)));
   }
 
   private void configureAuto() {
@@ -260,6 +288,8 @@ public class RobotContainer {
     autoCmdSelector.addCommand("Left Station Mode", new LeftStationMode(swerve, arm, intake));
 
     autoCmdSelector.addCommand("Right Station Mode", new RightStationMode(swerve, arm, intake));
+
+    autoCmdSelector.addCommand("Mid Net Mode", new MidNetMode(swerve, arm, intake));
   }
 
   private void configureSimulation(
@@ -414,7 +444,7 @@ public class RobotContainer {
                                 new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
                                     .plus(
                                         visualizer
-                                            .getComponentTransform(AscopeAssets.INTAKE)
+                                            .getComponentTransform(AscopeAssets.ARM)
                                             .plus(Misc.ee_T_algae)));
                         if (ret) {
                           s_armHasAlgae = true;
