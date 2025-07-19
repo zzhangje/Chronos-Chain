@@ -154,7 +154,7 @@ public class ProceedToReef extends Command {
   @Override
   public void end(boolean interrupted) {
     // Stop the swerve when command ends
-    swerve.setGoalVel(new ChassisSpeeds());
+    swerve.stop();
   }
 
   private Pose2d getCurrentPose() {

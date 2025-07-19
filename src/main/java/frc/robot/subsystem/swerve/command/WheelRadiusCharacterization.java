@@ -97,7 +97,7 @@ public class WheelRadiusCharacterization extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    swerve.setGoalVel(new ChassisSpeeds());
+    swerve.stop();
 
     if (sumGyroYawRads <= Math.PI * 2.0) {
       System.out.println("No enough data for characterization");

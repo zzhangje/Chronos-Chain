@@ -168,7 +168,7 @@ public class ProceedToProcessor extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    swerve.setGoalVel(new ChassisSpeeds());
+    swerve.stop();
   }
 
   public boolean hasHeadingAtGoal() {

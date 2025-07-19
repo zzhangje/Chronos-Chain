@@ -170,7 +170,7 @@ public class TeleopController extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    swerve.setGoalVel(new ChassisSpeeds());
+    swerve.stop();
   }
 
   public void disableHeadingMaintainer() {

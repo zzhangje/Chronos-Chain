@@ -113,6 +113,24 @@ public class Swerve extends SubsystemBase {
     setGoalVel(tarGoalVel, true);
   }
 
+  public void stop() {
+    // Stop all modules
+    for (var module : modules) {
+      module.stop();
+    }
+
+    // Reset last goal states
+    lastGoalModuleStates =
+        new SwerveModuleState[] {
+          new SwerveModuleState(),
+          new SwerveModuleState(),
+          new SwerveModuleState(),
+          new SwerveModuleState(),
+        };
+
+    Logger.recordOutput("Swerve/SwerveStates/GoalModuleStates", lastGoalModuleStates);
+  }
+
   /**
    * Set the goal velocity of the swerve drive.
    *

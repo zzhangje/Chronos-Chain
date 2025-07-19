@@ -109,7 +109,7 @@ public class ProceedToNet extends Command {
 
       swerve.setGoalVel(chassisSpeeds);
     } else {
-      swerve.setGoalVel(new ChassisSpeeds());
+      swerve.stop();
     }
   }
 
@@ -120,7 +120,7 @@ public class ProceedToNet extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    swerve.setGoalVel(new ChassisSpeeds());
+    swerve.stop();
   }
 
   public boolean hasHeadingAtGoal() {
