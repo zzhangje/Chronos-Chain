@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.dashboard.LoggedTunableNumber;
 import frc.robot.Constants.DebugGroup;
 import frc.robot.subsystem.arm.Arm;
+import frc.robot.subsystem.arm.ArmGoal.ArmSubsystemGoal;
 
 public class HomeCommand extends Command {
   private final Arm arm;
@@ -24,5 +25,42 @@ public class HomeCommand extends Command {
     this.arm = arm;
     this.debouncer = new Debouncer(shoulderHomingTimeSecs.get());
     addRequirements(arm);
+  }
+
+  @Override
+  public void initialize() {
+    arm.setArmGoal(ArmSubsystemGoal.HOME);
+    timer.start();
+    hasElbowReachedGoal = false;
+    debouncer.calculate(false);
+  }
+
+  @Override
+  public void execute() {
+    if (!hasElbowReachedGoal && arm.elbowAtGoal()) {
+      hasElbowReachedGoal = true;
+    }
+
+    if (hasElbowReachedGoal) {
+      arm.setShoulderCurrent(shoulderHomingCurrentAmp.get());
+    }
+  }
+
+  @Override
+  public boolean isFinished() {
+    return hasElbowReachedGoal
+        && (arm.atGoal()
+            || debouncer.calculate(
+                Math.abs(arm.getShoulderVelMeterPerSec())
+                    <= shoulderHomingVelocityThreshMeterPerSec.get()));
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    if (!interrupted) {
+      arm.homeShoulder(0.0);
+    }
+    arm.setArmGoal(ArmSubsystemGoal.IDLE);
+    timer.stop();
   }
 }

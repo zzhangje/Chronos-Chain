@@ -1,11 +1,9 @@
 package frc.robot.subsystem.arm;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.dashboard.Alert;
 import frc.lib.dashboard.LoggedTunableNumber;
@@ -25,11 +23,9 @@ import frc.lib.interfaces.sensor.digital.BiDigitalInputCandi;
 import frc.lib.math.EqualsUtil;
 import frc.lib.math.RotationUtil;
 import frc.robot.Constants.Ports;
-import frc.robot.RobotState.RobotGoal;
 import frc.robot.subsystem.arm.ArmGoal.ArmSubsystemGoal;
 import frc.robot.subsystem.arm.ArmGoal.EndEffectorGoal;
 import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.Setter;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -121,8 +117,6 @@ public class Arm extends SubsystemBase {
       setEeGoal(EndEffectorGoal.HOLDING);
     }
 
-    eeIO.setVoltage(eeGoal.getVoltageVolt());
-
     var minSafeGroundIntakeDodgeElevatorHeightMeterVal =
         ArmConfig.minSafeGroundIntakeDodgeElevatorHeightMeter.get();
     var maxUnsafeGroundIntakeDodgeElevatorHeightMeterVal =
@@ -142,6 +136,8 @@ public class Arm extends SubsystemBase {
               Units.degreesToRadians(170.0),
               Units.degreesToRadians(10.0));
     }
+
+    eeIO.setVoltage(eeGoal.getVoltageVolt());
   }
 
   public boolean hasCoral() {
@@ -161,10 +157,6 @@ public class Arm extends SubsystemBase {
         .withName("Arm/Idle");
   }
 
-  public Command setGoalBySelectionCommand(RobotGoal robotGoal, Supplier<Pose2d> poseSupplier) {
-    return Commands.none();
-  }
-
   public Command stopCommand() {
     return runOnce(
             () -> {
@@ -180,50 +172,37 @@ public class Arm extends SubsystemBase {
     if (this.armGoal != goal) {
       this.armGoal = goal;
 
-      // Update motor positions based on new goal
-      shoulderIO.setPosition(
-          goal.getShoulderHeightMeter(),
-          ArmConfig.shoulderMotionMagicVelMeterPerSec.get(),
-          ArmConfig.shoulderMotionMagicAccelMeterPerSec2.get(),
-          0.0);
-
-      elbowIO.setPosition(
-          goal.getElbowPositionRad(),
-          Units.degreesToRadians(ArmConfig.elbowMotionMagicVelDegreePerSec.get()),
-          Units.degreesToRadians(ArmConfig.elbowMotionMagicAccelDegreePerSec2.get()),
-          0.0);
+      setElbowPosition(goal.getElbowPositionRad());
+      setShoulderPosition(goal.getShoulderHeightMeter());
     }
   }
 
-  public boolean needsTransition(ArmSubsystemGoal currentGoal, ArmSubsystemGoal targetGoal) {
-    // Always transition when going to/from ground pick
-    if (currentGoal == ArmSubsystemGoal.CORAL_GROUND_PICK
-        || targetGoal == ArmSubsystemGoal.CORAL_GROUND_PICK) {
-      return true;
-    }
-
-    // Check if we're moving to/from algae low/high pick
-    if ((currentGoal == ArmSubsystemGoal.ALGAE_LOW_PICK
-            || currentGoal == ArmSubsystemGoal.ALGAE_HIGH_PICK)
-        || (targetGoal == ArmSubsystemGoal.ALGAE_LOW_PICK
-            || targetGoal == ArmSubsystemGoal.ALGAE_HIGH_PICK)) {
-      return !needsShoulderFall(currentGoal, targetGoal);
-    }
-
-    // Check dangerous angle zone transition
-    return RotationUtil.isRotationEnterSpecificAngleArea(
-        getElbowPositionRad(),
-        targetGoal.getElbowPositionRad(),
-        Units.degreesToRadians(-180.0),
-        Units.degreesToRadians(-60.0));
+  public void setShoulderCurrent(double currentAmp) {
+    shoulderIO.setCurrent(currentAmp);
   }
 
-  private boolean needsShoulderFall(ArmSubsystemGoal currentGoal, ArmSubsystemGoal targetGoal) {
-    double currentHeight = currentGoal.getShoulderHeightMeter();
-    double targetHeight = targetGoal.getShoulderHeightMeter();
-    double transitionHeight = ArmConfig.transitionElevatorHeightMeter.get();
+  public void setShoulderPosition(double positionMeter) {
+    shoulderIO.setPosition(
+        positionMeter,
+        ArmConfig.shoulderMotionMagicVelMeterPerSec.get(),
+        ArmConfig.shoulderMotionMagicAccelMeterPerSec2.get(),
+        0.0);
+  }
 
-    return currentHeight > transitionHeight && targetHeight <= transitionHeight;
+  public void setElbowPosition(double positionRad) {
+    elbowIO.setPosition(
+        positionRad,
+        Units.degreesToRadians(ArmConfig.elbowMotionMagicVelDegreePerSec.get()),
+        Units.degreesToRadians(ArmConfig.elbowMotionMagicAccelDegreePerSec2.get()),
+        0.0);
+  }
+
+  public double getShoulderVelMeterPerSec() {
+    return shoulderInputs.velMeterPerSec;
+  }
+
+  public void homeShoulder(double positionMeter) {
+    shoulderIO.home(positionMeter);
   }
 
   private Arm(
@@ -334,7 +313,7 @@ public class Arm extends SubsystemBase {
   }
 
   @AutoLogOutput
-  private boolean shoulderAtGoal() {
+  public boolean shoulderAtGoal() {
     return shoulderAtPosition(armGoal.getShoulderHeightMeter());
   }
 
@@ -349,7 +328,7 @@ public class Arm extends SubsystemBase {
   }
 
   @AutoLogOutput
-  private boolean elbowAtGoal() {
+  public boolean elbowAtGoal() {
     return elbowAtPosition(armGoal.getElbowPositionRad());
   }
 
@@ -368,12 +347,12 @@ public class Arm extends SubsystemBase {
     return Units.radiansToDegrees(elbowInputs.positionRad);
   }
 
-  private boolean shoulderAtPosition(double positionMeter) {
+  public boolean shoulderAtPosition(double positionMeter) {
     return EqualsUtil.epsilonEquals(
         positionMeter, shoulderInputs.positionMeter, ArmConfig.shoulderToleranceMeter.get());
   }
 
-  private boolean elbowAtPosition(double positionRad) {
+  public boolean elbowAtPosition(double positionRad) {
     return EqualsUtil.epsilonEquals(
         positionRad,
         elbowInputs.positionRad,

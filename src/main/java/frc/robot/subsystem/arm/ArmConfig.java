@@ -14,8 +14,6 @@ import frc.robot.Constants.DebugGroup;
 public class ArmConfig {
   static final double ELBOW_CANCODER_OFFSET = 0.22314453125;
   static final double ELBOW_REDUCTION = (74.0 / 12.0) * (60.0 / 20.0) * (64.0 / 16.0);
-  protected static final LoggedTunableNumber transitionElevatorHeightMeter =
-      new LoggedTunableNumber(DebugGroup.ARM, "Arm/TransitionElevatorHeightMeter", 0.85);
   protected static final LoggedTunableNumber minSafeGroundIntakeDodgeElevatorHeightMeter =
       new LoggedTunableNumber(
           DebugGroup.ARM, "Arm/MinSafeGroundIntakeDodgeElevatorHeightMeter", 0.8);
@@ -63,8 +61,6 @@ public class ArmConfig {
   protected static final LoggedTunableNumber elbowStaticCharacterizationVelocityThreshDegreePerSec =
       new LoggedTunableNumber(
           DebugGroup.ARM, "Arm/Elbow/StaticCharacterizationVelocityThreshDegreePerSec", 10.0);
-  protected static final LoggedTunableNumber elbowAvoidReefAlgaePositionDegree =
-      new LoggedTunableNumber(DebugGroup.ARM, "Arm/Elbow/AvoidReefAlgaePositionDegree", 90.0);
 
   static Gains getElbowGains() {
     return switch (Constants.MODE) {
