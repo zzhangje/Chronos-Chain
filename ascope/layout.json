@@ -1,13 +1,13 @@
 {
   "hubs": [
     {
-      "x": -8,
-      "y": -8,
-      "width": 2473,
-      "height": 1504,
+      "x": 1244,
+      "y": 481,
+      "width": 988,
+      "height": 786,
       "state": {
         "sidebar": {
-          "width": 313,
+          "width": 297,
           "expanded": [
             "/DriverStation/Joystick0/POVs",
             "/DriverStation/Joystick0/AxisValues",
@@ -142,7 +142,6 @@
             "/Tuning/Arm/Elbow",
             "/AdvantageKit/Swerve/Gyro",
             "/AdvantageKit/Swerve/Gyro/YawPosition",
-            "/AdvantageKit/RealOutputs/Arm/Shoulder",
             "/AdvantageKit/RealOutputs/AlgaeGroundIntake",
             "/AdvantageKit/RealOutputs/CoralEndEffector",
             "/Tuning/CoralEndEffector/Goal",
@@ -166,26 +165,30 @@
             "/AdvantageKit/RealOutputs/GamePieceTracker",
             "/AdvantageKit/RealOutputs/GroundIntake",
             "/AdvantageKit/RealOutputs/GamePieceVisualizer",
-            "/AdvantageKit/RealOutputs/Intake",
-            "/AdvantageKit/Intake",
             "/AdvantageKit/Intake/Pivot",
             "/Tuning/Intake/Config/Pivot",
             "/Tuning/Intake/Pivot",
             "/Tuning/Intake/Config",
             "/Tuning/Intake/Roller",
-            "/AdvantageKit/Arm Elbow",
-            "/AdvantageKit/RealOutputs/Arm",
-            "/AdvantageKit/Arm Shoulder",
             "/AdvantageKit/RealOutputs/GamePiece",
             "/AdvantageKit/RealOutputs/GamePiece/Algae",
             "/AdvantageKit/RealOutputs/Visualization/Algae",
             "/AdvantageKit/RealOutputs/Visualization/Coral",
-            "/AdvantageKit/Arm End Effector",
-            "/AdvantageKit/RealOutputs/RobotContainer",
-            "/AdvantageKit",
-            "/Tuning",
             "/Tuning/Arm",
-            "/AdvantageKit/RealOutputs/Visualization"
+            "/AdvantageKit/RealOutputs/Swerve/ProcessorAlignController",
+            "/AdvantageKit",
+            "/AdvantageKit/RealOutputs/Swerve/NetAlignController",
+            "/AdvantageKit/ObjectDetectionVision",
+            "/AdvantageKit/ObjectDetectionVision/FrontMid/GamePieceObservations",
+            "/AdvantageKit/RealOutputs/Swerve/AlignedGoalVel",
+            "/AdvantageKit/RealOutputs/RobotContainer",
+            "/AdvantageKit/RealOutputs/Swerve/ProceedToProcessor",
+            "/AdvantageKit/RealOutputs/Swerve/ProceedToNet",
+            "/AdvantageKit/NodeSelector",
+            "/AdvantageKit/NodeSelector/SelectedNode",
+            "/AdvantageKit/RealOutputs/Swerve/ProceedToReef",
+            "/AdvantageKit/RealOutputs/Swerve/FollowTrajectory",
+            "/AdvantageKit/RealOutputs/Intake"
           ]
         },
         "tabs": {
@@ -392,110 +395,11 @@
                     }
                   },
                   {
-                    "type": "vision",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/GamePieceTracker/AllCorals",
-                    "logType": "Pose2d[]",
-                    "visible": true,
-                    "options": {
-                      "color": "#ff00ff",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "vision",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/GamePieceTracker/BestCoral",
-                    "logType": "Pose2d[]",
-                    "visible": true,
-                    "options": {
-                      "color": "#ffff00",
-                      "size": "bold"
-                    }
-                  },
-                  {
                     "type": "component",
                     "logKey": "NT:/AdvantageKit/RealOutputs/Visualization/Components",
                     "logType": "Pose3d[]",
                     "visible": true,
                     "options": {}
-                  },
-                  {
-                    "type": "ghost",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/Odometry/WheeledPose",
-                    "logType": "Pose2d",
-                    "visible": false,
-                    "options": {
-                      "model": "Crab Bot",
-                      "color": "#0000ff"
-                    }
-                  },
-                  {
-                    "type": "ghost",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/ApriltagVision/AllGoodRobotInField",
-                    "logType": "Pose3d[]",
-                    "visible": false,
-                    "options": {
-                      "model": "Crab Bot",
-                      "color": "#00ff00"
-                    }
-                  },
-                  {
-                    "type": "ghost",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/ApriltagVision/AllBadRobotInField",
-                    "logType": "Pose3d[]",
-                    "visible": false,
-                    "options": {
-                      "model": "Crab Bot",
-                      "color": "#ff0000"
-                    }
-                  },
-                  {
-                    "type": "trajectory",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/Swerve/TrajectoryController/TrajectoryPoses",
-                    "logType": "Pose2d[]",
-                    "visible": true,
-                    "options": {
-                      "color": "#00ffff",
-                      "size": "bold"
-                    }
-                  },
-                  {
-                    "type": "aprilTag",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/ApriltagVision/AllUsedTagInField",
-                    "logType": "Pose3d[]",
-                    "visible": true,
-                    "options": {
-                      "family": "36h11"
-                    }
-                  },
-                  {
-                    "type": "trajectory",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/GamePieceTracker/SearchAreaCoral",
-                    "logType": "Translation2d[]",
-                    "visible": true,
-                    "options": {
-                      "color": "#ffff00",
-                      "size": "bold"
-                    }
-                  },
-                  {
-                    "type": "ghost",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/Swerve/ReefAlignController/UsedSingleTagPose",
-                    "logType": "Pose2d",
-                    "visible": false,
-                    "options": {
-                      "model": "Crab Bot",
-                      "color": "#ff00ff"
-                    }
-                  },
-                  {
-                    "type": "ghost",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/Swerve/ReefAlignController/GoalPose",
-                    "logType": "Pose2d",
-                    "visible": true,
-                    "options": {
-                      "model": "Duck Bot",
-                      "color": "#ffff00"
-                    }
                   },
                   {
                     "type": "gamePiece",
@@ -532,9 +436,49 @@
                     "options": {
                       "variant": "Algae"
                     }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Swerve/ProceedToProcessor/GoalPose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "model": "Duck Bot",
+                      "color": "#ffff00"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Swerve/ProceedToNet/GoalPose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "model": "Duck Bot",
+                      "color": "#ffff00"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Swerve/ProceedToReef/GoalPose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "model": "Duck Bot",
+                      "color": "#ffff00"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Swerve/FollowTrajectory/TrajectoryPoses",
+                    "logType": "Pose2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ffff",
+                      "size": "normal"
+                    }
                   }
                 ],
-                "game": "2025 Field (Welded)",
+                "game": "2025 Field (AndyMark)",
                 "origin": "blue"
               },
               "controllerUUID": "1039uu5pmi9tb8r5kmxl2aqwcr3021jc",
@@ -542,17 +486,17 @@
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  -10.064083865034224,
-                  5.217704136157524,
-                  -3.941703364741429
+                  -8.545385102716374,
+                  4.02338075901785,
+                  -5.989470274669745
                 ],
                 "cameraTarget": [
-                  -4.073053821702723,
-                  0.06721737572217265,
-                  -0.1504039950977748
+                  -4.009300444303191,
+                  1.4827256612992659,
+                  -0.3494633338408117
                 ]
               },
-              "controlsHeight": 0
+              "controlsHeight": 321
             },
             {
               "type": 3,
