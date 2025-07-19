@@ -89,7 +89,8 @@ public class Climber extends SubsystemBase {
   }
 
   public double getPullPositionRad() {
-    return pullInputs.positionRad;
+    // return pullInputs.positionRad;
+    return 0.0;
   }
 
   @AutoLogOutput

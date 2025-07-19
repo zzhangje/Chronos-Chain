@@ -152,7 +152,7 @@ public class Arm extends SubsystemBase {
     return hasAlgaeSupplier.getAsBoolean();
   }
 
-  public Command idleCommand() {
+  public Command idle() {
     return runOnce(
             () -> {
               setArmGoal(ArmSubsystemGoal.IDLE);
@@ -161,7 +161,7 @@ public class Arm extends SubsystemBase {
         .withName("Arm/Idle");
   }
 
-  public Command stopCommand() {
+  public Command stop() {
     return runOnce(
             () -> {
               shoulderIO.stop();
@@ -333,11 +333,5 @@ public class Arm extends SubsystemBase {
         positionRad,
         elbowInputs.positionRad,
         Units.degreesToRadians(ArmConfig.elbowToleranceDegree.get()));
-  }
-
-  public void stop() {
-    shoulderIO.stop();
-    elbowIO.stop();
-    eeIO.stop();
   }
 }

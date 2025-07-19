@@ -22,24 +22,24 @@ public class LeftStationMode extends ComposedCommands {
         Commands.sequence(
             new WaitAllianceConfirmed(),
             RobotState.getOdometry().resetPoseCommand(() -> Field.LEFT_START_POSE),
-            arm.idleCommand(),
+            arm.idle(),
             new UniversalScoreCommand(swerve, arm, intake, () -> RobotGoal.scoreCoral("J", "4")),
             Commands.parallel(
-                Commands.waitSeconds(0.4).andThen(arm.idleCommand()),
+                Commands.waitSeconds(0.4).andThen(arm.idle()),
                 new FollowTrajectory(
                         swerve, () -> RobotState.getTrajectorySet().j2LeftCoralStation.get())
                     .withTimeout(1.5)),
             PounceCoralCommand.leftStation(swerve, intake, arm),
             new UniversalScoreCommand(swerve, arm, intake, () -> RobotGoal.scoreCoral("K", "4")),
             Commands.parallel(
-                Commands.waitSeconds(0.4).andThen(arm.idleCommand()),
+                Commands.waitSeconds(0.4).andThen(arm.idle()),
                 new FollowTrajectory(
                         swerve, () -> RobotState.getTrajectorySet().k2LeftCoralStation.get())
                     .withTimeout(1.2)),
             PounceCoralCommand.leftStation(swerve, intake, arm),
             new UniversalScoreCommand(swerve, arm, intake, () -> RobotGoal.scoreCoral("L", "4")),
             Commands.parallel(
-                Commands.waitSeconds(0.4).andThen(arm.idleCommand()),
+                Commands.waitSeconds(0.4).andThen(arm.idle()),
                 new FollowTrajectory(
                         swerve, () -> RobotState.getTrajectorySet().l2LeftCoralStation.get())
                     .withTimeout(1.1)),

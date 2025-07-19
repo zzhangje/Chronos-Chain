@@ -36,6 +36,7 @@ import frc.robot.subsystem.intake.IntakeGoal.IntakePivotGoal;
 import frc.robot.subsystem.intake.IntakeGoal.IntakeRollerGoal;
 import frc.robot.subsystem.nodeselector.NodeSelector;
 import frc.robot.subsystem.swerve.Swerve;
+import frc.robot.subsystem.swerve.command.SideJump;
 import frc.robot.subsystem.swerve.command.TeleopController;
 import frc.robot.subsystem.swerve.command.WheelRadiusCharacterization;
 import frc.robot.subsystem.swerve.command.WheelRadiusCharacterization.Direction;
@@ -151,6 +152,29 @@ public class RobotContainer {
                 .ignoringDisable(true));
 
     driver
+        .start()
+        .debounce(1.5)
+        .onTrue(
+            Commands.sequence(
+                Commands.runOnce(
+                    () -> {
+                      g_isClimbing = true;
+                      Command current = swerve.getCurrentCommand();
+                      if (current != null && current != teleopDrive) {
+                        current.cancel();
+                      }
+                      swerve.removeDefaultCommand();
+                      swerve.setDefaultCommand(
+                          new SideJump(
+                              swerve,
+                              () -> driver.getLeftY(),
+                              () -> driver.x().getAsBoolean(),
+                              () -> driver.b().getAsBoolean(),
+                              () -> driver.a().getAsBoolean()));
+                    }),
+                Commands.parallel(arm.idle(), intake.idle(), climber.ready())));
+
+    driver
         .b()
         .and(() -> !g_isClimbing)
         .whileTrue(
@@ -179,12 +203,14 @@ public class RobotContainer {
         .and(() -> !g_isClimbing)
         .whileTrue(new UniversalScoreCommand(swerve, arm, intake, nodeSelector::getSelectedNode));
 
+    driver.y().and(() -> g_isClimbing).whileTrue(climber.pull());
+
     driver
         .a()
         .and(() -> !g_isClimbing)
         .onTrue(
             Commands.parallel(
-                    arm.idleCommand(),
+                    arm.idle(),
                     intake.idle(),
                     Commands.runOnce(
                         () -> {
@@ -397,7 +423,12 @@ public class RobotContainer {
         "climber_base",
         "climber",
         AscopeAssets.CLIMBER,
-        () -> new Transform3d(-0.325, 0.0, -0.275, new Rotation3d(0.0, 0.28 - 0.0, 0.0)));
+        () ->
+            new Transform3d(
+                -0.325,
+                0.0,
+                -0.275,
+                new Rotation3d(0.0, 0.28 - climber.getPullPositionRad(), 0.0)));
 
     // intake
     visualizer.registerVisualizedComponent(
