@@ -449,4 +449,18 @@ public class Swerve extends SubsystemBase {
       odometryYaws = table.get("OdometryYaws", odometryYaws);
     }
   }
+
+  public double getModuleDriveCharacterizationVel() {
+    var sumDriveVelocity = 0.0;
+    for (var module : modules) {
+      sumDriveVelocity += Math.abs(module.getDriveVelRadPerSec());
+    }
+    return sumDriveVelocity / 4.0;
+  }
+
+  public void setModuleDriveCharacterizationCurrent(double currentAmp) {
+    for (var module : modules) {
+      module.setDriveCharacterizationCurrent(currentAmp);
+    }
+  }
 }

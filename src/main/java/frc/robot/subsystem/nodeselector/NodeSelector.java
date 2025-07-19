@@ -71,7 +71,7 @@ public class NodeSelector extends VirtualSubsystem {
     Boolean isIgnoreArmMoveCondition = false;
     for (var val : isIgnoreArmMoveConditionSubscriber.readQueueValues()) {
       isIgnoreArmMoveCondition = val;
-      selectedNode.setIgnoreArmMoveCondition(isIgnoreArmMoveCondition);
+      selectedNode = selectedNode.setIgnoreArmMoveCondition(isIgnoreArmMoveCondition);
     }
 
     var selectedNodeStr = "";

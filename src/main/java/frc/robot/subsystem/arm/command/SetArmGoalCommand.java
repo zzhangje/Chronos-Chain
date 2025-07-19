@@ -2,7 +2,9 @@ package frc.robot.subsystem.arm.command;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.lib.math.EqualsUtil;
 import frc.robot.subsystem.arm.Arm;
 import frc.robot.subsystem.arm.ArmGoal.ArmSubsystemGoal;
 import java.util.function.BooleanSupplier;
@@ -30,18 +32,17 @@ public class SetArmGoalCommand extends Command {
             () ->
                 (needStopSupplier.getAsBoolean() && arm.stopAtGoal())
                     || (!needStopSupplier.getAsBoolean() && arm.atGoal()));
-    // if (EqualsUtil.epsilonEquals(goal.getShoulderHeightMeter(),
-    // ArmSubsystemGoal.HOME.getShoulderHeightMeter())
-    // && EqualsUtil.epsilonEquals(goal.getElbowPositionRad(),
-    // ArmSubsystemGoal.HOME.getElbowPositionRad())) {
-    // runningCommand = new HomeCommand(arm).andThen(new InstantCommand(() ->
-    // arm.setArmGoal(goal)));
-    // } else if (TransitionCommand.needsTransition(arm.getArmGoal(), goal)) {
-    //   runningCommand = new TransitionCommand(arm, goalSupplier).andThen(new
-    // WaitUntilCommand(arm::stopAtGoal));
-    // } else {
-    runningCommand = Commands.runOnce(() -> arm.setArmGoal(goal)).andThen(waitCommand);
-    // }
+    if (EqualsUtil.epsilonEquals(
+            goal.getShoulderHeightMeter(), ArmSubsystemGoal.HOME.getShoulderHeightMeter())
+        && EqualsUtil.epsilonEquals(
+            goal.getElbowPositionRad(), ArmSubsystemGoal.HOME.getElbowPositionRad())) {
+      runningCommand = new HomeCommand(arm).andThen(new InstantCommand(() -> arm.setArmGoal(goal)));
+    } else if (TransitionCommand.needsTransition(arm.getArmGoal(), goal)) {
+      runningCommand =
+          new TransitionCommand(arm, goalSupplier).andThen(new WaitUntilCommand(arm::stopAtGoal));
+    } else {
+      runningCommand = Commands.runOnce(() -> arm.setArmGoal(goal)).andThen(waitCommand);
+    }
     runningCommand.initialize();
   }
 

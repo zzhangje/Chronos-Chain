@@ -98,9 +98,10 @@ public class UniversalScoreCommand extends Command {
                             () -> ArmSubsystemGoal.ALGAE_PROCESSOR_SCORE.setIsLeft(isLeftSupplier),
                             () -> true),
                         Commands.waitUntil(() -> arm.stopAtGoal()),
+                        Commands.waitUntil(driveCmd::isFinished),
                         Commands.runOnce(() -> arm.setEeGoal(EndEffectorGoal.ALGAE_SCORE))))
                 .withDeadline(
-                    Commands.waitUntil(() -> !arm.hasAlgae())
+                    Commands.waitUntil(() -> !arm.hasAlgae() || arm.hasCoral())
                         .finallyDo(() -> arm.setEeGoal(EndEffectorGoal.IDLE)));
       } else if (goal.getSelectedBranch().equals("N")) {
         setName("Super/Score Net");
@@ -124,9 +125,10 @@ public class UniversalScoreCommand extends Command {
                             arm,
                             () -> ArmSubsystemGoal.ALGAE_NET_SCORE.setIsLeft(isLeftSupplier),
                             () -> true),
+                        Commands.waitUntil(driveCmd::isFinished),
                         Commands.runOnce(() -> arm.setEeGoal(EndEffectorGoal.ALGAE_SCORE))))
                 .withDeadline(
-                    Commands.waitUntil(() -> !arm.hasAlgae())
+                    Commands.waitUntil(() -> !arm.hasAlgae() || arm.hasCoral())
                         .finallyDo(() -> arm.setEeGoal(EndEffectorGoal.IDLE)));
       } else {
         setName("Super/Collect Algae");
@@ -158,7 +160,7 @@ public class UniversalScoreCommand extends Command {
                             () -> true),
                         Commands.runOnce(() -> arm.setEeGoal(EndEffectorGoal.ALGAE_COLLECT))))
                 .withDeadline(
-                    Commands.waitUntil(() -> arm.hasAlgae())
+                    Commands.waitUntil(() -> arm.hasAlgae() || arm.hasCoral())
                         .finallyDo(() -> arm.setEeGoal(EndEffectorGoal.IDLE)));
       }
     } else if (goal.getSelectedType() == GamePieceType.CORAL) {
@@ -182,6 +184,7 @@ public class UniversalScoreCommand extends Command {
                                     && driveCmd.hasDistanceWithin(1.2))),
                     intake.idle(),
                     Commands.waitUntil(() -> intake.isAtSetpoint()),
+                    Commands.waitUntil(driveCmd::isFinished),
                     Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerGoal.TROUGH)))
                 .withDeadline(
                     Commands.waitUntil(() -> !intake.hasCoral())
@@ -216,6 +219,7 @@ public class UniversalScoreCommand extends Command {
                                     })
                                     .setIsLeft(isLeftSupplier),
                             () -> false),
+                        Commands.waitUntil(driveCmd::isFinished),
                         Commands.parallel(
                             Commands.runOnce(() -> arm.setEeGoal(EndEffectorGoal.CORAL_SCORE)),
                             new SetArmGoalCommand(
@@ -230,11 +234,11 @@ public class UniversalScoreCommand extends Command {
                                         .setIsLeft(isLeftSupplier),
                                 () -> false),
                             Commands.waitUntil(() -> !arm.hasCoral()))))
-                .withDeadline(
-                    Commands.waitUntil(() -> !arm.hasCoral()).andThen(Commands.waitSeconds(0.1)))
+                .withDeadline(Commands.waitUntil(() -> !arm.hasCoral() || arm.hasAlgae()))
                 .finallyDo(() -> arm.setEeGoal(EndEffectorGoal.IDLE));
       }
     } else {
+      setName("Super/Invalid Goal");
       runningCommand = Commands.none();
     }
     runningCommand.initialize();

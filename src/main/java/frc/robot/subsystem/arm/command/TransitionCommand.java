@@ -30,14 +30,15 @@ public class TransitionCommand extends Command {
     needsAvoidReef =
         !(goalSupplier.get().equals(ArmSubsystemGoal.ALGAE_HIGH_PICK)
             || goalSupplier.get().equals(ArmSubsystemGoal.ALGAE_LOW_PICK));
-    // arm.setShoulderPosition(transitionElevatorHeightMeter.get());
+    System.out.println("TransitionCommand initialized, needsAvoidReef: " + needsAvoidReef);
+    arm.setShoulderPosition(transitionElevatorHeightMeter.get());
   }
 
   @Override
   public void execute() {
     if (needsAvoidReef
         && !arm.elbowAtPosition(Units.degreesToRadians(elbowAvoidReefAlgaePositionDegree.get()))) {
-      // arm.setElbowPosition(Units.degreesToRadians(elbowAvoidReefAlgaePositionDegree.get()));
+      arm.setElbowPosition(Units.degreesToRadians(elbowAvoidReefAlgaePositionDegree.get()));
     }
   }
 
@@ -48,7 +49,7 @@ public class TransitionCommand extends Command {
     }
 
     if (needsShoulderFall(arm.getArmGoal(), goalSupplier.get())) {
-      // arm.setElbowPosition(goalSupplier.get().getElbowPositionRad());
+      arm.setElbowPosition(goalSupplier.get().getElbowPositionRad());
       return arm.elbowAtPosition(goalSupplier.get().getElbowPositionRad());
     }
 
@@ -58,6 +59,7 @@ public class TransitionCommand extends Command {
 
   @Override
   public void end(boolean interrupted) {
+    System.out.println("TransitionCommand ended, interrupted: " + interrupted);
     if (!interrupted) {
       arm.setArmGoal(goalSupplier.get());
     }

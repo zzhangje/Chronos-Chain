@@ -1,3 +1,3 @@
-package frc.robot;
+package frc.robot.command;
 
 public class AutoBuilder {}

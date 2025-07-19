@@ -25,6 +25,7 @@ import frc.robot.Constants.Misc;
 import frc.robot.Constants.Ports;
 import frc.robot.RobotState.RobotGoal;
 import frc.robot.command.UniversalScoreCommand;
+import frc.robot.command.general.KsCharacterization;
 import frc.robot.subsystem.arm.Arm;
 import frc.robot.subsystem.arm.ArmGoal.ArmSubsystemGoal;
 import frc.robot.subsystem.arm.ArmGoal.EndEffectorGoal;
@@ -35,6 +36,10 @@ import frc.robot.subsystem.intake.IntakeGoal.IntakeRollerGoal;
 import frc.robot.subsystem.nodeselector.NodeSelector;
 import frc.robot.subsystem.swerve.Swerve;
 import frc.robot.subsystem.swerve.command.TeleopController;
+import frc.robot.subsystem.swerve.command.WheelRadiusCharacterization;
+import frc.robot.subsystem.swerve.command.WheelRadiusCharacterization.Direction;
+import frc.robot.subsystem.vision.ApriltagVision;
+import frc.robot.subsystem.vision.ObjectDetectionVision;
 
 public class RobotContainer {
   // driver
@@ -62,6 +67,9 @@ public class RobotContainer {
       intake = Intake.createReal();
       climber = Climber.createReal();
       arm = Arm.createReal();
+
+      ApriltagVision apriltagVision = ApriltagVision.createReal();
+      ObjectDetectionVision objectDetectionVision = ObjectDetectionVision.createReal();
     } else if (Constants.MODE.equals(Constants.Mode.SIM)) {
       swerve = Swerve.createSim();
       intake = Intake.createSim(() -> s_intakeHasCoral);
@@ -85,6 +93,13 @@ public class RobotContainer {
               PoseUtil.repeat(Field.PRESET_CORAL_POSES, 5),
               PoseUtil.tolist(Field.Reef.CORAL_POSES),
               (s_armHasCoral ? 1 : 0) + (s_intakeHasCoral ? 1 : 0));
+
+      ApriltagVision apriltagVision =
+          ApriltagVision.createSim(() -> RobotState.getOdometry().getEstimatedPose());
+      ObjectDetectionVision objectDetectionVision =
+          ObjectDetectionVision.createSim(
+              () -> RobotState.getOdometry().getEstimatedPose(),
+              () -> coral.getPickableGamePiecePose());
 
       Visualizer visualizer = new Visualizer();
       configureVisualization(visualizer);
@@ -137,7 +152,7 @@ public class RobotContainer {
     driver
         .b()
         .and(() -> !g_isClimbing)
-        .onTrue(
+        .whileTrue(
             new UniversalScoreCommand(
                 swerve,
                 arm,
@@ -149,7 +164,7 @@ public class RobotContainer {
     driver
         .x()
         .and(() -> !g_isClimbing)
-        .onTrue(
+        .whileTrue(
             new UniversalScoreCommand(
                 swerve,
                 arm,
@@ -159,24 +174,25 @@ public class RobotContainer {
                         .setIgnoreArmMoveCondition(nodeSelector.isIgnoreArmMoveCondition())));
 
     driver
+        .y()
+        .and(() -> !g_isClimbing)
+        .whileTrue(new UniversalScoreCommand(swerve, arm, intake, nodeSelector::getSelectedNode));
+
+    driver
         .a()
         .and(() -> !g_isClimbing)
         .onTrue(
             Commands.parallel(
-                arm.idleCommand(),
-                intake.idle(),
-                Commands.runOnce(
-                    () -> {
-                      Command current = swerve.getCurrentCommand();
-                      if (current != null && current != teleopDrive) {
-                        current.cancel();
-                      }
-                    })));
-
-    driver
-        .y()
-        .and(() -> !g_isClimbing)
-        .onTrue(new UniversalScoreCommand(swerve, arm, intake, nodeSelector::getSelectedNode));
+                    arm.idleCommand(),
+                    intake.idle(),
+                    Commands.runOnce(
+                        () -> {
+                          Command current = swerve.getCurrentCommand();
+                          if (current != null && current != teleopDrive) {
+                            current.cancel();
+                          }
+                        }))
+                .withName("Super/Force Idle"));
 
     driver.leftBumper().onTrue(intake.inject()).onFalse(intake.idle());
   }
@@ -185,6 +201,20 @@ public class RobotContainer {
     new Trigger(() -> DriverStation.isAutonomousEnabled())
         .onTrue(autoCmdSelector.stop())
         .onFalse(autoCmdSelector.run());
+
+    autoCmdSelector.addCommand(
+        "Wheel Radius Characterization",
+        new WheelRadiusCharacterization(
+            swerve,
+            () -> RobotState.getOdometry().getEstimatedPose().getRotation(),
+            Direction.CLOCKWISE));
+
+    autoCmdSelector.addCommand(
+        "Drive Ks Characeterization",
+        new KsCharacterization(
+            swerve,
+            swerve::setModuleDriveCharacterizationCurrent,
+            swerve::getModuleDriveCharacterizationVel));
   }
 
   private void configureSimulation(

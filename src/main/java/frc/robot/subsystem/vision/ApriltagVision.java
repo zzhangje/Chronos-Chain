@@ -82,8 +82,6 @@ public class ApriltagVision extends VirtualSubsystem {
   private final Alert reefBackRightOfflineAlert =
       new Alert(CameraId.REEF_BACK_RIGHT.toString() + " offline!", Alert.AlertType.WARNING);
 
-  private VisionSystemSim visionSystemSim = null;
-
   private ApriltagVision(
       ApriltagVisionIO casualMidLeftIo,
       ApriltagVisionIO casualMidRightIo,
@@ -95,7 +93,7 @@ public class ApriltagVision extends VirtualSubsystem {
     this.reefBackRightIo = reefBackRightIo;
   }
 
-  public ApriltagVision createReal() {
+  public static ApriltagVision createReal() {
     return new ApriltagVision(
         new ApriltagVisionIOPhoton(CameraId.CASUAL_MID_LEFT.toString()),
         new ApriltagVisionIOPhoton(CameraId.CASUAL_MID_RIGHT.toString()),
@@ -103,7 +101,9 @@ public class ApriltagVision extends VirtualSubsystem {
         new ApriltagVisionIOPhoton(CameraId.REEF_BACK_RIGHT.toString()));
   }
 
-  public ApriltagVision createSim(Supplier<Pose2d> poseSupplier) {
+  public static ApriltagVision createSim(Supplier<Pose2d> poseSupplier) {
+    var visionSystemSim = new VisionSystemSim("apriltag");
+    visionSystemSim.addAprilTags(Field.APRILTAG_LAYOUT.getLayout());
     return new ApriltagVision(
         new ApriltagVisionIOPhotonSim(
             CameraId.CASUAL_MID_LEFT.toString(),
@@ -131,7 +131,7 @@ public class ApriltagVision extends VirtualSubsystem {
             poseSupplier));
   }
 
-  public ApriltagVision createIO() {
+  public static ApriltagVision createIO() {
     return new ApriltagVision(
         new ApriltagVisionIO() {},
         new ApriltagVisionIO() {},

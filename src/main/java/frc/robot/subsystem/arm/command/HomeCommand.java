@@ -34,6 +34,7 @@ public class HomeCommand extends Command {
     timer.start();
     hasElbowReachedGoal = false;
     debouncer.calculate(false);
+    System.out.println("HomeCommand initialized, starting homing process.");
   }
 
   @Override
@@ -63,5 +64,6 @@ public class HomeCommand extends Command {
     }
     arm.setArmGoal(ArmSubsystemGoal.IDLE);
     timer.stop();
+    System.out.println("HomeCommand ended, interrupted: " + interrupted);
   }
 }
