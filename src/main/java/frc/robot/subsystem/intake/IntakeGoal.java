@@ -11,13 +11,14 @@ public class IntakeGoal {
         new LoggedTunableNumber(
             Constants.DebugGroup.INTAKE, "Intake/Pivot/DownAngleRadians", 130.0)),
     IDLE(
-        new LoggedTunableNumber(Constants.DebugGroup.INTAKE, "Intake/Pivot/IdleAngleRadians", 0.0)),
+        new LoggedTunableNumber(
+            Constants.DebugGroup.INTAKE, "Intake/Pivot/IdleAngleRadians", 30.0)),
     REGRASP(
         new LoggedTunableNumber(
             Constants.DebugGroup.INTAKE, "Intake/Pivot/RegraspAngleRadians", 0.0)),
     DODGE(
         new LoggedTunableNumber(
-            Constants.DebugGroup.INTAKE, "Intake/Pivot/DodgeAngleRadians", 20.0)),
+            Constants.DebugGroup.INTAKE, "Intake/Pivot/DodgeAngleRadians", 50.0)),
     TROUGH(
         new LoggedTunableNumber(
             Constants.DebugGroup.INTAKE, "Intake/Pivot/TroughAngleRadians", 30.0));

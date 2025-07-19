@@ -25,6 +25,7 @@ import frc.robot.Constants.Misc;
 import frc.robot.Constants.Ports;
 import frc.robot.RobotState.RobotGoal;
 import frc.robot.command.UniversalScoreCommand;
+import frc.robot.command.auto.LeftStationMode;
 import frc.robot.command.general.KsCharacterization;
 import frc.robot.subsystem.arm.Arm;
 import frc.robot.subsystem.arm.ArmGoal.ArmSubsystemGoal;
@@ -57,7 +58,7 @@ public class RobotContainer {
 
   // states
   boolean g_isClimbing = false;
-  boolean s_intakeHasCoral = true;
+  boolean s_intakeHasCoral = false;
   boolean s_armHasCoral = true;
   boolean s_armHasAlgae = false;
 
@@ -215,6 +216,8 @@ public class RobotContainer {
             swerve,
             swerve::setModuleDriveCharacterizationCurrent,
             swerve::getModuleDriveCharacterizationVel));
+
+    autoCmdSelector.addCommand("Left Station Mode", new LeftStationMode(swerve, arm, intake));
   }
 
   private void configureSimulation(

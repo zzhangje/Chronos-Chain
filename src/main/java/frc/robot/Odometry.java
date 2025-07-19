@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.function.Supplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -83,8 +84,8 @@ public class Odometry extends VirtualSubsystem {
     resetPose(new Pose2d(Field.LENGTH / 2.0, Field.WIDTH / 2.0, Rotation2d.fromDegrees(0.0)));
   }
 
-  public Command resetPoseCommand(Pose2d pose) {
-    return Commands.runOnce(() -> resetPose(AllianceFlipUtil.apply(pose)));
+  public Command resetPoseCommand(Supplier<Pose2d> pose) {
+    return Commands.runOnce(() -> resetPose(AllianceFlipUtil.apply(pose.get())));
   }
 
   public void addWheeledObservation(WheeledObservation observation) {

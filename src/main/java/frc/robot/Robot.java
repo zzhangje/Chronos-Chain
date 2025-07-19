@@ -46,7 +46,6 @@ public class Robot extends LoggedRobot {
 
     // virtual subsystem init
     debugGroupInit();
-    trajectoryLoaderInit();
 
     robotContainer = new RobotContainer();
     WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
@@ -189,8 +188,6 @@ public class Robot extends LoggedRobot {
     debugGroup.register(Constants.DebugGroup.CLIMBER);
     new Trigger(Constants.IS_LIVE_DEBUG).onTrue(debugGroup.run()).onFalse(debugGroup.stop());
   }
-
-  private void trajectoryLoaderInit() {}
 
   private String commandPrintHelper(String name) {
     switch (name.split("/").length) {

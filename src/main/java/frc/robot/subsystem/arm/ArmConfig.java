@@ -19,7 +19,7 @@ public class ArmConfig {
           DebugGroup.ARM, "Arm/MinSafeGroundIntakeDodgeElevatorHeightMeter", 0.8);
   protected static final LoggedTunableNumber maxUnsafeGroundIntakeDodgeElevatorHeightMeter =
       new LoggedTunableNumber(
-          DebugGroup.ARM, "Arm/MaxUnsafeGroundIntakeDodgeElevatorHeightMeter", 0.3);
+          DebugGroup.ARM, "Arm/MaxUnsafeGroundIntakeDodgeElevatorHeightMeter", -0.01);
 
   protected static final LoggedTunableNumber shoulderMotionMagicVelMeterPerSec =
       new LoggedTunableNumber("Arm/Shoulder/MotionMagicVelMeterPerSec", 6.0);

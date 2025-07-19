@@ -39,6 +39,7 @@ public class ObjectDetectionVisionIOPhotonSim extends ObjectDetectionVisionIOPho
 
   @Override
   public void updateInputs(ObjectDetectionVisionIOInputs inputs) {
+    visionSystemSim.update(poseSupplier.get());
     visionSystemSim.removeVisionTargets(GamePiece.GamePieceType.CORAL.getName());
     var unpickedCoral = unpickedCoralSupplier.get();
     var corals = new VisionTargetSim[unpickedCoral.size()];
@@ -49,7 +50,6 @@ public class ObjectDetectionVisionIOPhotonSim extends ObjectDetectionVisionIOPho
     }
     visionSystemSim.addVisionTargets(GamePiece.GamePieceType.CORAL.getName(), corals);
 
-    visionSystemSim.update(poseSupplier.get());
     super.updateInputs(inputs);
   }
 }

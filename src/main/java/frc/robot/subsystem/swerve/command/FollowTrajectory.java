@@ -20,6 +20,7 @@ import frc.robot.RobotState;
 import frc.robot.subsystem.swerve.Swerve;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import lombok.Getter;
 import lombok.experimental.ExtensionMethod;
@@ -37,7 +38,7 @@ public class FollowTrajectory extends Command {
       new LoggedTunableNumber(DebugGroup.SWERVE, "Swerve/FollowTrajectory/RotationKd", 0.0);
 
   private final Swerve swerve;
-  private final Trajectory<SwerveSample> trajectory;
+  private final Supplier<Trajectory<SwerveSample>> trajectorySupplier;
   private final PIDController xController;
   private final PIDController yController;
   private final PIDController rotationController;
@@ -49,9 +50,9 @@ public class FollowTrajectory extends Command {
 
   private SwerveSample setpoint = null;
 
-  public FollowTrajectory(Swerve swerve, Trajectory<SwerveSample> trajectory) {
+  public FollowTrajectory(Swerve swerve, Supplier<Trajectory<SwerveSample>> trajectorySupplier) {
     this.swerve = swerve;
-    this.trajectory = trajectory;
+    this.trajectorySupplier = trajectorySupplier;
 
     xController = new PIDController(translationKp.get(), 0, translationKd.get());
     yController = new PIDController(translationKp.get(), 0, translationKd.get());
@@ -59,12 +60,13 @@ public class FollowTrajectory extends Command {
     rotationController.enableContinuousInput(-Math.PI, Math.PI);
 
     addRequirements(swerve);
-    Logger.recordOutput("Swerve/FollowTrajectory/TrajectoryPoses", trajectory.getPoses());
+    Logger.recordOutput(
+        "Swerve/FollowTrajectory/TrajectoryPoses", trajectorySupplier.get().getPoses());
   }
 
   @Override
   public void initialize() {
-    setpoint = trajectory.getInitialSample(false).get();
+    setpoint = trajectorySupplier.get().getInitialSample(false).get();
     timer.reset();
     timer.start();
   }
@@ -72,7 +74,7 @@ public class FollowTrajectory extends Command {
   @Override
   public void execute() {
     if (!isFinished()) {
-      setpoint = trajectory.sampleAt(timer.get(), false).get();
+      setpoint = trajectorySupplier.get().sampleAt(timer.get(), false).get();
     }
     Logger.recordOutput("Swerve/FollowTrajectory/setpointPose", setpoint.getPose());
     Logger.recordOutput("Swerve/FollowTrajectory/setpointVel/Vx", setpoint.vx);
@@ -125,17 +127,18 @@ public class FollowTrajectory extends Command {
 
   @Override
   public boolean isFinished() {
-    return timer.hasElapsed(trajectory.getTotalTime());
+    return timer.hasElapsed(trajectorySupplier.get().getTotalTime());
   }
 
   @Override
   public void end(boolean interrupted) {
     swerve.stop();
     Logger.recordOutput("Swerve/FollowTrajectory/Completed", !interrupted);
+    Logger.recordOutput("Swerve/FollowTrajectory/TrajectoryPoses", new Pose2d[0]);
   }
 
   public Pose2d getInitialPose() {
-    return trajectory.getInitialSample(false).get().getPose();
+    return trajectorySupplier.get().getInitialSample(false).get().getPose();
   }
 
   private static Vector<N2> fixModuleForce(double x, double y, Rotation2d headingInField) {

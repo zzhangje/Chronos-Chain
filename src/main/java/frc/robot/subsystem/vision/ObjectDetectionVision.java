@@ -60,16 +60,12 @@ public class ObjectDetectionVision extends VirtualSubsystem {
 
   @Override
   public void periodic() {
-    updateInputs();
+    frontMidIo.updateInputs(frontMidInputs);
+    Logger.processInputs("ObjectDetectionVision/FrontMid", frontMidInputs);
 
     frontMidCameraOfflineAlert.set(!frontMidInputs.connected);
 
     updateGamePieces(frontMidInputs, ObjectDetectionVisionConfig.FRONT_MID_IN_ROBOT);
-  }
-
-  private void updateInputs() {
-    frontMidIo.updateInputs(frontMidInputs);
-    Logger.processInputs("ObjectDetectionVision/FrontMid", frontMidInputs);
   }
 
   private void updateGamePieces(
