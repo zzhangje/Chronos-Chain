@@ -29,6 +29,7 @@ import frc.robot.Constants.Misc;
 import frc.robot.Constants.Ports;
 import frc.robot.command.UniversalScoreCommand;
 import frc.robot.command.auto.LeftStationMode;
+import frc.robot.command.auto.RightStationMode;
 import frc.robot.command.general.KsCharacterization;
 import frc.robot.subsystem.arm.Arm;
 import frc.robot.subsystem.arm.ArmGoal.ArmSubsystemGoal;
@@ -257,6 +258,8 @@ public class RobotContainer {
             swerve::getModuleDriveCharacterizationVel));
 
     autoCmdSelector.addCommand("Left Station Mode", new LeftStationMode(swerve, arm, intake));
+
+    autoCmdSelector.addCommand("Right Station Mode", new RightStationMode(swerve, arm, intake));
   }
 
   private void configureSimulation(
