@@ -5,16 +5,20 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystem.arm.Arm;
 import frc.robot.subsystem.arm.ArmGoal.ArmSubsystemGoal;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 public class SetArmGoalCommand extends Command {
   private final Arm arm;
   private final Supplier<ArmSubsystemGoal> goalSupplier;
+  private final BooleanSupplier needStopSupplier;
   private Command runningCommand;
 
-  public SetArmGoalCommand(Arm arm, Supplier<ArmSubsystemGoal> goalSupplier) {
+  public SetArmGoalCommand(
+      Arm arm, Supplier<ArmSubsystemGoal> goalSupplier, BooleanSupplier needStopSupplier) {
     this.arm = arm;
     this.goalSupplier = goalSupplier;
+    this.needStopSupplier = needStopSupplier;
     addRequirements(arm);
   }
 
@@ -32,7 +36,12 @@ public class SetArmGoalCommand extends Command {
     // WaitUntilCommand(arm::stopAtGoal));
     // } else {
     runningCommand =
-        Commands.runOnce(() -> arm.setArmGoal(goal)).andThen(new WaitUntilCommand(arm::stopAtGoal));
+        Commands.runOnce(() -> arm.setArmGoal(goal))
+            .andThen(
+                new WaitUntilCommand(
+                    () ->
+                        (needStopSupplier.getAsBoolean() && arm.stopAtGoal())
+                            || (!needStopSupplier.getAsBoolean() && arm.atGoal())));
     // }
     runningCommand.initialize();
   }

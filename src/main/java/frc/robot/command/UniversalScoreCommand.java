@@ -95,7 +95,8 @@ public class UniversalScoreCommand extends Command {
                     Commands.sequence(
                         new SetArmGoalCommand(
                             arm,
-                            () -> ArmSubsystemGoal.ALGAE_PROCESSOR_SCORE.setIsLeft(isLeftSupplier)),
+                            () -> ArmSubsystemGoal.ALGAE_PROCESSOR_SCORE.setIsLeft(isLeftSupplier),
+                            () -> true),
                         Commands.waitUntil(() -> arm.stopAtGoal()),
                         Commands.runOnce(() -> arm.setEeGoal(EndEffectorGoal.ALGAE_SCORE))))
                 .withDeadline(
@@ -120,8 +121,9 @@ public class UniversalScoreCommand extends Command {
                                     || (driveCmd.hasHeadingAtGoal()
                                         && driveCmd.hasDistanceWithin(1.2))),
                         new SetArmGoalCommand(
-                            arm, () -> ArmSubsystemGoal.ALGAE_NET_SCORE.setIsLeft(isLeftSupplier)),
-                        Commands.waitUntil(() -> arm.stopAtGoal()),
+                            arm,
+                            () -> ArmSubsystemGoal.ALGAE_NET_SCORE.setIsLeft(isLeftSupplier),
+                            () -> true),
                         Commands.runOnce(() -> arm.setEeGoal(EndEffectorGoal.ALGAE_SCORE))))
                 .withDeadline(
                     Commands.waitUntil(() -> !arm.hasAlgae())
@@ -152,8 +154,8 @@ public class UniversalScoreCommand extends Command {
                                 (goal.isHighPick()
                                         ? ArmSubsystemGoal.ALGAE_HIGH_PICK
                                         : ArmSubsystemGoal.ALGAE_LOW_PICK)
-                                    .setIsLeft(isLeftSupplier)),
-                        Commands.waitUntil(() -> arm.stopAtGoal()),
+                                    .setIsLeft(isLeftSupplier),
+                            () -> true),
                         Commands.runOnce(() -> arm.setEeGoal(EndEffectorGoal.ALGAE_COLLECT))))
                 .withDeadline(
                     Commands.waitUntil(() -> arm.hasAlgae())
@@ -195,8 +197,42 @@ public class UniversalScoreCommand extends Command {
                 () -> true);
         runningCommand =
             Commands.parallel(
-                Commands.either(
-                    driveCmd, Commands.none(), () -> !goal.getIgnoreArmMoveCondition()));
+                    Commands.either(
+                        driveCmd, Commands.none(), () -> !goal.getIgnoreArmMoveCondition()),
+                    Commands.sequence(
+                        Commands.waitUntil(
+                            () ->
+                                goal.getIgnoreArmMoveCondition()
+                                    || (driveCmd.hasHeadingAtGoal()
+                                        && driveCmd.hasDistanceWithin(1.2))),
+                        new SetArmGoalCommand(
+                            arm,
+                            () ->
+                                (switch (goal.getSelectedLevel()) {
+                                      case "2" -> ArmSubsystemGoal.CORAL_L2_PRESCORE;
+                                      case "3" -> ArmSubsystemGoal.CORAL_L3_PRESCORE;
+                                      case "4" -> ArmSubsystemGoal.CORAL_L4_PRESCORE;
+                                      default -> ArmSubsystemGoal.IDLE;
+                                    })
+                                    .setIsLeft(isLeftSupplier),
+                            () -> false)),
+                    Commands.parallel(
+                        Commands.runOnce(() -> arm.setEeGoal(EndEffectorGoal.CORAL_SCORE)),
+                        new SetArmGoalCommand(
+                            arm,
+                            () ->
+                                (switch (goal.getSelectedLevel()) {
+                                      case "2" -> ArmSubsystemGoal.CORAL_L2_PRESCORE;
+                                      case "3" -> ArmSubsystemGoal.CORAL_L3_PRESCORE;
+                                      case "4" -> ArmSubsystemGoal.CORAL_L4_PRESCORE;
+                                      default -> ArmSubsystemGoal.IDLE;
+                                    })
+                                    .setIsLeft(isLeftSupplier),
+                            () -> false),
+                        Commands.waitUntil(() -> !arm.hasCoral())))
+                .withDeadline(
+                    Commands.waitUntil(() -> !arm.hasCoral()).andThen(Commands.waitSeconds(0.1)))
+                .finallyDo(() -> arm.setEeGoal(EndEffectorGoal.IDLE));
       }
     } else {
       runningCommand = Commands.none();
