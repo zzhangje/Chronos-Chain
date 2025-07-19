@@ -27,7 +27,6 @@ import frc.robot.subsystem.arm.ArmGoal.ArmSubsystemGoal;
 import frc.robot.subsystem.arm.ArmGoal.EndEffectorGoal;
 import java.util.function.BooleanSupplier;
 import lombok.Getter;
-import lombok.Setter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -63,7 +62,7 @@ public class Arm extends SubsystemBase {
       new Alert("Arm end effector motor offline!", Alert.AlertType.WARNING);
 
   @Getter @AutoLogOutput private ArmSubsystemGoal armGoal = ArmSubsystemGoal.IDLE;
-  @Getter @Setter @AutoLogOutput private EndEffectorGoal eeGoal = EndEffectorGoal.IDLE;
+  @Getter @AutoLogOutput private EndEffectorGoal eeGoal = EndEffectorGoal.IDLE;
 
   private final BooleanSupplier hasCoralSupplier, hasAlgaeSupplier;
   @Getter @AutoLogOutput private boolean needIntakeDodge = false;
@@ -136,8 +135,13 @@ public class Arm extends SubsystemBase {
               Units.degreesToRadians(170.0),
               Units.degreesToRadians(10.0));
     }
+  }
 
-    eeIO.setVoltage(eeGoal.getVoltageVolt());
+  public void setEeGoal(EndEffectorGoal goal) {
+    if (this.eeGoal != goal) {
+      this.eeGoal = goal;
+      eeIO.setVoltage(eeGoal.getVoltageVolt());
+    }
   }
 
   public boolean hasCoral() {
@@ -167,14 +171,12 @@ public class Arm extends SubsystemBase {
         .withName("Arm/Stop");
   }
 
-  // State management methods
   public void setArmGoal(ArmSubsystemGoal goal) {
-    if (this.armGoal != goal) {
-      this.armGoal = goal;
+    System.out.println("Setting arm goal: " + goal + (goal.getIsLeft() ? " (left)" : " (right)"));
+    this.armGoal = goal;
 
-      setElbowPosition(goal.getElbowPositionRad());
-      setShoulderPosition(goal.getShoulderHeightMeter());
-    }
+    // setElbowPosition(goal.getElbowPositionRad());
+    // setShoulderPosition(goal.getShoulderHeightMeter());
   }
 
   public void setShoulderCurrent(double currentAmp) {
@@ -182,6 +184,7 @@ public class Arm extends SubsystemBase {
   }
 
   public void setShoulderPosition(double positionMeter) {
+    System.out.println("Setting shoulder position: " + positionMeter);
     shoulderIO.setPosition(
         positionMeter,
         ArmConfig.shoulderMotionMagicVelMeterPerSec.get(),
@@ -190,6 +193,7 @@ public class Arm extends SubsystemBase {
   }
 
   public void setElbowPosition(double positionRad) {
+    System.out.println("Setting elbow position: " + Units.radiansToDegrees(positionRad));
     elbowIO.setPosition(
         positionRad,
         Units.degreesToRadians(ArmConfig.elbowMotionMagicVelDegreePerSec.get()),

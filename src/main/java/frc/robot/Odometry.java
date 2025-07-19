@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.dashboard.LoggedTunableNumber;
+import frc.lib.interfaces.VirtualSubsystem;
 import frc.lib.utils.AllianceFlipUtil;
 import frc.reefscape.Field;
 import frc.robot.subsystem.swerve.Swerve.WheeledObservation;
@@ -31,8 +32,9 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
-public class Odometry {
+public class Odometry extends VirtualSubsystem {
   private static final LoggedTunableNumber txTyObservationStaleSecs =
       new LoggedTunableNumber(
           Constants.DebugGroup.ODOMETRY, "Odometry/TxTyObservation/StaleSeconds", 0.2);
@@ -44,13 +46,15 @@ public class Odometry {
   private static final Matrix<N3, N1> WHEELED_STD_DEVS =
       new Matrix<>(VecBuilder.fill(0.003, 0.003, 0.0002));
 
-  @AutoLogOutput(key = "Odometry/WheeledPose")
-  @Getter
-  private Pose2d wheeledPose;
+  @Getter private Pose2d wheeledPose;
 
-  @AutoLogOutput(key = "Odometry/EstimatedPose")
-  @Getter
-  private Pose2d estimatedPose;
+  @Getter private Pose2d estimatedPose;
+
+  @Override
+  public void periodic() {
+    Logger.recordOutput("Odometry/WheeledPose", wheeledPose);
+    Logger.recordOutput("Odometry/EstimatedPose", estimatedPose);
+  }
 
   private final HashMap<ApriltagVision.CameraId, HashMap<Integer, SingleTagVisionObservation>>
       singleTagPoses = new HashMap<>();

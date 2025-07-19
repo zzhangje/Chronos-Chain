@@ -7,10 +7,11 @@ import frc.lib.math.RotationUtil;
 import frc.robot.Constants.DebugGroup;
 import frc.robot.subsystem.arm.Arm;
 import frc.robot.subsystem.arm.ArmGoal.ArmSubsystemGoal;
+import java.util.function.Supplier;
 
 public class TransitionCommand extends Command {
   private final Arm arm;
-  private final ArmSubsystemGoal goal;
+  private final Supplier<ArmSubsystemGoal> goalSupplier;
   private boolean needsAvoidReef;
 
   private static final LoggedTunableNumber transitionElevatorHeightMeter =
@@ -18,17 +19,17 @@ public class TransitionCommand extends Command {
   private static final LoggedTunableNumber elbowAvoidReefAlgaePositionDegree =
       new LoggedTunableNumber(DebugGroup.ARM, "Arm/Elbow/AvoidReefAlgaePositionDegree", 90.0);
 
-  public TransitionCommand(Arm arm, ArmSubsystemGoal goal) {
+  public TransitionCommand(Arm arm, Supplier<ArmSubsystemGoal> goalSupplier) {
     this.arm = arm;
-    this.goal = goal;
+    this.goalSupplier = goalSupplier;
     addRequirements(arm);
   }
 
   @Override
   public void initialize() {
     needsAvoidReef =
-        !(goal.equals(ArmSubsystemGoal.ALGAE_HIGH_PICK)
-            || goal.equals(ArmSubsystemGoal.ALGAE_LOW_PICK));
+        !(goalSupplier.get().equals(ArmSubsystemGoal.ALGAE_HIGH_PICK)
+            || goalSupplier.get().equals(ArmSubsystemGoal.ALGAE_LOW_PICK));
     arm.setShoulderPosition(transitionElevatorHeightMeter.get());
   }
 
@@ -46,9 +47,9 @@ public class TransitionCommand extends Command {
       return false;
     }
 
-    if (needsShoulderFall(arm.getArmGoal(), goal)) {
-      arm.setElbowPosition(goal.getElbowPositionRad());
-      return arm.elbowAtPosition(goal.getElbowPositionRad());
+    if (needsShoulderFall(arm.getArmGoal(), goalSupplier.get())) {
+      arm.setElbowPosition(goalSupplier.get().getElbowPositionRad());
+      return arm.elbowAtPosition(goalSupplier.get().getElbowPositionRad());
     }
 
     return !needsAvoidReef
@@ -58,7 +59,7 @@ public class TransitionCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     if (!interrupted) {
-      arm.setArmGoal(goal);
+      arm.setArmGoal(goalSupplier.get());
     }
   }
 

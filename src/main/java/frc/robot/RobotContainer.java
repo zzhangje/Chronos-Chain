@@ -23,6 +23,8 @@ import frc.reefscape.Field;
 import frc.robot.Constants.AscopeAssets;
 import frc.robot.Constants.Misc;
 import frc.robot.Constants.Ports;
+import frc.robot.RobotState.RobotGoal;
+import frc.robot.command.UniversalScoreCommand;
 import frc.robot.subsystem.arm.Arm;
 import frc.robot.subsystem.arm.ArmGoal.ArmSubsystemGoal;
 import frc.robot.subsystem.arm.ArmGoal.EndEffectorGoal;
@@ -108,7 +110,7 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    swerve.setDefaultCommand(
+    var teleopDrive =
         new TeleopController(
             swerve,
             () -> -driver.getLeftY(),
@@ -117,7 +119,8 @@ public class RobotContainer {
                 -driver.getRightX()
                     * Math.pow(
                         1.0 - arm.getCOGHeightPercent() * Misc.omegaCOGHeightScaleFactor.get(), 2),
-            () -> driver.rightBumper().getAsBoolean()));
+            driver.rightBumper()::getAsBoolean);
+    swerve.setDefaultCommand(teleopDrive);
 
     driver
         .back()
@@ -130,6 +133,32 @@ public class RobotContainer {
                                     RobotState.getOdometry().getEstimatedPose().getTranslation(),
                                     AllianceFlipUtil.apply(Rotation2d.kZero))))
                 .ignoringDisable(true));
+
+    driver
+        .b()
+        .and(() -> !g_isClimbing)
+        .whileTrue(
+            new UniversalScoreCommand(
+                swerve,
+                arm,
+                intake,
+                () ->
+                    RobotGoal.scoreProcessor()
+                        .setIgnoreArmMoveCondition(nodeSelector.isIgnoreArmMoveCondition())));
+
+    driver
+        .x()
+        .and(() -> !g_isClimbing)
+        .whileTrue(
+            new UniversalScoreCommand(
+                swerve,
+                arm,
+                intake,
+                () ->
+                    RobotGoal.scoreNet()
+                        .setIgnoreArmMoveCondition(nodeSelector.isIgnoreArmMoveCondition())));
+
+    driver.a().and(() -> !g_isClimbing).whileTrue(arm.idleCommand());
   }
 
   private void configureAuto() {
@@ -141,19 +170,33 @@ public class RobotContainer {
   private void configureSimulation(
       Visualizer visualizer, GamePieceVisualizer coral, GamePieceVisualizer algae) {
 
-    new Trigger(
-            () ->
-                intake.getPivotGoal().equals(IntakePivotGoal.REGRASP)
-                    && intake.getRollerGoal().equals(IntakeRollerGoal.EJECT)
-                    && arm.getArmGoal().equals(ArmSubsystemGoal.CORAL_GROUND_PICK)
-                    && arm.getEeGoal().equals(EndEffectorGoal.CORAL_COLLECT))
+    new Trigger(() -> arm.getEeGoal().equals(EndEffectorGoal.CORAL_COLLECT))
         .debounce(0.1)
         .whileTrue(
             Commands.runOnce(
                     () -> {
-                      if (s_intakeHasCoral && !s_armHasAlgae) {
-                        s_armHasCoral = true;
-                        s_intakeHasCoral = false;
+                      if (intake.getPivotGoal().equals(IntakePivotGoal.REGRASP)
+                          && intake.getRollerGoal().equals(IntakeRollerGoal.EJECT)
+                          && arm.getArmGoal().equals(ArmSubsystemGoal.CORAL_GROUND_PICK)) {
+                        if (s_intakeHasCoral && !s_armHasAlgae) {
+                          s_armHasCoral = true;
+                          s_intakeHasCoral = false;
+                        }
+                      }
+                      // FIXME: 棒棒糖
+                      if (false) {
+                        if (!s_armHasAlgae && !s_armHasCoral) {
+                          Boolean ret =
+                              coral.tryPick(
+                                  new Pose3d(RobotState.getOdometry().getEstimatedPose())
+                                      .plus(
+                                          visualizer
+                                              .getComponentTransform(AscopeAssets.ARM)
+                                              .plus(Misc.ee_T_coral)));
+                          if (ret) {
+                            s_armHasCoral = true;
+                          }
+                        }
                       }
                     })
                 .withName("[SIM] Try Regrasp Coral"));

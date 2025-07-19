@@ -93,6 +93,10 @@ public class TeleopController extends Command {
 
   @Override
   public void execute() {
+    Logger.recordOutput("Swerve/TeleopController/TranslationX", xSupplier.get());
+    Logger.recordOutput("Swerve/TeleopController/TranslationY", ySupplier.get());
+    Logger.recordOutput("Swerve/TeleopController/Rotation", omegaSupplier.get());
+
     var translation = calcTranslation();
     var rotation = calcRotation();
 
@@ -109,10 +113,10 @@ public class TeleopController extends Command {
             yawVelRadPerSec,
             0.0,
             Units.degreesToRadians(headingMaintainerMinEnableVelDegreePerSec.get()))) {
-      if (!enableHeadingMaintainer) {
-        headingMaintainer.setSetpoint(yawRad);
-        enableHeadingMaintainer = true;
-      }
+      // if (!enableHeadingMaintainer) {
+      //   headingMaintainer.setSetpoint(yawRad);
+      //   enableHeadingMaintainer = true;
+      // }
     } else {
       disableHeadingMaintainer();
     }

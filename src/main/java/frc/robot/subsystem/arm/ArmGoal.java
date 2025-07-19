@@ -97,7 +97,7 @@ public class ArmGoal {
         new LoggedTunableNumber(
             DebugGroup.ARM, "Arm/Elbow/Goal/AlgaeProcessorScorePositionDegree", 0.0)),
     ALGAE_NET_SCORE(
-        new LoggedTunableNumber(DebugGroup.ARM, "Arm/Shoulder/Goal/AlgaeNetScoreHeightMeter", 1.51),
+        new LoggedTunableNumber(DebugGroup.ARM, "Arm/Shoulder/Goal/AlgaeNetScoreHeightMeter", 1.5),
         new LoggedTunableNumber(
             DebugGroup.ARM, "Arm/Elbow/Goal/AlgaeNetScorePositionDegree", 115.0)),
     CLIMB(

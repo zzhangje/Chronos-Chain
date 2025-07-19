@@ -84,6 +84,9 @@ public class Swerve extends SubsystemBase {
     var optimizedGoalModuleTorques = new SwerveModuleState[4];
 
     for (int i = 0; i < modules.length; i++) {
+      optimizedGoalModuleStates[i] = goalModuleStates[i];
+      optimizedGoalModuleStates[i].optimize(modules[i].getState().angle);
+
       var wheelDirection =
           VecBuilder.fill(
               optimizedGoalModuleStates[i].angle.getCos(),
@@ -165,6 +168,8 @@ public class Swerve extends SubsystemBase {
     var optimizedGoalModuleTorques = new SwerveModuleState[4];
 
     for (int i = 0; i < modules.length; i++) {
+      optimizedGoalModuleStates[i] = goalModuleStates[i];
+      optimizedGoalModuleStates[i].optimize(modules[i].getState().angle);
       optimizedGoalModuleTorques[i] =
           new SwerveModuleState(0.0, optimizedGoalModuleStates[i].angle);
 

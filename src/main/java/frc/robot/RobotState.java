@@ -4,7 +4,8 @@ import frc.lib.utils.GamePieceTracker;
 import frc.reefscape.GamePiece;
 import frc.reefscape.GamePiece.GamePieceType;
 import lombok.Getter;
-import lombok.Setter;
+import org.littletonrobotics.junction.LogTable;
+import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 public class RobotState {
   @Getter
@@ -13,11 +14,11 @@ public class RobotState {
 
   @Getter private static final Odometry odometry = new Odometry();
 
-  public static class RobotGoal {
-    @Getter private final GamePieceType selectedType;
-    @Getter private final String selectedBranch;
-    @Getter private final String selectedLevel;
-    @Getter @Setter private Boolean ignoreArmMoveCondition;
+  public static class RobotGoal implements LoggableInputs {
+    @Getter private GamePieceType selectedType;
+    @Getter private String selectedBranch;
+    @Getter private String selectedLevel;
+    @Getter private Boolean ignoreArmMoveCondition;
 
     public RobotGoal(
         GamePieceType type, String branch, String level, Boolean ignoreArmMoveCondition) {
@@ -25,6 +26,11 @@ public class RobotState {
       this.selectedBranch = branch;
       this.selectedLevel = level;
       this.ignoreArmMoveCondition = ignoreArmMoveCondition;
+    }
+
+    public RobotGoal setIgnoreArmMoveCondition(Boolean ignoreArmMoveCondition) {
+      return new RobotGoal(
+          this.selectedType, this.selectedBranch, this.selectedLevel, ignoreArmMoveCondition);
     }
 
     public static RobotGoal scoreNet() {
@@ -59,6 +65,22 @@ public class RobotState {
       return !selectedType.equals(GamePieceType.INVALID)
           && !selectedBranch.equals("NA")
           && !selectedLevel.equals("NA");
+    }
+
+    @Override
+    public void toLog(LogTable table) {
+      table.put("selectedType", selectedType.getName());
+      table.put("selectedBranch", selectedBranch);
+      table.put("selectedLevel", selectedLevel);
+      table.put("ignoreArmMoveCondition", ignoreArmMoveCondition);
+    }
+
+    @Override
+    public void fromLog(LogTable table) {
+      selectedType = GamePieceType.fromString(table.get("selectedType", "INVALID"));
+      selectedBranch = table.get("selectedBranch", "NA");
+      selectedLevel = table.get("selectedLevel", "NA");
+      ignoreArmMoveCondition = table.get("ignoreArmMoveCondition", false);
     }
   }
 }

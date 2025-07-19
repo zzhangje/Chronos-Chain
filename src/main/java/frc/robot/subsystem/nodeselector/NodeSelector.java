@@ -24,6 +24,7 @@ public class NodeSelector extends VirtualSubsystem {
   private final DoublePublisher reef2RobotAngleDegreePublisher;
   private final DoublePublisher reef2RobotDistanceMeterPublisher;
 
+  // @AutoLogOutput(key = "NodeSelector/SelectedNode")
   @Getter private RobotGoal selectedNode = RobotGoal.invalid();
 
   public NodeSelector() {

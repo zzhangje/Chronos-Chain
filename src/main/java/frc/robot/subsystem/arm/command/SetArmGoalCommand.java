@@ -1,34 +1,39 @@
 package frc.robot.subsystem.arm.command;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.lib.math.EqualsUtil;
 import frc.robot.subsystem.arm.Arm;
 import frc.robot.subsystem.arm.ArmGoal.ArmSubsystemGoal;
+import java.util.function.Supplier;
 
 public class SetArmGoalCommand extends Command {
   private final Arm arm;
-  private final ArmSubsystemGoal goal;
+  private final Supplier<ArmSubsystemGoal> goalSupplier;
   private Command runningCommand;
 
-  public SetArmGoalCommand(Arm arm, ArmSubsystemGoal goal) {
+  public SetArmGoalCommand(Arm arm, Supplier<ArmSubsystemGoal> goalSupplier) {
     this.arm = arm;
-    this.goal = goal;
+    this.goalSupplier = goalSupplier;
     addRequirements(arm);
   }
 
   @Override
   public void initialize() {
-    if (EqualsUtil.epsilonEquals(goal.getShoulderHeightMeter(), 0.0)
-        && EqualsUtil.epsilonEquals(goal.getElbowPositionRad(), Math.PI / 2.0)) {
-      runningCommand = new HomeCommand(arm).andThen(new InstantCommand(() -> arm.setArmGoal(goal)));
-    } else if (TransitionCommand.needsTransition(arm.getArmGoal(), goal)) {
-      runningCommand = new TransitionCommand(arm, goal).andThen(new WaitUntilCommand(arm::atGoal));
-    } else {
-      runningCommand =
-          new InstantCommand(() -> arm.setArmGoal(goal)).andThen(new WaitUntilCommand(arm::atGoal));
-    }
+    var goal = goalSupplier.get();
+    // if (EqualsUtil.epsilonEquals(goal.getShoulderHeightMeter(),
+    // ArmSubsystemGoal.HOME.getShoulderHeightMeter())
+    // && EqualsUtil.epsilonEquals(goal.getElbowPositionRad(),
+    // ArmSubsystemGoal.HOME.getElbowPositionRad())) {
+    // runningCommand = new HomeCommand(arm).andThen(new InstantCommand(() ->
+    // arm.setArmGoal(goal)));
+    // } else if (TransitionCommand.needsTransition(arm.getArmGoal(), goal)) {
+    //   runningCommand = new TransitionCommand(arm, goalSupplier).andThen(new
+    // WaitUntilCommand(arm::stopAtGoal));
+    // } else {
+    runningCommand =
+        Commands.runOnce(() -> arm.setArmGoal(goal)).andThen(new WaitUntilCommand(arm::stopAtGoal));
+    // }
     runningCommand.initialize();
   }
 

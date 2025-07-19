@@ -1,6 +1,8 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.lib.dashboard.LoggedTunableNumber;
@@ -30,6 +32,11 @@ public class Constants {
         new Transform3d(0.225, -0.15, 0.5, new Rotation3d(0.0, 0.0, Math.PI / 2));
     public static final Transform3d ee_T_algae =
         new Transform3d(0.225, 0.0, 0.65, new Rotation3d());
+
+    public static final Transform2d leftSide =
+        new Transform2d(0.0, -0.2169, new Rotation2d(+Math.PI / 2.0));
+    public static final Transform2d rightSide =
+        new Transform2d(0.0, +0.2169, new Rotation2d(-Math.PI / 2.0));
 
     public static final LoggedTunableNumber omegaCOGHeightScaleFactor =
         new LoggedTunableNumber("Swerve", "TeleopController/OmegaCOGHeightScaleFactor", 0.1);

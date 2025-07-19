@@ -26,5 +26,14 @@ public class GamePiece {
     GamePieceType(String name) {
       this.name = name;
     }
+
+    public static GamePieceType fromString(String name) {
+      for (GamePieceType type : values()) {
+        if (type.name.equalsIgnoreCase(name)) {
+          return type;
+        }
+      }
+      return INVALID;
+    }
   }
 }
