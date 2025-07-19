@@ -203,6 +203,7 @@ public class UniversalScoreCommand extends Command {
                     Commands.either(
                         driveCmd, Commands.none(), () -> !goal.getIgnoreArmMoveCondition()),
                     Commands.sequence(
+                        new RegraspCoralCommand(arm, intake),
                         Commands.waitUntil(
                             () ->
                                 goal.getIgnoreArmMoveCondition()
@@ -234,7 +235,9 @@ public class UniversalScoreCommand extends Command {
                                         .setIsLeft(isLeftSupplier),
                                 () -> false),
                             Commands.waitUntil(() -> !arm.hasCoral()))))
-                .withDeadline(Commands.waitUntil(() -> !arm.hasCoral() || arm.hasAlgae()))
+                .withDeadline(
+                    Commands.waitUntil(
+                        () -> (!intake.hasCoral() && !arm.hasCoral()) || arm.hasAlgae()))
                 .finallyDo(() -> arm.setEeGoal(EndEffectorGoal.IDLE));
       }
     } else {

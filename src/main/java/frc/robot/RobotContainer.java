@@ -57,7 +57,7 @@ public class RobotContainer {
 
   // states
   boolean g_isClimbing = false;
-  boolean s_intakeHasCoral = false;
+  boolean s_intakeHasCoral = true;
   boolean s_armHasCoral = true;
   boolean s_armHasAlgae = false;
 
