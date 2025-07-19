@@ -25,6 +25,7 @@ public class HomeCommand extends Command {
     this.arm = arm;
     this.debouncer = new Debouncer(shoulderHomingTimeSecs.get());
     addRequirements(arm);
+    withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
   }
 
   @Override

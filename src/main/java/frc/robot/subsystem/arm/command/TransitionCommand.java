@@ -8,7 +8,6 @@ import frc.robot.Constants.DebugGroup;
 import frc.robot.subsystem.arm.Arm;
 import frc.robot.subsystem.arm.ArmGoal.ArmSubsystemGoal;
 
-// FIXME: handle mirror case for elbow
 public class TransitionCommand extends Command {
   private final Arm arm;
   private final ArmSubsystemGoal goal;
@@ -64,13 +63,11 @@ public class TransitionCommand extends Command {
   }
 
   public static boolean needsTransition(ArmSubsystemGoal currentGoal, ArmSubsystemGoal targetGoal) {
-    // Always transition when going to/from ground pick
     if (currentGoal == ArmSubsystemGoal.CORAL_GROUND_PICK
         || targetGoal == ArmSubsystemGoal.CORAL_GROUND_PICK) {
       return true;
     }
 
-    // Check if we're moving to/from algae low/high pick
     if ((currentGoal == ArmSubsystemGoal.ALGAE_LOW_PICK
             || currentGoal == ArmSubsystemGoal.ALGAE_HIGH_PICK)
         || (targetGoal == ArmSubsystemGoal.ALGAE_LOW_PICK
@@ -78,7 +75,7 @@ public class TransitionCommand extends Command {
       return !needsShoulderFall(currentGoal, targetGoal);
     }
 
-    // Check dangerous angle zone transition
+    // FIXME: handle mirror case for elbow
     return RotationUtil.isRotationEnterSpecificAngleArea(
         currentGoal.getElbowPositionRad(),
         targetGoal.getElbowPositionRad(),

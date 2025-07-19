@@ -31,16 +31,16 @@ public class RobotState {
       return new RobotGoal(GamePieceType.ALGAE, "N", "0", false);
     }
 
-    public static Boolean isScoreNet(RobotGoal goal) {
-      return goal.getSelectedType() == GamePieceType.ALGAE && goal.getSelectedBranch().equals("N");
+    public Boolean isScoreNet() {
+      return selectedType == GamePieceType.ALGAE && selectedBranch.equals("N");
     }
 
     public static RobotGoal scoreProcessor() {
       return new RobotGoal(GamePieceType.ALGAE, "P", "0", false);
     }
 
-    public static Boolean isScoreProcessor(RobotGoal goal) {
-      return goal.getSelectedType() == GamePieceType.ALGAE && goal.getSelectedBranch().equals("P");
+    public Boolean isScoreProcessor() {
+      return selectedType == GamePieceType.ALGAE && selectedBranch.equals("P");
     }
 
     public static RobotGoal collectAlgae(String branch) {
