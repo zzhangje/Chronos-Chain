@@ -1,8 +1,8 @@
 package frc.robot.command;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.lib.interfaces.ComposedCommands;
 import frc.lib.utils.AllianceFlipUtil;
 import frc.reefscape.Field.Barge;
 import frc.reefscape.Field.Processor;
@@ -25,7 +25,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 
-public class UniversalScoreCommand extends Command {
+public class UniversalScoreCommand extends ComposedCommands {
   private final Swerve swerve;
   private final Arm arm;
   private final Intake intake;
@@ -33,8 +33,6 @@ public class UniversalScoreCommand extends Command {
 
   @AutoLogOutput(key = "Super/IsLeft")
   private final BooleanSupplier isLeftSupplier;
-
-  private Command runningCommand;
 
   public UniversalScoreCommand(
       Swerve swerve,
@@ -245,24 +243,5 @@ public class UniversalScoreCommand extends Command {
       runningCommand = Commands.none();
     }
     runningCommand.initialize();
-  }
-
-  @Override
-  public void execute() {
-    if (runningCommand != null) {
-      runningCommand.execute();
-    }
-  }
-
-  @Override
-  public boolean isFinished() {
-    return runningCommand != null && runningCommand.isFinished();
-  }
-
-  @Override
-  public void end(boolean interrupted) {
-    if (runningCommand != null) {
-      runningCommand.end(interrupted);
-    }
   }
 }

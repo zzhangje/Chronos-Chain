@@ -1,20 +1,19 @@
 package frc.robot.subsystem.arm.command;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.lib.interfaces.ComposedCommands;
 import frc.lib.math.EqualsUtil;
 import frc.robot.subsystem.arm.Arm;
 import frc.robot.subsystem.arm.ArmGoal.ArmSubsystemGoal;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
-public class SetArmGoalCommand extends Command {
+public class SetArmGoalCommand extends ComposedCommands {
   private final Arm arm;
   private final Supplier<ArmSubsystemGoal> goalSupplier;
   private final BooleanSupplier needStopSupplier;
-  private Command runningCommand;
 
   public SetArmGoalCommand(
       Arm arm, Supplier<ArmSubsystemGoal> goalSupplier, BooleanSupplier needStopSupplier) {
@@ -22,10 +21,8 @@ public class SetArmGoalCommand extends Command {
     this.goalSupplier = goalSupplier;
     this.needStopSupplier = needStopSupplier;
     addRequirements(arm);
-  }
+    setName("Arm/Set Arm Goal");
 
-  @Override
-  public void initialize() {
     var goal = goalSupplier.get();
     var waitCommand =
         new WaitUntilCommand(
@@ -42,26 +39,6 @@ public class SetArmGoalCommand extends Command {
           new TransitionCommand(arm, goalSupplier).andThen(new WaitUntilCommand(arm::stopAtGoal));
     } else {
       runningCommand = Commands.runOnce(() -> arm.setArmGoal(goal)).andThen(waitCommand);
-    }
-    runningCommand.initialize();
-  }
-
-  @Override
-  public void execute() {
-    if (runningCommand != null) {
-      runningCommand.execute();
-    }
-  }
-
-  @Override
-  public boolean isFinished() {
-    return runningCommand != null && runningCommand.isFinished();
-  }
-
-  @Override
-  public void end(boolean interrupted) {
-    if (runningCommand != null) {
-      runningCommand.end(interrupted);
     }
   }
 }
