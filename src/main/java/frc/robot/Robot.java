@@ -44,9 +44,6 @@ public class Robot extends LoggedRobot {
     // configure AKit
     loggerInit();
 
-    // virtual subsystem init
-    debugGroupInit();
-
     robotContainer = new RobotContainer();
     WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
   }
@@ -70,15 +67,14 @@ public class Robot extends LoggedRobot {
     Logger.start();
 
     Map<String, Integer> commandCounts = new HashMap<>();
-    BiConsumer<Command, Boolean> logCommandFunction =
-        (Command command, Boolean active) -> {
-          String name = command.getName();
-          int count = commandCounts.getOrDefault(name, 0) + (active ? 1 : -1);
-          commandCounts.put(name, count);
-          Logger.recordOutput(
-              "CommandsUnique/" + name + "_" + Integer.toHexString(command.hashCode()), active);
-          Logger.recordOutput("CommandsAll/" + name, count > 0);
-        };
+    BiConsumer<Command, Boolean> logCommandFunction = (Command command, Boolean active) -> {
+      String name = command.getName();
+      int count = commandCounts.getOrDefault(name, 0) + (active ? 1 : -1);
+      commandCounts.put(name, count);
+      Logger.recordOutput(
+          "CommandsUnique/" + name + "_" + Integer.toHexString(command.hashCode()), active);
+      Logger.recordOutput("CommandsAll/" + name, count > 0);
+    };
     CommandScheduler.getInstance()
         .onCommandInitialize(
             (Command command) -> {
@@ -129,13 +125,16 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+  }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+  }
 
   @Override
-  public void disabledExit() {}
+  public void disabledExit() {
+  }
 
   @Override
   public void autonomousInit() {
@@ -149,10 +148,12 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+  }
 
   @Override
-  public void autonomousExit() {}
+  public void autonomousExit() {
+  }
 
   @Override
   public void teleopInit() {
@@ -162,10 +163,12 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+  }
 
   @Override
-  public void teleopExit() {}
+  public void teleopExit() {
+  }
 
   @Override
   public void testInit() {
@@ -173,47 +176,36 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+  }
 
   @Override
-  public void testExit() {}
-
-  private void debugGroupInit() {
-    TunableManager debugGroup = new TunableManager("DebugGroup");
-    debugGroup.register(Constants.DebugGroup.ARM);
-    debugGroup.register(Constants.DebugGroup.SWERVE);
-    debugGroup.register(Constants.DebugGroup.AUTO);
-    debugGroup.register(Constants.DebugGroup.ODOMETRY);
-    debugGroup.register(Constants.DebugGroup.INTAKE);
-    debugGroup.register(Constants.DebugGroup.CLIMBER);
-    new Trigger(Constants.IS_LIVE_DEBUG).onTrue(debugGroup.run()).onFalse(debugGroup.stop());
+  public void testExit() {
   }
 
   private String commandPrintHelper(String name) {
     switch (name.split("/").length) {
-      case 2:
-        {
-          String subsystem = name.split("/")[0];
-          String command = name.split("/")[1];
-          StringBuilder sb = new StringBuilder("$ [");
-          sb.append(subsystem);
-          sb.append("] ");
-          sb.append(command);
-          return sb.toString();
-        }
-      case 3:
-        {
-          String subsystem = name.split("/")[0];
-          String command = name.split("/")[1];
-          String subcommand = name.split("/")[2];
-          StringBuilder sb = new StringBuilder("$ [");
-          sb.append(subsystem);
-          sb.append("] ");
-          sb.append(command);
-          sb.append(" => ");
-          sb.append(subcommand);
-          return sb.toString();
-        }
+      case 2: {
+        String subsystem = name.split("/")[0];
+        String command = name.split("/")[1];
+        StringBuilder sb = new StringBuilder("$ [");
+        sb.append(subsystem);
+        sb.append("] ");
+        sb.append(command);
+        return sb.toString();
+      }
+      case 3: {
+        String subsystem = name.split("/")[0];
+        String command = name.split("/")[1];
+        String subcommand = name.split("/")[2];
+        StringBuilder sb = new StringBuilder("$ [");
+        sb.append(subsystem);
+        sb.append("] ");
+        sb.append(command);
+        sb.append(" => ");
+        sb.append(subcommand);
+        return sb.toString();
+      }
       default:
         return "# " + name;
     }
