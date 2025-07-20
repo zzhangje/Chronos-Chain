@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.math.PoseUtil;
 import frc.lib.service.CommandSelector;
 import frc.lib.service.GamePieceVisualizer;
+import frc.lib.service.TunableManager;
 import frc.lib.service.Visualizer;
 import frc.lib.utils.AllianceFlipUtil;
 import frc.lib.utils.GamePieceTracker;
@@ -48,490 +49,510 @@ import frc.robot.subsystem.swerve.command.WheelRadiusCharacterization;
 import frc.robot.subsystem.swerve.command.WheelRadiusCharacterization.Direction;
 import frc.robot.subsystem.vision.ApriltagVision;
 import frc.robot.subsystem.vision.ObjectDetectionVision;
-import frc.lib.service.TunableManager;
 import lombok.Getter;
 
 public class RobotContainer {
-    @Getter
-    private static final GamePieceTracker coralTracker = new GamePieceTracker(GamePiece.GamePieceType.CORAL.getName(),
-            0.5);
+  @Getter
+  private static final GamePieceTracker coralTracker =
+      new GamePieceTracker(GamePiece.GamePieceType.CORAL.getName(), 0.5);
 
-    @Getter
-    private static final Odometry odometry = new Odometry();
-    @Getter
-    private static final TrajectorySet trajectorySet = new TrajectorySet();
+  @Getter private static final Odometry odometry = new Odometry();
+  @Getter private static final TrajectorySet trajectorySet = new TrajectorySet();
 
-    // driver
-    CommandXboxController driver = new CommandXboxController(Ports.Joystick.DRIVER);
+  // driver
+  CommandXboxController driver = new CommandXboxController(Ports.Joystick.DRIVER);
 
-    // subsystem
-    private final Swerve swerve;
-    private final Intake intake;
-    private final Climber climber;
-    private final Arm arm;
+  // subsystem
+  private final Swerve swerve;
+  private final Intake intake;
+  private final Climber climber;
+  private final Arm arm;
 
-    // service
-    private final CommandSelector autoCmdSelector = new CommandSelector("Auto");
-    private final NodeSelector nodeSelector = new NodeSelector();
+  // service
+  private final CommandSelector autoCmdSelector = new CommandSelector("Auto");
+  private final NodeSelector nodeSelector = new NodeSelector();
 
-    // states
-    boolean g_isClimbing = false;
-    boolean s_intakeHasCoral = false;
-    boolean s_armHasCoral = true;
-    boolean s_armHasAlgae = false;
+  // states
+  boolean g_isClimbing = false;
+  boolean s_intakeHasCoral = false;
+  boolean s_armHasCoral = true;
+  boolean s_armHasAlgae = false;
 
-    public RobotContainer() {
-        if (Constants.MODE.equals(Constants.Mode.REAL)) {
-            swerve = Swerve.createReal();
-            intake = Intake.createReal();
-            climber = Climber.createReal();
-            arm = Arm.createReal();
+  public RobotContainer() {
+    if (Constants.MODE.equals(Constants.Mode.REAL)) {
+      swerve = Swerve.createReal();
+      intake = Intake.createReal();
+      climber = Climber.createReal();
+      arm = Arm.createReal();
 
-            ApriltagVision apriltagVision = ApriltagVision.createReal();
-            ObjectDetectionVision objectDetectionVision = ObjectDetectionVision.createReal();
-        } else if (Constants.MODE.equals(Constants.Mode.SIM)) {
-            swerve = Swerve.createSim();
-            intake = Intake.createSim(() -> s_intakeHasCoral);
-            climber = Climber.createSim();
-            arm = Arm.createSim(() -> s_armHasCoral, () -> s_armHasAlgae);
+      ApriltagVision apriltagVision = ApriltagVision.createReal();
+      ObjectDetectionVision objectDetectionVision = ObjectDetectionVision.createReal();
+    } else if (Constants.MODE.equals(Constants.Mode.SIM)) {
+      swerve = Swerve.createSim();
+      intake = Intake.createSim(() -> s_intakeHasCoral);
+      climber = Climber.createSim();
+      arm = Arm.createSim(() -> s_armHasCoral, () -> s_armHasAlgae);
 
-            GamePieceVisualizer algae = new GamePieceVisualizer(
-                    "Algae",
-                    1.2,
-                    1.3,
-                    PoseUtil.concat(Field.PRESET_ALGAE_POSES, Field.Reef.AlGAE_POSES),
-                    PoseUtil.concat(Field.Barge.SCORABLE_POSES, Field.Processor.SCORABLE_POSES),
-                    s_armHasAlgae ? 1 : 0);
+      GamePieceVisualizer algae =
+          new GamePieceVisualizer(
+              "Algae",
+              1.2,
+              1.3,
+              PoseUtil.concat(Field.PRESET_ALGAE_POSES, Field.Reef.AlGAE_POSES),
+              PoseUtil.concat(Field.Barge.SCORABLE_POSES, Field.Processor.SCORABLE_POSES),
+              s_armHasAlgae ? 1 : 0);
 
-            GamePieceVisualizer coral = new GamePieceVisualizer(
-                    "Coral",
-                    0.5,
-                    1.0,
-                    PoseUtil.repeat(Field.PRESET_CORAL_POSES, 5),
-                    PoseUtil.tolist(Field.Reef.CORAL_POSES),
-                    (s_armHasCoral ? 1 : 0) + (s_intakeHasCoral ? 1 : 0));
+      GamePieceVisualizer coral =
+          new GamePieceVisualizer(
+              "Coral",
+              0.5,
+              1.0,
+              PoseUtil.repeat(Field.PRESET_CORAL_POSES, 5),
+              PoseUtil.tolist(Field.Reef.CORAL_POSES),
+              (s_armHasCoral ? 1 : 0) + (s_intakeHasCoral ? 1 : 0));
 
-            ApriltagVision apriltagVision = ApriltagVision
-                    .createSim(() -> RobotContainer.getOdometry().getEstimatedPose());
-            ObjectDetectionVision objectDetectionVision = ObjectDetectionVision.createSim(
-                    () -> RobotContainer.getOdometry().getEstimatedPose(),
-                    () -> coral.getPickableGamePiecePose());
+      ApriltagVision apriltagVision =
+          ApriltagVision.createSim(() -> RobotContainer.getOdometry().getEstimatedPose());
+      ObjectDetectionVision objectDetectionVision =
+          ObjectDetectionVision.createSim(
+              () -> RobotContainer.getOdometry().getEstimatedPose(),
+              () -> coral.getPickableGamePiecePose());
 
-            Visualizer visualizer = new Visualizer();
-            configureVisualization(visualizer);
-            configureSimulation(visualizer, coral, algae);
-        } else {
-            swerve = Swerve.createIO();
-            intake = Intake.createIO();
-            climber = Climber.createIO();
-            arm = Arm.createIO();
-        }
-
-        swerve.setCustomMaxTiltAccelScale(
-                () -> Math.pow(1.0 - arm.getCOGHeightPercent() * Misc.accelCOGHeightScaleFactor.get(), 2));
-        intake.setNeedDodgeSupplier(() -> arm.isNeedIntakeDodge());
-
-        configureBindings();
-        configureAuto();
-        configureDebugGroup();
-
-        System.out.println("##########################################");
-        System.out.println("# RobotContainer Initialization Complete #");
-        System.out.println("#               Mode: " + Constants.MODE + "               #");
-        System.out.println("##########################################");
+      Visualizer visualizer = new Visualizer();
+      configureVisualization(visualizer);
+      configureSimulation(visualizer, coral, algae);
+    } else {
+      swerve = Swerve.createIO();
+      intake = Intake.createIO();
+      climber = Climber.createIO();
+      arm = Arm.createIO();
     }
 
-    private Command joystickRumblerCommand(
-            CommandXboxController controller, double timeoutSecs, RumbleType rumbleType) {
-        return Commands.startEnd(
-                () -> controller.getHID().setRumble(rumbleType, 1.0),
-                () -> controller.getHID().setRumble(rumbleType, 0.0))
-                .withTimeout(timeoutSecs)
-                .withName("Joystick Rumbler");
-    }
+    swerve.setCustomMaxTiltAccelScale(
+        () -> Math.pow(1.0 - arm.getCOGHeightPercent() * Misc.accelCOGHeightScaleFactor.get(), 2));
+    intake.setNeedDodgeSupplier(() -> arm.isNeedIntakeDodge());
 
-    private void configureBindings() {
-        new Trigger(intake::hasCoral)
-                .onChange(joystickRumblerCommand(driver, 0.3, RumbleType.kLeftRumble));
-        new Trigger(arm::hasCoral)
-                .onChange(joystickRumblerCommand(driver, 0.3, RumbleType.kLeftRumble));
-        new Trigger(arm::hasAlgae)
-                .onChange(joystickRumblerCommand(driver, 0.3, RumbleType.kRightRumble));
+    configureBindings();
+    configureAuto();
+    configureDebugGroup();
 
-        var teleopDrive = new TeleopController(
+    System.out.println("##########################################");
+    System.out.println("# RobotContainer Initialization Complete #");
+    System.out.println("#               Mode: " + Constants.MODE + "               #");
+    System.out.println("##########################################");
+  }
+
+  private Command joystickRumblerCommand(
+      CommandXboxController controller, double timeoutSecs, RumbleType rumbleType) {
+    return Commands.startEnd(
+            () -> controller.getHID().setRumble(rumbleType, 1.0),
+            () -> controller.getHID().setRumble(rumbleType, 0.0))
+        .withTimeout(timeoutSecs)
+        .withName("Joystick Rumbler");
+  }
+
+  private void configureBindings() {
+    new Trigger(intake::hasCoral)
+        .onChange(joystickRumblerCommand(driver, 0.3, RumbleType.kLeftRumble));
+    new Trigger(arm::hasCoral)
+        .onChange(joystickRumblerCommand(driver, 0.3, RumbleType.kLeftRumble));
+    new Trigger(arm::hasAlgae)
+        .onChange(joystickRumblerCommand(driver, 0.3, RumbleType.kRightRumble));
+
+    var teleopDrive =
+        new TeleopController(
+            swerve,
+            () -> -driver.getLeftY(),
+            () -> -driver.getLeftX(),
+            () ->
+                -driver.getRightX()
+                    * Math.pow(
+                        1.0 - arm.getCOGHeightPercent() * Misc.omegaCOGHeightScaleFactor.get(), 2),
+            driver.rightBumper()::getAsBoolean);
+    swerve.setDefaultCommand(teleopDrive);
+
+    driver
+        .back()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        RobotContainer.getOdometry()
+                            .resetPose(
+                                new Pose2d(
+                                    RobotContainer.getOdometry()
+                                        .getEstimatedPose()
+                                        .getTranslation(),
+                                    AllianceFlipUtil.apply(Rotation2d.kZero))))
+                .ignoringDisable(true));
+
+    driver
+        .start()
+        .debounce(1.5)
+        .onTrue(
+            Commands.sequence(
+                Commands.runOnce(
+                    () -> {
+                      g_isClimbing = true;
+                      Command current = swerve.getCurrentCommand();
+                      if (current != null && current != teleopDrive) {
+                        current.cancel();
+                      }
+                      swerve.removeDefaultCommand();
+                      swerve.setDefaultCommand(
+                          new SideJump(
+                              swerve,
+                              () -> driver.getLeftY(),
+                              () -> driver.x().getAsBoolean(),
+                              () -> driver.b().getAsBoolean(),
+                              () -> driver.a().getAsBoolean()));
+                    }),
+                Commands.parallel(arm.idle(), intake.idle(), climber.ready())));
+
+    driver
+        .b()
+        .and(() -> !g_isClimbing)
+        .whileTrue(
+            new UniversalScoreCommand(
                 swerve,
-                () -> -driver.getLeftY(),
-                () -> -driver.getLeftX(),
-                () -> -driver.getRightX()
-                        * Math.pow(
-                                1.0 - arm.getCOGHeightPercent() * Misc.omegaCOGHeightScaleFactor.get(), 2),
-                driver.rightBumper()::getAsBoolean);
-        swerve.setDefaultCommand(teleopDrive);
+                arm,
+                intake,
+                () ->
+                    RobotGoal.scoreProcessor()
+                        .setIgnoreArmMoveCondition(nodeSelector.isIgnoreArmMoveCondition())));
 
-        driver
-                .back()
-                .onTrue(
-                        Commands.runOnce(
-                                () -> RobotContainer.getOdometry()
-                                        .resetPose(
-                                                new Pose2d(
-                                                        RobotContainer.getOdometry()
-                                                                .getEstimatedPose()
-                                                                .getTranslation(),
-                                                        AllianceFlipUtil.apply(Rotation2d.kZero))))
-                                .ignoringDisable(true));
+    driver
+        .x()
+        .and(() -> !g_isClimbing)
+        .whileTrue(
+            new UniversalScoreCommand(
+                swerve,
+                arm,
+                intake,
+                () ->
+                    RobotGoal.scoreNet()
+                        .setIgnoreArmMoveCondition(nodeSelector.isIgnoreArmMoveCondition())));
 
-        driver
-                .start()
-                .debounce(1.5)
-                .onTrue(
-                        Commands.sequence(
-                                Commands.runOnce(
-                                        () -> {
-                                            g_isClimbing = true;
-                                            Command current = swerve.getCurrentCommand();
-                                            if (current != null && current != teleopDrive) {
-                                                current.cancel();
-                                            }
-                                            swerve.removeDefaultCommand();
-                                            swerve.setDefaultCommand(
-                                                    new SideJump(
-                                                            swerve,
-                                                            () -> driver.getLeftY(),
-                                                            () -> driver.x().getAsBoolean(),
-                                                            () -> driver.b().getAsBoolean(),
-                                                            () -> driver.a().getAsBoolean()));
-                                        }),
-                                Commands.parallel(arm.idle(), intake.idle(), climber.ready())));
+    driver
+        .y()
+        .and(() -> !g_isClimbing)
+        .whileTrue(new UniversalScoreCommand(swerve, arm, intake, nodeSelector::getSelectedNode));
 
-        driver
-                .b()
-                .and(() -> !g_isClimbing)
-                .whileTrue(
-                        new UniversalScoreCommand(
-                                swerve,
-                                arm,
-                                intake,
-                                () -> RobotGoal.scoreProcessor()
-                                        .setIgnoreArmMoveCondition(nodeSelector.isIgnoreArmMoveCondition())));
+    driver.y().and(() -> g_isClimbing).whileTrue(climber.pull());
 
-        driver
-                .x()
-                .and(() -> !g_isClimbing)
-                .whileTrue(
-                        new UniversalScoreCommand(
-                                swerve,
-                                arm,
-                                intake,
-                                () -> RobotGoal.scoreNet()
-                                        .setIgnoreArmMoveCondition(nodeSelector.isIgnoreArmMoveCondition())));
+    driver
+        .a()
+        .and(() -> !g_isClimbing)
+        .onTrue(
+            Commands.parallel(
+                    arm.idle(),
+                    intake.idle(),
+                    Commands.runOnce(
+                        () -> {
+                          Command current = swerve.getCurrentCommand();
+                          if (current != null && current != teleopDrive) {
+                            current.cancel();
+                          }
+                        }))
+                .withName("Super/Force Idle"));
 
-        driver
-                .y()
-                .and(() -> !g_isClimbing)
-                .whileTrue(new UniversalScoreCommand(swerve, arm, intake, nodeSelector::getSelectedNode));
+    driver.leftBumper().onTrue(intake.inject()).onFalse(intake.idle());
 
-        driver.y().and(() -> g_isClimbing).whileTrue(climber.pull());
+    driver
+        .leftTrigger()
+        .whileTrue(Commands.runOnce(() -> arm.setEeGoal(EndEffectorGoal.EJECT)))
+        .onFalse(Commands.runOnce(() -> arm.setEeGoal(EndEffectorGoal.IDLE)));
 
-        driver
-                .a()
-                .and(() -> !g_isClimbing)
-                .onTrue(
-                        Commands.parallel(
-                                arm.idle(),
-                                intake.idle(),
-                                Commands.runOnce(
-                                        () -> {
-                                            Command current = swerve.getCurrentCommand();
-                                            if (current != null && current != teleopDrive) {
-                                                current.cancel();
-                                            }
-                                        }))
-                                .withName("Super/Force Idle"));
+    driver
+        .rightTrigger()
+        .whileTrue(Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerGoal.EJECT)))
+        .onFalse(Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerGoal.IDLE)));
+  }
 
-        driver.leftBumper().onTrue(intake.inject()).onFalse(intake.idle());
+  private void configureAuto() {
+    new Trigger(() -> DriverStation.isAutonomousEnabled())
+        .onTrue(autoCmdSelector.stop())
+        .onFalse(autoCmdSelector.run());
 
-        driver
-                .leftTrigger()
-                .whileTrue(Commands.runOnce(() -> arm.setEeGoal(EndEffectorGoal.EJECT)))
-                .onFalse(Commands.runOnce(() -> arm.setEeGoal(EndEffectorGoal.IDLE)));
+    autoCmdSelector.addCommand(
+        "Wheel Radius Characterization",
+        new WheelRadiusCharacterization(
+            swerve,
+            () -> RobotContainer.getOdometry().getEstimatedPose().getRotation(),
+            Direction.CLOCKWISE));
 
-        driver
-                .rightTrigger()
-                .whileTrue(Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerGoal.EJECT)))
-                .onFalse(Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerGoal.IDLE)));
-    }
+    autoCmdSelector.addCommand(
+        "Drive Ks Characeterization",
+        new KsCharacterization(
+            swerve,
+            swerve::setModuleDriveCharacterizationCurrent,
+            swerve::getModuleDriveCharacterizationVel));
 
-    private void configureAuto() {
-        new Trigger(() -> DriverStation.isAutonomousEnabled())
-                .onTrue(autoCmdSelector.stop())
-                .onFalse(autoCmdSelector.run());
+    autoCmdSelector.addCommand("Left Station Mode", new LeftStationMode(swerve, arm, intake));
 
-        autoCmdSelector.addCommand(
-                "Wheel Radius Characterization",
-                new WheelRadiusCharacterization(
-                        swerve,
-                        () -> RobotContainer.getOdometry().getEstimatedPose().getRotation(),
-                        Direction.CLOCKWISE));
+    autoCmdSelector.addCommand("Right Station Mode", new RightStationMode(swerve, arm, intake));
 
-        autoCmdSelector.addCommand(
-                "Drive Ks Characeterization",
-                new KsCharacterization(
-                        swerve,
-                        swerve::setModuleDriveCharacterizationCurrent,
-                        swerve::getModuleDriveCharacterizationVel));
+    autoCmdSelector.addCommand("Mid Net Mode", new MidNetMode(swerve, arm, intake));
+  }
 
-        autoCmdSelector.addCommand("Left Station Mode", new LeftStationMode(swerve, arm, intake));
+  private void configureSimulation(
+      Visualizer visualizer, GamePieceVisualizer coral, GamePieceVisualizer algae) {
 
-        autoCmdSelector.addCommand("Right Station Mode", new RightStationMode(swerve, arm, intake));
+    new Trigger(() -> arm.getEeGoal().equals(EndEffectorGoal.CORAL_COLLECT))
+        .debounce(0.1)
+        .whileTrue(
+            Commands.runOnce(
+                    () -> {
+                      if (intake.getPivotGoal().equals(IntakePivotGoal.REGRASP)
+                          && intake.getRollerGoal().equals(IntakeRollerGoal.EJECT)
+                          && arm.getArmGoal().equals(ArmSubsystemGoal.CORAL_GROUND_PICK)) {
+                        if (s_intakeHasCoral && !s_armHasAlgae) {
+                          s_armHasCoral = true;
+                          s_intakeHasCoral = false;
+                        }
+                      }
+                      // FIXME: 棒棒糖
+                      if (false) {
+                        if (!s_armHasAlgae && !s_armHasCoral) {
+                          Boolean ret =
+                              coral.tryPick(
+                                  new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
+                                      .plus(
+                                          visualizer
+                                              .getComponentTransform(AscopeAssets.ARM)
+                                              .plus(Misc.ee_T_coral)));
+                          if (ret) {
+                            s_armHasCoral = true;
+                          }
+                        }
+                      }
+                    })
+                .withName("[SIM] Try Regrasp Coral"));
 
-        autoCmdSelector.addCommand("Mid Net Mode", new MidNetMode(swerve, arm, intake));
-    }
+    new Trigger(
+            () ->
+                intake.getRollerGoal().equals(IntakeRollerGoal.INJECT)
+                    && intake.getPivotGoal().equals(IntakePivotGoal.DOWN))
+        .debounce(0.5)
+        .whileTrue(
+            Commands.run(
+                    () -> {
+                      if (!s_intakeHasCoral) {
+                        Boolean ret =
+                            coral.tryPick(
+                                new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
+                                    .plus(
+                                        visualizer
+                                            .getComponentTransform(AscopeAssets.INTAKE)
+                                            .plus(Misc.intake_T_coral)));
+                        if (ret) {
+                          s_intakeHasCoral = true;
+                        }
+                      }
+                    })
+                .withName("[SIM] Try Pick Coral"));
 
-    private void configureSimulation(
-            Visualizer visualizer, GamePieceVisualizer coral, GamePieceVisualizer algae) {
+    new Trigger(
+            () ->
+                intake.getRollerGoal().equals(IntakeRollerGoal.EJECT)
+                    || intake.getRollerGoal().equals(IntakeRollerGoal.TROUGH))
+        .debounce(3.5)
+        .whileTrue(
+            Commands.runOnce(
+                    () -> {
+                      if (s_intakeHasCoral) {
+                        Boolean ret =
+                            coral.tryScore(
+                                new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
+                                    .plus(
+                                        visualizer
+                                            .getComponentTransform(AscopeAssets.INTAKE)
+                                            .plus(Misc.intake_T_coral)));
+                        if (ret) {
+                          s_intakeHasCoral = false;
+                        } else if (coral.tryEject(
+                            new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
+                                .plus(
+                                    visualizer
+                                        .getComponentTransform(AscopeAssets.INTAKE)
+                                        .plus(Misc.intake_T_coral)))) {
+                          s_intakeHasCoral = false;
+                        }
+                      }
+                    })
+                .withName("[SIM] Try Eject Coral"));
 
-        new Trigger(() -> arm.getEeGoal().equals(EndEffectorGoal.CORAL_COLLECT))
-                .debounce(0.1)
-                .whileTrue(
-                        Commands.runOnce(
-                                () -> {
-                                    if (intake.getPivotGoal().equals(IntakePivotGoal.REGRASP)
-                                            && intake.getRollerGoal().equals(IntakeRollerGoal.EJECT)
-                                            && arm.getArmGoal().equals(ArmSubsystemGoal.CORAL_GROUND_PICK)) {
-                                        if (s_intakeHasCoral && !s_armHasAlgae) {
-                                            s_armHasCoral = true;
-                                            s_intakeHasCoral = false;
-                                        }
-                                    }
-                                    // FIXME: 棒棒糖
-                                    if (false) {
-                                        if (!s_armHasAlgae && !s_armHasCoral) {
-                                            Boolean ret = coral.tryPick(
-                                                    new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
-                                                            .plus(
-                                                                    visualizer
-                                                                            .getComponentTransform(AscopeAssets.ARM)
-                                                                            .plus(Misc.ee_T_coral)));
-                                            if (ret) {
-                                                s_armHasCoral = true;
-                                            }
-                                        }
-                                    }
-                                })
-                                .withName("[SIM] Try Regrasp Coral"));
+    new Trigger(
+            () ->
+                arm.getEeGoal().equals(EndEffectorGoal.EJECT)
+                    || arm.getEeGoal().equals(EndEffectorGoal.ALGAE_SCORE)
+                    || arm.getEeGoal().equals(EndEffectorGoal.CORAL_SCORE))
+        .debounce(0.3)
+        .whileTrue(
+            Commands.runOnce(
+                    () -> {
+                      if (s_armHasAlgae) {
+                        Boolean ret =
+                            algae.tryScore(
+                                new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
+                                    .plus(
+                                        visualizer
+                                            .getComponentTransform(AscopeAssets.ARM)
+                                            .plus(Misc.ee_T_algae)));
+                        if (ret) {
+                          s_armHasAlgae = false;
+                        } else {
+                          if (algae.tryEject(
+                              new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
+                                  .plus(
+                                      visualizer
+                                          .getComponentTransform(AscopeAssets.ARM)
+                                          .plus(Misc.ee_T_algae)))) {
+                            s_armHasAlgae = false;
+                          }
+                        }
+                      }
+                      if (s_armHasCoral) {
+                        Boolean ret =
+                            coral.tryScore(
+                                new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
+                                    .plus(
+                                        visualizer
+                                            .getComponentTransform(AscopeAssets.ARM)
+                                            .plus(Misc.ee_T_coral)));
+                        if (ret) {
+                          s_armHasCoral = false;
+                        } else {
+                          if (coral.tryEject(
+                              new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
+                                  .plus(
+                                      visualizer
+                                          .getComponentTransform(AscopeAssets.ARM)
+                                          .plus(Misc.ee_T_coral)))) {
+                            s_armHasCoral = false;
+                          }
+                        }
+                      }
+                    })
+                .withName("[SIM] Try Score or Eject"));
 
-        new Trigger(
-                () -> intake.getRollerGoal().equals(IntakeRollerGoal.INJECT)
-                        && intake.getPivotGoal().equals(IntakePivotGoal.DOWN))
-                .debounce(0.5)
-                .whileTrue(
-                        Commands.run(
-                                () -> {
-                                    if (!s_intakeHasCoral) {
-                                        Boolean ret = coral.tryPick(
-                                                new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
-                                                        .plus(
-                                                                visualizer
-                                                                        .getComponentTransform(AscopeAssets.INTAKE)
-                                                                        .plus(Misc.intake_T_coral)));
-                                        if (ret) {
-                                            s_intakeHasCoral = true;
-                                        }
-                                    }
-                                })
-                                .withName("[SIM] Try Pick Coral"));
+    new Trigger(() -> arm.getEeGoal().equals(EndEffectorGoal.ALGAE_COLLECT))
+        .debounce(0.2)
+        .whileTrue(
+            Commands.run(
+                    () -> {
+                      if (!s_armHasAlgae && !s_armHasCoral) {
+                        Boolean ret =
+                            algae.tryPick(
+                                new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
+                                    .plus(
+                                        visualizer
+                                            .getComponentTransform(AscopeAssets.ARM)
+                                            .plus(Misc.ee_T_algae)));
+                        if (ret) {
+                          s_armHasAlgae = true;
+                        }
+                      }
+                    })
+                .withName("[SIM] Try Pick Algae"));
+  }
 
-        new Trigger(
-                () -> intake.getRollerGoal().equals(IntakeRollerGoal.EJECT)
-                        || intake.getRollerGoal().equals(IntakeRollerGoal.TROUGH))
-                .debounce(3.5)
-                .whileTrue(
-                        Commands.runOnce(
-                                () -> {
-                                    if (s_intakeHasCoral) {
-                                        Boolean ret = coral.tryScore(
-                                                new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
-                                                        .plus(
-                                                                visualizer
-                                                                        .getComponentTransform(AscopeAssets.INTAKE)
-                                                                        .plus(Misc.intake_T_coral)));
-                                        if (ret) {
-                                            s_intakeHasCoral = false;
-                                        } else if (coral.tryEject(
-                                                new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
-                                                        .plus(
-                                                                visualizer
-                                                                        .getComponentTransform(AscopeAssets.INTAKE)
-                                                                        .plus(Misc.intake_T_coral)))) {
-                                            s_intakeHasCoral = false;
-                                        }
-                                    }
-                                })
-                                .withName("[SIM] Try Eject Coral"));
+  private void configureDebugGroup() {
+    TunableManager debugGroup = new TunableManager("DebugGroup");
+    debugGroup.register(Constants.DebugGroup.ARM);
+    debugGroup.register(Constants.DebugGroup.SWERVE);
+    debugGroup.register(Constants.DebugGroup.AUTO);
+    debugGroup.register(Constants.DebugGroup.ODOMETRY);
+    debugGroup.register(Constants.DebugGroup.INTAKE);
+    debugGroup.register(Constants.DebugGroup.CLIMBER);
+    new Trigger(Constants.IS_LIVE_DEBUG).onTrue(debugGroup.run()).onFalse(debugGroup.stop());
+  }
 
-        new Trigger(
-                () -> arm.getEeGoal().equals(EndEffectorGoal.EJECT)
-                        || arm.getEeGoal().equals(EndEffectorGoal.ALGAE_SCORE)
-                        || arm.getEeGoal().equals(EndEffectorGoal.CORAL_SCORE))
-                .debounce(0.3)
-                .whileTrue(
-                        Commands.runOnce(
-                                () -> {
-                                    if (s_armHasAlgae) {
-                                        Boolean ret = algae.tryScore(
-                                                new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
-                                                        .plus(
-                                                                visualizer
-                                                                        .getComponentTransform(AscopeAssets.ARM)
-                                                                        .plus(Misc.ee_T_algae)));
-                                        if (ret) {
-                                            s_armHasAlgae = false;
-                                        } else {
-                                            if (algae.tryEject(
-                                                    new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
-                                                            .plus(
-                                                                    visualizer
-                                                                            .getComponentTransform(AscopeAssets.ARM)
-                                                                            .plus(Misc.ee_T_algae)))) {
-                                                s_armHasAlgae = false;
-                                            }
-                                        }
-                                    }
-                                    if (s_armHasCoral) {
-                                        Boolean ret = coral.tryScore(
-                                                new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
-                                                        .plus(
-                                                                visualizer
-                                                                        .getComponentTransform(AscopeAssets.ARM)
-                                                                        .plus(Misc.ee_T_coral)));
-                                        if (ret) {
-                                            s_armHasCoral = false;
-                                        } else {
-                                            if (coral.tryEject(
-                                                    new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
-                                                            .plus(
-                                                                    visualizer
-                                                                            .getComponentTransform(AscopeAssets.ARM)
-                                                                            .plus(Misc.ee_T_coral)))) {
-                                                s_armHasCoral = false;
-                                            }
-                                        }
-                                    }
-                                })
-                                .withName("[SIM] Try Score or Eject"));
+  private void configureVisualization(Visualizer visualizer) {
+    visualizer.registerVisualizedComponent(
+        Visualizer.BASE_FRAME,
+        "chassis",
+        AscopeAssets.CHASSIS,
+        new Transform3d(
+            0.0, 0.0, 0.0, new Rotation3d(Math.PI / 2 * 0, Math.PI / 2 * 2, Math.PI / 2 * 2)));
 
-        new Trigger(() -> arm.getEeGoal().equals(EndEffectorGoal.ALGAE_COLLECT))
-                .debounce(0.2)
-                .whileTrue(
-                        Commands.run(
-                                () -> {
-                                    if (!s_armHasAlgae && !s_armHasCoral) {
-                                        Boolean ret = algae.tryPick(
-                                                new Pose3d(RobotContainer.getOdometry().getEstimatedPose())
-                                                        .plus(
-                                                                visualizer
-                                                                        .getComponentTransform(AscopeAssets.ARM)
-                                                                        .plus(Misc.ee_T_algae)));
-                                        if (ret) {
-                                            s_armHasAlgae = true;
-                                        }
-                                    }
-                                })
-                                .withName("[SIM] Try Pick Algae"));
-    }
+    // climber
+    visualizer.registerVisualizedComponent(
+        "chassis", "climber_base", AscopeAssets.CLIMBER_BASE, new Transform3d());
+    visualizer.registerVisualizedComponent(
+        "climber_base",
+        "climber",
+        AscopeAssets.CLIMBER,
+        () ->
+            new Transform3d(
+                -0.325,
+                0.0,
+                -0.275,
+                new Rotation3d(0.0, 0.28 - climber.getPullPositionRad(), 0.0)));
 
-    private void configureDebugGroup() {
-        TunableManager debugGroup = new TunableManager("DebugGroup");
-        debugGroup.register(Constants.DebugGroup.ARM);
-        debugGroup.register(Constants.DebugGroup.SWERVE);
-        debugGroup.register(Constants.DebugGroup.AUTO);
-        debugGroup.register(Constants.DebugGroup.ODOMETRY);
-        debugGroup.register(Constants.DebugGroup.INTAKE);
-        debugGroup.register(Constants.DebugGroup.CLIMBER);
-        new Trigger(Constants.IS_LIVE_DEBUG).onTrue(debugGroup.run()).onFalse(debugGroup.stop());
-    }
+    // intake
+    visualizer.registerVisualizedComponent(
+        "chassis", "intake_base", AscopeAssets.INTAKE_BASE, new Transform3d());
+    visualizer.registerVisualizedComponent(
+        "intake_base",
+        "intake",
+        AscopeAssets.INTAKE,
+        () ->
+            new Transform3d(
+                0.315,
+                0.0,
+                -0.15,
+                new Rotation3d(0.0, Math.PI * 0.72 - intake.getPivotPositionRad(), 0.0)));
 
-    private void configureVisualization(Visualizer visualizer) {
-        visualizer.registerVisualizedComponent(
-                Visualizer.BASE_FRAME,
-                "chassis",
-                AscopeAssets.CHASSIS,
-                new Transform3d(
-                        0.0, 0.0, 0.0, new Rotation3d(Math.PI / 2 * 0, Math.PI / 2 * 2, Math.PI / 2 * 2)));
+    // arm
+    visualizer.registerVisualizedComponent(
+        "chassis", "elevator_l1", AscopeAssets.ELEVATOR_1, new Transform3d());
+    visualizer.registerVisualizedComponent(
+        "elevator_l1",
+        "elevator_l2",
+        AscopeAssets.ELEVATOR_2,
+        () -> new Transform3d(0.0, 0.0, -arm.getElevatorHeightMeter(), new Rotation3d()));
+    visualizer.registerVisualizedComponent(
+        "elevator_l2",
+        "carriage",
+        AscopeAssets.CARRIAGE,
+        () -> new Transform3d(0.0, 0.0, -arm.getCarriageHeightMeter(), new Rotation3d()));
+    visualizer.registerVisualizedComponent(
+        "carriage",
+        "arm",
+        AscopeAssets.ARM,
+        () ->
+            new Transform3d(
+                0.0,
+                0.0,
+                -0.255,
+                new Rotation3d(Math.PI / 2 + arm.getElbowPositionRad(), 0.0, 0.0)));
 
-        // climber
-        visualizer.registerVisualizedComponent(
-                "chassis", "climber_base", AscopeAssets.CLIMBER_BASE, new Transform3d());
-        visualizer.registerVisualizedComponent(
-                "climber_base",
-                "climber",
-                AscopeAssets.CLIMBER,
-                () -> new Transform3d(
-                        -0.325,
-                        0.0,
-                        -0.275,
-                        new Rotation3d(0.0, 0.28 - climber.getPullPositionRad(), 0.0)));
+    // game piece
+    visualizer.registerVisualizedComponent(
+        "intake",
+        "coral_intake",
+        AscopeAssets.CORAL_INTAKE,
+        () ->
+            s_intakeHasCoral
+                ? Misc.intake_T_coral
+                : new Transform3d(0, 0, 0x3f3f3f3f, new Rotation3d()));
+    visualizer.registerVisualizedComponent(
+        "arm",
+        "coral_arm",
+        AscopeAssets.CORAL,
+        () ->
+            s_armHasCoral ? Misc.ee_T_coral : new Transform3d(0, 0, 0x3f3f3f3f, new Rotation3d()));
+    visualizer.registerVisualizedComponent(
+        "arm",
+        "algae_arm",
+        AscopeAssets.ALGAE,
+        () ->
+            s_armHasAlgae ? Misc.ee_T_algae : new Transform3d(0, 0, 0x3f3f3f3f, new Rotation3d()));
 
-        // intake
-        visualizer.registerVisualizedComponent(
-                "chassis", "intake_base", AscopeAssets.INTAKE_BASE, new Transform3d());
-        visualizer.registerVisualizedComponent(
-                "intake_base",
-                "intake",
-                AscopeAssets.INTAKE,
-                () -> new Transform3d(
-                        0.315,
-                        0.0,
-                        -0.15,
-                        new Rotation3d(0.0, Math.PI * 0.72 - intake.getPivotPositionRad(), 0.0)));
+    visualizer.print();
+  }
 
-        // arm
-        visualizer.registerVisualizedComponent(
-                "chassis", "elevator_l1", AscopeAssets.ELEVATOR_1, new Transform3d());
-        visualizer.registerVisualizedComponent(
-                "elevator_l1",
-                "elevator_l2",
-                AscopeAssets.ELEVATOR_2,
-                () -> new Transform3d(0.0, 0.0, -arm.getElevatorHeightMeter(), new Rotation3d()));
-        visualizer.registerVisualizedComponent(
-                "elevator_l2",
-                "carriage",
-                AscopeAssets.CARRIAGE,
-                () -> new Transform3d(0.0, 0.0, -arm.getCarriageHeightMeter(), new Rotation3d()));
-        visualizer.registerVisualizedComponent(
-                "carriage",
-                "arm",
-                AscopeAssets.ARM,
-                () -> new Transform3d(
-                        0.0,
-                        0.0,
-                        -0.255,
-                        new Rotation3d(Math.PI / 2 + arm.getElbowPositionRad(), 0.0, 0.0)));
-
-        // game piece
-        visualizer.registerVisualizedComponent(
-                "intake",
-                "coral_intake",
-                AscopeAssets.CORAL_INTAKE,
-                () -> s_intakeHasCoral
-                        ? Misc.intake_T_coral
-                        : new Transform3d(0, 0, 0x3f3f3f3f, new Rotation3d()));
-        visualizer.registerVisualizedComponent(
-                "arm",
-                "coral_arm",
-                AscopeAssets.CORAL,
-                () -> s_armHasCoral ? Misc.ee_T_coral : new Transform3d(0, 0, 0x3f3f3f3f, new Rotation3d()));
-        visualizer.registerVisualizedComponent(
-                "arm",
-                "algae_arm",
-                AscopeAssets.ALGAE,
-                () -> s_armHasAlgae ? Misc.ee_T_algae : new Transform3d(0, 0, 0x3f3f3f3f, new Rotation3d()));
-
-        visualizer.print();
-    }
-
-    public Command getAutonomousCommand() {
-        return autoCmdSelector.getCommand();
-    }
+  public Command getAutonomousCommand() {
+    return autoCmdSelector.getCommand();
+  }
 }

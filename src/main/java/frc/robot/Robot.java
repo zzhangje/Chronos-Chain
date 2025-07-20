@@ -13,9 +13,7 @@ import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.interfaces.VirtualSubsystem;
-import frc.lib.service.TunableManager;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -67,14 +65,15 @@ public class Robot extends LoggedRobot {
     Logger.start();
 
     Map<String, Integer> commandCounts = new HashMap<>();
-    BiConsumer<Command, Boolean> logCommandFunction = (Command command, Boolean active) -> {
-      String name = command.getName();
-      int count = commandCounts.getOrDefault(name, 0) + (active ? 1 : -1);
-      commandCounts.put(name, count);
-      Logger.recordOutput(
-          "CommandsUnique/" + name + "_" + Integer.toHexString(command.hashCode()), active);
-      Logger.recordOutput("CommandsAll/" + name, count > 0);
-    };
+    BiConsumer<Command, Boolean> logCommandFunction =
+        (Command command, Boolean active) -> {
+          String name = command.getName();
+          int count = commandCounts.getOrDefault(name, 0) + (active ? 1 : -1);
+          commandCounts.put(name, count);
+          Logger.recordOutput(
+              "CommandsUnique/" + name + "_" + Integer.toHexString(command.hashCode()), active);
+          Logger.recordOutput("CommandsAll/" + name, count > 0);
+        };
     CommandScheduler.getInstance()
         .onCommandInitialize(
             (Command command) -> {
@@ -125,16 +124,13 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void disabledInit() {
-  }
+  public void disabledInit() {}
 
   @Override
-  public void disabledPeriodic() {
-  }
+  public void disabledPeriodic() {}
 
   @Override
-  public void disabledExit() {
-  }
+  public void disabledExit() {}
 
   @Override
   public void autonomousInit() {
@@ -148,12 +144,10 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void autonomousPeriodic() {
-  }
+  public void autonomousPeriodic() {}
 
   @Override
-  public void autonomousExit() {
-  }
+  public void autonomousExit() {}
 
   @Override
   public void teleopInit() {
@@ -163,12 +157,10 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {
-  }
+  public void teleopPeriodic() {}
 
   @Override
-  public void teleopExit() {
-  }
+  public void teleopExit() {}
 
   @Override
   public void testInit() {
@@ -176,36 +168,36 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void testPeriodic() {
-  }
+  public void testPeriodic() {}
 
   @Override
-  public void testExit() {
-  }
+  public void testExit() {}
 
   private String commandPrintHelper(String name) {
     switch (name.split("/").length) {
-      case 2: {
-        String subsystem = name.split("/")[0];
-        String command = name.split("/")[1];
-        StringBuilder sb = new StringBuilder("$ [");
-        sb.append(subsystem);
-        sb.append("] ");
-        sb.append(command);
-        return sb.toString();
-      }
-      case 3: {
-        String subsystem = name.split("/")[0];
-        String command = name.split("/")[1];
-        String subcommand = name.split("/")[2];
-        StringBuilder sb = new StringBuilder("$ [");
-        sb.append(subsystem);
-        sb.append("] ");
-        sb.append(command);
-        sb.append(" => ");
-        sb.append(subcommand);
-        return sb.toString();
-      }
+      case 2:
+        {
+          String subsystem = name.split("/")[0];
+          String command = name.split("/")[1];
+          StringBuilder sb = new StringBuilder("$ [");
+          sb.append(subsystem);
+          sb.append("] ");
+          sb.append(command);
+          return sb.toString();
+        }
+      case 3:
+        {
+          String subsystem = name.split("/")[0];
+          String command = name.split("/")[1];
+          String subcommand = name.split("/")[2];
+          StringBuilder sb = new StringBuilder("$ [");
+          sb.append(subsystem);
+          sb.append("] ");
+          sb.append(command);
+          sb.append(" => ");
+          sb.append(subcommand);
+          return sb.toString();
+        }
       default:
         return "# " + name;
     }
