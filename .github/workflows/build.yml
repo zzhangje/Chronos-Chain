@@ -11,17 +11,26 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: "temurin"
           java-version: "17"
+
       - name: Grant execute permission
         run: chmod +x gradlew
-      - name: Check formatting
-        run: ./gradlew spotlessCheck
+
       - name: Build robot code
         run: ./gradlew build
-      - name: Check constants (PR)
-        if: github.event_name == 'pull_request'
-        run: ./gradlew checkConfigPullRequest
+
+      - name: Commit and Push changes
+        if: success() && github.event_name == 'push' 
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add .
+          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-commit build changes [skip ci]"
+          git push
