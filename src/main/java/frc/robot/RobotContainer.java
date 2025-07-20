@@ -156,7 +156,7 @@ public class RobotContainer {
         .onChange(joystickRumblerCommand(driver, 0.3, RumbleType.kLeftRumble));
     new Trigger(arm::hasAlgae)
         .onChange(joystickRumblerCommand(driver, 0.3, RumbleType.kRightRumble));
-        
+
     var teleopDrive =
         new TeleopController(
             swerve,
