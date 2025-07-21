@@ -68,7 +68,7 @@ public class NodeSelector extends VirtualSubsystem {
     Logger.recordOutput("NodeSelector/Reef2RobotAngleDegree", fieldCentricReef2RobotAngleDegree);
     Logger.recordOutput("NodeSelector/Reef2RobotDistanceMeter", reef2RobotDistanceMeter);
 
-    Boolean isIgnoreArmMoveCondition = false;
+    Boolean isIgnoreArmMoveCondition = selectedNode.isIgnoreArmMoveCondition;
     for (var val : isIgnoreArmMoveConditionSubscriber.readQueueValues()) {
       isIgnoreArmMoveCondition = val;
       selectedNode = selectedNode.setIgnoreArmMoveCondition(isIgnoreArmMoveCondition);
