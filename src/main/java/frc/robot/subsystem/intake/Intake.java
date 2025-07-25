@@ -35,31 +35,34 @@ public class Intake extends SubsystemBase {
     IntakeConfig.pivotKg.initDefault(gains.kg());
   }
 
-  @Setter @Getter @AutoLogOutput private IntakePivotGoal pivotGoal = IntakePivotGoal.IDLE;
-  @Setter @Getter @AutoLogOutput private IntakeRollerGoal rollerGoal = IntakeRollerGoal.IDLE;
+  @Setter
+  @Getter
+  @AutoLogOutput
+  private IntakePivotGoal pivotGoal = IntakePivotGoal.IDLE;
+  @Setter
+  @Getter
+  @AutoLogOutput
+  private IntakeRollerGoal rollerGoal = IntakeRollerGoal.IDLE;
 
-  @Setter private BooleanSupplier hasCoralSupplier;
+  @Setter
+  private BooleanSupplier hasCoralSupplier;
   private final Debouncer hasCoralDebouncer = new Debouncer(0.2, Debouncer.DebounceType.kFalling);
-  @Setter private BooleanSupplier needDodgeSupplier = () -> false;
-  private final Debouncer needDodgeDebouncer = new Debouncer(0.2, Debouncer.DebounceType.kFalling);
-  @Getter @AutoLogOutput private boolean isAtSetpoint = false;
+  @Getter
+  @AutoLogOutput
+  private boolean isAtSetpoint = false;
 
   private final GenericRollerIO rollerIO;
   private final GenericRollerIO centeringIO;
   private final GenericArmIO pivotIO;
 
-  private final GenericRollerIOInputsAutoLogged rollerIOInputs =
-      new GenericRollerIOInputsAutoLogged();
-  private final GenericRollerIOInputsAutoLogged centeringIOInputs =
-      new GenericRollerIOInputsAutoLogged();
+  private final GenericRollerIOInputsAutoLogged rollerIOInputs = new GenericRollerIOInputsAutoLogged();
+  private final GenericRollerIOInputsAutoLogged centeringIOInputs = new GenericRollerIOInputsAutoLogged();
   private final GenericArmIOInputsAutoLogged pivotIOInputs = new GenericArmIOInputsAutoLogged();
 
-  private final Alert rollerOfflineAlert =
-      new Alert("Ground intake roller motor offline!", Alert.AlertType.WARNING);
-  private final Alert pivotOfflineAlert =
-      new Alert("Ground intake pivot motor offline!", Alert.AlertType.WARNING);
-  private final Alert centeringOfflineAlert =
-      new Alert("Ground intake centering motor offline!", Alert.AlertType.WARNING);
+  private final Alert rollerOfflineAlert = new Alert("Ground intake roller motor offline!", Alert.AlertType.WARNING);
+  private final Alert pivotOfflineAlert = new Alert("Ground intake pivot motor offline!", Alert.AlertType.WARNING);
+  private final Alert centeringOfflineAlert = new Alert("Ground intake centering motor offline!",
+      Alert.AlertType.WARNING);
 
   public double getPivotPositionRad() {
     return pivotIOInputs.positionRad;
@@ -81,25 +84,15 @@ public class Intake extends SubsystemBase {
 
     LoggedTunableNumber.ifChanged(
         hashCode(),
-        () ->
-            pivotIO.setPdf(
-                IntakeConfig.pivotKp.get(),
-                IntakeConfig.pivotKd.get(),
-                IntakeConfig.pivotKs.get(),
-                IntakeConfig.pivotKg.get()),
+        () -> pivotIO.setPdf(
+            IntakeConfig.pivotKp.get(),
+            IntakeConfig.pivotKd.get(),
+            IntakeConfig.pivotKs.get(),
+            IntakeConfig.pivotKg.get()),
         IntakeConfig.pivotKp,
         IntakeConfig.pivotKd,
         IntakeConfig.pivotKs,
         IntakeConfig.pivotKg);
-
-    boolean needDodge = needDodgeDebouncer.calculate(needDodgeSupplier.getAsBoolean());
-
-    if (pivotGoal == IntakePivotGoal.IDLE && needDodge) {
-      pivotGoal = IntakePivotGoal.DODGE;
-    }
-    if (pivotGoal == IntakePivotGoal.DODGE && !needDodge) {
-      pivotGoal = IntakePivotGoal.IDLE;
-    }
 
     if (rollerGoal != IntakeRollerGoal.EJECT
         && rollerGoal != IntakeRollerGoal.TROUGH
@@ -115,36 +108,42 @@ public class Intake extends SubsystemBase {
     rollerIO.setVoltage(rollerGoal.getRollingVolts());
     centeringIO.setVoltage(rollerGoal.getCenteringVoltage());
 
-    isAtSetpoint =
-        Math.abs(pivotIOInputs.positionRad) - pivotGoal.getAngleRadians()
-            < IntakeConfig.AT_SETPOINT_THRESHOLD.getAsDouble();
+    isAtSetpoint = Math.abs(pivotIOInputs.positionRad)
+        - pivotGoal.getAngleRadians() < IntakeConfig.AT_SETPOINT_THRESHOLD.getAsDouble();
   }
 
   public Command trough() {
     return Commands.runOnce(
-            () -> {
-              setPivotGoal(IntakePivotGoal.TROUGH);
-              setRollerGoal(IntakeRollerGoal.TROUGH);
-            })
-        .withName("[Intake] Trough");
+        () -> {
+          setPivotGoal(IntakePivotGoal.TROUGH);
+          setRollerGoal(IntakeRollerGoal.TROUGH);
+        })
+        .withName("Intake/Trough");
   }
 
   public Command inject() {
     return Commands.runOnce(
-            () -> {
-              setPivotGoal(IntakePivotGoal.DOWN);
-              setRollerGoal(IntakeRollerGoal.INJECT);
-            })
-        .withName("[Intake] Inject");
+        () -> {
+          setPivotGoal(IntakePivotGoal.DOWN);
+          setRollerGoal(IntakeRollerGoal.INJECT);
+        })
+        .withName("Intake/Inject");
   }
 
   public Command idle() {
     return Commands.runOnce(
-            () -> {
-              setPivotGoal(IntakePivotGoal.IDLE);
-              setRollerGoal(IntakeRollerGoal.IDLE);
-            })
-        .withName("[Intake] Idle");
+        () -> {
+          setPivotGoal(IntakePivotGoal.IDLE);
+          setRollerGoal(IntakeRollerGoal.IDLE);
+        })
+        .withName("Intake/Idle");
+  }
+
+  public Command dodge() {
+    var cmd = Commands.runOnce(() -> setPivotGoal(IntakePivotGoal.DODGE))
+        .withName("Intake/Dodge").withInterruptBehavior(InterruptBehavior.kCancelIncoming);
+    cmd.addRequirements(this);
+    return cmd;
   }
 
   public void stop() {
@@ -201,6 +200,9 @@ public class Intake extends SubsystemBase {
 
   public static Intake createIO() {
     return new Intake(
-        new GenericRollerIO() {}, new GenericRollerIO() {}, new GenericArmIO() {}, () -> false);
+        new GenericRollerIO() {
+        }, new GenericRollerIO() {
+        }, new GenericArmIO() {
+        }, () -> false);
   }
 }
