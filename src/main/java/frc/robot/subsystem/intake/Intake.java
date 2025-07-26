@@ -141,7 +141,7 @@ public class Intake extends SubsystemBase {
 
   public Command dodge() {
     var cmd = Commands.runOnce(() -> setPivotGoal(IntakePivotGoal.DODGE))
-        .withName("Intake/Dodge").    withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+        .withName("Intake/Dodge").withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     cmd.addRequirements(this);
     return cmd;
   }
